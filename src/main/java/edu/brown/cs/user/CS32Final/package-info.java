@@ -5,4 +5,4 @@
  * @author Adam DeHovitz
  */
 
-package edu.brown.cs.adehovit.autocorrect;
+package edu.brown.cs.user.CS32Final;
