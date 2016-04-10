@@ -1,0 +1,12 @@
+edu/brown/cs/adehovit/autocorrect/Main.class
+edu/brown/cs/adehovit/autocorrect/Trie$TrieIterator.class
+edu/brown/cs/adehovit/autocorrect/Command.class
+edu/brown/cs/adehovit/autocorrect/Node.class
+edu/brown/cs/adehovit/autocorrect/Main$ResultsHandler.class
+edu/brown/cs/adehovit/autocorrect/Main$ExceptionPrinter.class
+edu/brown/cs/adehovit/autocorrect/Main$1.class
+edu/brown/cs/adehovit/autocorrect/Trie.class
+edu/brown/cs/adehovit/autocorrect/TrieData.class
+edu/brown/cs/adehovit/reader/Reader.class
+edu/brown/cs/adehovit/autocorrect/WordData.class
+edu/brown/cs/adehovit/autocorrect/Main$FrontHandler.class
