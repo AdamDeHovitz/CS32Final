@@ -117,7 +117,6 @@ public final class Main {
   }
 
 
-
   /**
    * Runs the spark server.
    */
