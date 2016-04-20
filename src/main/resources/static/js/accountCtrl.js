@@ -1,5 +1,6 @@
-bulkAppControllers.controller("accountCtrl", function($scope, $http) {
+bulkAppControllers.controller("accountCtrl", function($scope, $http, $rootScope) {
 
+		console.log($rootScope.account);
 		/*
 		if (!$rootScope.userId) {
 			$location.path("/");

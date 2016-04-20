@@ -1,5 +1,5 @@
 bulkAppControllers.controller("myEventsCtrl", function($scope, $http) {
-
+	$scope.curTitle = "My Events";
 		/*
 		if (!$rootScope.userId) {
 			$location.path("/");

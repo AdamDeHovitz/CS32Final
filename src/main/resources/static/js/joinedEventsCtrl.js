@@ -1,6 +1,6 @@
-bulkAppControllers.controller("accountCtrl", function($scope, $http, $rootScope) {
+bulkAppControllers.controller("joinedEventsCtrl", function($scope, $http) {
+	$scope.curTitle = "Joined Events";
 
-		console.log($rootScope.account);
 		/*
 		if (!$rootScope.userId) {
 			$location.path("/");

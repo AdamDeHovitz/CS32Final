@@ -30,7 +30,7 @@ bulkApp.config(function($stateProvider, $urlRouterProvider) {
     		views: {
     			'tab-events': {
     				templateUrl: 'templates/events.html',
-    				controller: 'eventCtrl'
+    				controller: 'eventsCtrl'
     			}
     		}
  		 })	
@@ -68,6 +68,33 @@ bulkApp.config(function($stateProvider, $urlRouterProvider) {
     				templateUrl: 'templates/feed.html',
     				controller: 'myEventsCtrl'
     			}
+    		}
+ 		 })
+ 		 .state('tab.event', {
+ 		 	url: '/event/:eventId',
+    		views: {
+    			'tab-feed': {
+    				templateUrl: 'templates/event.html',
+    				controller: 'eventCtrl'
+    			}
+    		}
+ 		 })
+ 		 .state('tab.profile', {
+ 		 	url: '/profile/:userId',
+    		views: {
+    			'tab-feed': {
+    				templateUrl: 'templates/profile.html',
+    				controller: 'profileCtrl'
+    			},
+    		}
+ 		 })
+ 		 .state('tab.account-profile', {
+ 		 	url: '/account-profile/:userId',
+    		views: {
+    			'tab-account': {
+    				templateUrl: 'templates/profile.html',
+    				controller: 'profileCtrl'
+    			},
     		}
  		 });
 

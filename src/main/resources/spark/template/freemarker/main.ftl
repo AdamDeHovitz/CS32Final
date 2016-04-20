@@ -23,9 +23,12 @@
 	 <script src="js/loginCtrl.js"></script>
 	 <script src="js/feedCtrl.js"></script>
 	 <script src="js/accountCtrl.js"></script>
-	 <script src="js/eventCtrl.js"></script>
+	 <script src="js/eventsCtrl.js"></script>
 	 <script src="js/myEventsCtrl.js"></script>
 	 <script src="js/pendingEventsCtrl.js"></script>
+	 <script src="js/joinedEventsCtrl.js"></script>
+	 <script src="js/eventCtrl.js"></script>
+	 <script src="js/profileCtrl.js"></script>
      <script src="js/main.js"></script>
   </body>
   <!-- See http://html5boilerplate.com/ for a good place to start

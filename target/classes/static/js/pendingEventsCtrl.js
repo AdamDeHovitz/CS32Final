@@ -1,4 +1,5 @@
 bulkAppControllers.controller("pendingEventsCtrl", function($scope, $http) {
+	$scope.curTitle = "Pending Events";
 
 		/*
 		if (!$rootScope.userId) {
