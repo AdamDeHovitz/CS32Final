@@ -1,31 +1,27 @@
 package edu.brown.cs.user.CS32Final;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Map;
+
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
+
 import freemarker.template.Configuration;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import spark.ExceptionHandler;
 import spark.ModelAndView;
-import spark.QueryParamsMap;
 import spark.Request;
 import spark.Response;
-import spark.Route;
 import spark.Spark;
 import spark.TemplateViewRoute;
 import spark.template.freemarker.FreeMarkerEngine;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -73,15 +69,17 @@ public final class Main {
    */
   private void run() {
     OptionParser parser = new OptionParser();
+    parser.accepts("gui");
+    options = parser.parse(args);
 
+
+    /*
     //parser.accepts("led").withRequiredArg().ofType( Integer.class );
     led = parser.accepts("led").withRequiredArg().ofType(Integer.class);
     parser.accepts("prefix");
     parser.accepts("whitespace");
     parser.accepts("smart");
-    parser.accepts("gui");
     OptionSpec<File> fileSpec = parser.nonOptions().ofType(File.class);
-    options = parser.parse(args);
 
     List<File> dicts = options.valuesOf(fileSpec);
     if (dicts.size() < 1) {
@@ -93,7 +91,7 @@ public final class Main {
         System.out.println("ERROR: levenshtein distance less than 0");
         System.exit(1);
       }
-    }
+    }*/
 
 
 
@@ -127,7 +125,7 @@ public final class Main {
     FreeMarkerEngine freeMarker = createEngine();
 
     // Setup Spark Routes
-    Spark.get("/autocorrect", new FrontHandler(), freeMarker);
+    Spark.get("/", new FrontHandler(), freeMarker);
   }
 
   /**
@@ -155,7 +153,7 @@ public final class Main {
     public ModelAndView handle(Request req, Response res) {
       Map<String, Object> variables =
               ImmutableMap.of("title", "Type Away!", "content", "");
-      return new ModelAndView(variables, "query.ftl");
+      return new ModelAndView(variables, "main.ftl");
     }
   }
 }
