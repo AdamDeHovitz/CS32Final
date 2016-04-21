@@ -195,18 +195,18 @@ public class SqliteDatabase {
         return null;
     }
 
-    public List<String> findMessagesByEventId(String eventId) {
+    public List<Integer> findMessagesByEventId(String eventId) {
         ResultSet rs = null;
         try {
             String sql = "SELECT id FROM message WHERE event_id = ?;";
             PreparedStatement prep = connection.prepareStatement(sql);
             prep.setString(1, eventId);
 
-            List<String> toReturn = new ArrayList<>();
+            List<Integer> toReturn = new ArrayList<>();
             rs = prep.executeQuery();
 
             while (rs.next()) {
-                String id = rs.getString(1);
+                int id = rs.getInt(1);
                 toReturn.add(id);
             }
             return toReturn;
@@ -219,18 +219,18 @@ public class SqliteDatabase {
         return null;
     }
 
-    public List<String> findEventsByUserId(String userId) {
+    public List<Integer> findEventsByUserId(String userId) {
         ResultSet rs = null;
         try {
             String sql = "SELECT event_id FROM user_event WHERE user_id = ?;";
             PreparedStatement prep = connection.prepareStatement(sql);
             prep.setString(1, userId);
 
-            List<String> toReturn = new ArrayList<>();
+            List<Integer> toReturn = new ArrayList<>();
             rs = prep.executeQuery();
 
             while (rs.next()) {
-                String id = rs.getString(1);
+                int id = rs.getInt(1);
                 toReturn.add(id);
             }
             return toReturn;
@@ -243,18 +243,18 @@ public class SqliteDatabase {
         return null;
     }
 
-    public List<String> findReviewsByUserId(String userId) {
+    public List<Integer> findReviewsByUserId(String userId) {
         ResultSet rs = null;
         try {
             String sql = "SELECT id FROM review WHERE target_id = ?;";
             PreparedStatement prep = connection.prepareStatement(sql);
             prep.setString(1, userId);
 
-            List<String> toReturn = new ArrayList<>();
+            List<Integer> toReturn = new ArrayList<>();
             rs = prep.executeQuery();
 
             while (rs.next()) {
-                String id = rs.getString(1);
+                int id = rs.getInt(1);
                 toReturn.add(id);
             }
             return toReturn;
@@ -267,18 +267,18 @@ public class SqliteDatabase {
         return null;
     }
 
-    public List<String> findEventsByOwnerId(String userId) {
+    public List<Integer> findEventsByOwnerId(String userId) {
         ResultSet rs = null;
         try {
             String sql = "SELECT id FROM event WHERE owner_id = ?;";
             PreparedStatement prep = connection.prepareStatement(sql);
             prep.setString(1, userId);
 
-            List<String> toReturn = new ArrayList<>();
+            List<Integer> toReturn = new ArrayList<>();
             rs = prep.executeQuery();
 
             while (rs.next()) {
-                String id = rs.getString(1);
+                Integer id = rs.getInt(1);
                 toReturn.add(id);
             }
             return toReturn;
@@ -289,6 +289,27 @@ public class SqliteDatabase {
             closeResultSet(rs);
         }
         return null;
+    }
+
+    public int findUserByUsername(String username) {
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT id FROM user WHERE email = ?;";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setString(1, username);
+
+            rs = prep.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch(Exception e){
+            System.out.println("ERROR: SQL error");
+            e.printStackTrace();
+        } finally {
+            closeResultSet(rs);
+        }
+        return 0;
     }
 
     private void makeConnection(String db) throws SQLException, ClassNotFoundException {
