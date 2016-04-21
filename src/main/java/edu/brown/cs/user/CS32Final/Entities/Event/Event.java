@@ -44,6 +44,8 @@ public class Event {
     this.chat = chat;
   }
 
+  //read from db
+
   public int getState() {
     return state;
   }
