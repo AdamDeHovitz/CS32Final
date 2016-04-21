@@ -117,6 +117,7 @@ public final class Main {
 
         // Setup Spark Routes
         Spark.get("/", new FrontHandler(), freeMarker);
+
     }
 
     /**
