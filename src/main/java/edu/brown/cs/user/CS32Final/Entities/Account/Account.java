@@ -1,6 +1,6 @@
-package edu.brown.cs.user.Entities.Account;
+package edu.brown.cs.user.CS32Final.Entities.Account;
 
-import edu.brown.cs.user.Entities.Event.Event;
+import edu.brown.cs.user.CS32Final.Entities.Event.Event;
 
 import java.util.List;
 

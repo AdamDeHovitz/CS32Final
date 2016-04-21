@@ -1,4 +1,4 @@
-package edu.brown.cs.user.Entities.Account;
+package edu.brown.cs.user.CS32Final.Entities.Account;
 
 import java.util.ArrayList;
 import java.util.List;

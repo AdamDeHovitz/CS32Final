@@ -1,6 +1,6 @@
-package edu.brown.cs.user.Entities.Chat;
+package edu.brown.cs.user.CS32Final.Entities.Chat;
 
-import edu.brown.cs.user.Entities.Account.Account;
+import edu.brown.cs.user.CS32Final.Entities.Account.Account;
 
 /**
  * Created by adamdeho on 4/10/16.

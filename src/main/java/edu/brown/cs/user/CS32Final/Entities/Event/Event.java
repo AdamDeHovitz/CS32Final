@@ -1,7 +1,7 @@
-package edu.brown.cs.user.Entities.Event;
+package edu.brown.cs.user.CS32Final.Entities.Event;
 
-import edu.brown.cs.user.Entities.Account.Account;
-import edu.brown.cs.user.Entities.Chat.Chat;
+import edu.brown.cs.user.CS32Final.Entities.Account.Account;
+import edu.brown.cs.user.CS32Final.Entities.Chat.Chat;
 
 import java.util.List;
 

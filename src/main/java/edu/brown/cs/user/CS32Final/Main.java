@@ -6,11 +6,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
+import edu.brown.cs.user.CS32Final.SQL.SqliteDatabase;
 import freemarker.template.Configuration;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -34,6 +36,8 @@ public final class Main {
     private OptionSet options;
     private OptionSpec<Integer> led;
     private final Gson gson = new Gson();
+
+    private SqliteDatabase database;
 
     private Main(String[] args) {
         this.args = args;
@@ -68,31 +72,19 @@ public final class Main {
      * Prepares for autocorrect by reading options and establishing a trie.
      */
     private void run() {
+
         OptionParser parser = new OptionParser();
         parser.accepts("gui");
+
+        OptionSpec<String> lineSpec = parser.nonOptions()
+                .ofType(String.class);
+
         options = parser.parse(args);
+        List<String> input = options.valuesOf(lineSpec);
 
-
-    /*
-    //parser.accepts("led").withRequiredArg().ofType( Integer.class );
-    led = parser.accepts("led").withRequiredArg().ofType(Integer.class);
-    parser.accepts("prefix");
-    parser.accepts("whitespace");
-    parser.accepts("smart");
-    OptionSpec<File> fileSpec = parser.nonOptions().ofType(File.class);
-
-    List<File> dicts = options.valuesOf(fileSpec);
-    if (dicts.size() < 1) {
-      System.out.println("ERROR: Please specify a file");
-      System.exit(1);
-    }
-    if (options.has("led")) {
-      if (led.value(options) < 0) {
-        System.out.println("ERROR: levenshtein distance less than 0");
-        System.exit(1);
-      }
-    }*/
-
+        database = new SqliteDatabase(input.get(input
+                .size() - 1));
+        database.createTables();
 
         if (options.has("gui")) {
             runSparkServer();
