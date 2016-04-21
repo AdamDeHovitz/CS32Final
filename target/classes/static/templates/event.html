@@ -1,0 +1,35 @@
+<ion-view view-title="Event: {{event.title}}">
+<ion-content class="padding">
+  
+<div class="list card">
+
+  <div class="item item-avatar">
+    <img src="{{event.authorImg}}" ng-click="goAuthor();">
+    <h2><b>{{event.title}}</b></h2>
+    
+    by <a class="stressed" href="#/tab/profile/{{event.authorId}}">{{event.author}}</a>
+
+  </div>
+  
+  <div class="item item-body" style="text-align:center;">
+  <img class="full-image" src="{{event.img}}">
+  </div>
+  <div class="item item-divider">
+  Location: {{event.location}} <br>
+    <b>${{event.price}}</b>/person
+  </div>
+  <div class="item item-body" style="text-align:center;">
+    <p>
+      {{event.description}}
+    </p>
+    <p>
+    <a href="" class="subdued" ng-repeat="tag in event.tags"> #{{tag}} </a> 
+    <p> Currently has <b>{{event.curMemberNum}}/ {{event.desiredMembers}}</b> participants.
+    </p>
+    
+  <button class="button button-positive button-block" ng-click="showConfirm();">Request to Join</button>
+  </div>
+
+</div>
+</ion-content>
+</ion-view>
