@@ -75,6 +75,7 @@ public class GUI {
 
     Spark.post("/event-create", new EventCreateHandler());
     Spark.post("/event-view", new EventViewHandler());
+    Spark.post("/event-feed", new EventFeedHandler());
     Spark.post("/event-owner", new EventOwnerHandler());
     Spark.post("/event-joined", new EventJoinedHandler());
     Spark.post("/event-pending", new EventPendingHandler());
@@ -139,7 +140,7 @@ public class GUI {
 
       Map<String, Object> variables = null;
 
-      Account user =  database.findUserByUsername(username);
+      Account user = database.findUserByUsername(username);
       if (user.authenticate(password)) {
         ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
         user.getLoginData(vars);
@@ -183,16 +184,16 @@ public class GUI {
 
       int id = Integer.parseInt(qm.value("id"));
 
-      Profile user =  database.findUserProfileById(id);
+      Profile user = database.findUserProfileById(id);
 
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       user.getProfileData(vars);
       List<Review> reviews = database.findReviewsByUserId(id);
       double sum = 0;
-      for (Review a: reviews) {
+      for (Review a : reviews) {
         sum += a.getRating();
       }
-      double average = sum/reviews.size();
+      double average = sum / reviews.size();
       vars.put("rating", average);
       vars.put("reviews", reviews);
 
@@ -209,7 +210,7 @@ public class GUI {
 
       int id = Integer.parseInt(qm.value("id"));
 
-      Event event =  database.findEventById(id);
+      Event event = database.findEventById(id);
 
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       event.getEventData(vars);
@@ -225,10 +226,31 @@ public class GUI {
 
       int id = Integer.parseInt(qm.value("id"));
 
-      List<Event> events =  database.findEventsByOwnerId(id);
+      List<Event> events = database.findEventsByOwnerId(id);
 
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
-      //event.getEventData(vars);
+      vars.put("events", events);
+      Map<String, Object> variables = vars.build();
+      return gson.toJson(variables);
+    }
+  }
+
+
+  private class EventFeedHandler implements Route {
+
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+
+      int id = Integer.parseInt(qm.value("id"));
+      List<Integer> handled = database.findEventIdsbyOwnerId(id);
+      handled.addAll(database.findEventsByRequestedId(id));
+      handled.addAll(database.findEventsByUserId(id));
+      List<Event> events = database.findNewNearbyEvents(handled);
+
+      ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+      vars.put("events", events);
+
       Map<String, Object> variables = vars.build();
       return gson.toJson(variables);
     }
@@ -241,10 +263,12 @@ public class GUI {
 
       int id = Integer.parseInt(qm.value("id"));
 
-      List<Event> events =  database.findEventsByOwnerId(id);
+
+      List<Event> events = database.findEventsByOwnerId(id);
 
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       //event.getEventData(vars);
+
       Map<String, Object> variables = vars.build();
       return gson.toJson(variables);
     }
@@ -257,7 +281,7 @@ public class GUI {
 
       int id = Integer.parseInt(qm.value("id"));
 
-      List<Event> events =  database.findEventsByOwnerId(id);
+      List<Event> events = database.findEventsByOwnerId(id);
 
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       //event.getEventData(vars);
