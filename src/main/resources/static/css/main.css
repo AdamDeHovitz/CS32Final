@@ -32,3 +32,16 @@ background-color: transparent !important;
 .full-image {
 	max-width: 300px;
 }
+
+label.item.has-error {
+	border-bottom: 2px solid red;
+}
+
+.form-errors {
+	margin: 5px 0;
+}
+
+.form-error {
+	padding: 2px 0 2px 16px;
+	color: red;
+}

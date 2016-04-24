@@ -1,10 +1,10 @@
 package edu.brown.cs.user.CS32Final.Entities.Event;
 
-import com.google.common.collect.ImmutableMap;
-import edu.brown.cs.user.CS32Final.Entities.Account.Account;
-import edu.brown.cs.user.CS32Final.Entities.Chat.Chat;
-
 import java.util.List;
+
+import com.google.common.collect.ImmutableMap;
+
+import edu.brown.cs.user.CS32Final.Entities.Account.Account;
 
 /**
  * Created by adamdeho on 4/10/16.
@@ -24,7 +24,6 @@ public class Event {
   private double cost;
   private String location;
   private List<String> tags;
-  private Chat chat;
 
   public Event(int id, int host_id, EventState state, String name,
                String description, String image,
@@ -139,14 +138,14 @@ public class Event {
   public void setTags(List<String> tags) {
     this.tags = tags;
   }
-
+/*
   public Chat getChat() {
     return chat;
   }
 
   public void setChat(Chat chat) {
     this.chat = chat;
-  }
+  }*/
 
   public void getEventData(ImmutableMap.Builder<String, Object> variables) {
     variables.put("eventId", id)

@@ -1,7 +1,15 @@
 package edu.brown.cs.user.CS32Final.GUI;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.List;
+import java.util.Map;
+
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
+
 import edu.brown.cs.user.CS32Final.Entities.Account.Account;
 import edu.brown.cs.user.CS32Final.Entities.Account.Profile;
 import edu.brown.cs.user.CS32Final.Entities.Account.Review;
@@ -17,13 +25,6 @@ import spark.Route;
 import spark.Spark;
 import spark.TemplateViewRoute;
 import spark.template.freemarker.FreeMarkerEngine;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by adamdeho on 4/21/16.
@@ -62,6 +63,7 @@ public class GUI {
     // Setup Spark Routes
     // Setup Spark Routes
     Spark.get("/", new FrontHandler(), freeMarker);
+
     Spark.post("/register", new RegisterHandler());
     Spark.post("/login", new LoginHandler());
     Spark.post("/profile", new ProfileHandler());
@@ -109,8 +111,8 @@ public class GUI {
 
       String email = qm.value("email");
       String password = qm.value("password");
-      String first_name = qm.value("first_name");
-      String last_name = qm.value("last_name");
+      String first_name = qm.value("firstName");
+      String last_name = qm.value("lastName");
       String image = qm.value("image");
       String date = "19 May, 2016";
 
@@ -131,6 +133,7 @@ public class GUI {
       String password = qm.value("password");
 
       Map<String, Object> variables = null;
+
       Account user =  database.findUserByUsername(username);
       if (user.authenticate(password)) {
         ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
