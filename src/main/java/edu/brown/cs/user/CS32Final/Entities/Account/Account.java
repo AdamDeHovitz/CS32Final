@@ -15,20 +15,20 @@ public class Account {
   private String id;
   private String email;
   private String password;
-  private int jnotif;
-  private int hnotif;
+  private int joinedNotif;
+  private int requestNotif;
 
   //private boolean hasFacebook
 
 
   public Account(Profile prof, String id, String email,
-                 String password, int jnotif, int hnotif) {
+                 String password, int requestNotif, int joinedNotif) {
     this.prof = prof;
     this.id = id;
     this.email = email;
     this.password = password;
-    this.jnotif = jnotif;
-    this.hnotif = hnotif;
+    this.joinedNotif = joinedNotif;
+    this.requestNotif = requestNotif;
   }
 
   public Profile getProf() {

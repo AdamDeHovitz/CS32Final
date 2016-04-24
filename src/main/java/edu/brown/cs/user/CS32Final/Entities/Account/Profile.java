@@ -10,18 +10,19 @@ public class Profile {
 
   private String name;
   private String image; //maybe an image class?
-  private double rating;
+  private String date;
   private List<Integer> reviews;
 
-  public Profile(String name, String image) {
+  public Profile(String name, String image, String date) {
     this.name = name;
     this.image = image;
+    this.date = date;
   }
 
-  public Profile(String name, String image,
-                 double rate, List<Integer> reviews) {
-    this(name, image);
-    rating = rate;
+  public Profile(String name, String image, String date,
+                 List<Integer> reviews) {
+    this(name, image, date);
+
     reviews = new ArrayList(reviews);
   }
 
@@ -33,9 +34,6 @@ public class Profile {
     return image;
   }
 
-  public double getRating() {
-    return rating;
-  }
 //  public double getRating() {
 //    double average = 0;
 //    for (int i: ratings) {
@@ -54,10 +52,6 @@ public class Profile {
 
   public void setImage(String image) {
     this.image = image;
-  }
-
-  public void setRatings(double ratings) {
-    this.rating = ratings;
   }
 
   public void setReviews(List<Integer> reviews) {

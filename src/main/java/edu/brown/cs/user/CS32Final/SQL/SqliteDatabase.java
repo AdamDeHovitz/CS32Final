@@ -30,7 +30,9 @@ public class SqliteDatabase {
                 "email TEXT, " +
                 "password TEXT, " +
                 "name TEXT, " +
-                "image TEXT)";
+                "image TEXT, " +
+                "requestNotif INTEGER, " +
+                "joinedNotif INTEGER)";
 
         String review = "CREATE TABLE IF NOT EXISTS review(" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -322,7 +324,7 @@ public class SqliteDatabase {
     public Account findUserAccountById(int id) {
         ResultSet rs = null;
         try {
-            String sql = "SELECT email, password FROM user WHERE id = ?;";
+            String sql = "SELECT email, password, requestNotif, joinedNotif FROM user WHERE id = ?;";
             PreparedStatement prep = connection.prepareStatement(sql);
             prep.setInt(1, id);
 
@@ -331,6 +333,9 @@ public class SqliteDatabase {
             while (rs.next()) {
                 String email = rs.getString(1);
                 String password = rs.getString(2);
+                int requestNotif = rs.getInt(3);
+                int joinedNotif = rs.getInt(4);
+
                 Profile profile = findUserProfileById(id);
 
             }
