@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -69,6 +68,8 @@ public class GUI {
 
     Spark.post("/event-create", new EventCreateHandler());
     Spark.post("/event-view", new EventViewHandler());
+    Spark.post("/event-owner", new EventOwnerHandler());
+    Spark.post("/event-joined", new EventOwnerHandler());
     Spark.post("/event-owner", new EventOwnerHandler());
   }
 
@@ -202,7 +203,6 @@ public class GUI {
 
       Event event =  database.findEventById(id);
 
-
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       event.getEventData(vars);
       Map<String, Object> variables = vars.build();
@@ -217,7 +217,7 @@ public class GUI {
 
       int id = Integer.parseInt(qm.value("id"));
 
-      Event event =  database.findEventsByOwnerId(id);
+      List<Event> events =  database.findEventsByOwnerId(id);
 
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       event.getEventData(vars);

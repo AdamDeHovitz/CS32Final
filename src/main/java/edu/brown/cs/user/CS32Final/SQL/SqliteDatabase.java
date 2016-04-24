@@ -7,6 +7,7 @@ import edu.brown.cs.user.CS32Final.Entities.Account.Account;
 import edu.brown.cs.user.CS32Final.Entities.Account.Profile;
 import edu.brown.cs.user.CS32Final.Entities.Account.Review;
 import edu.brown.cs.user.CS32Final.Entities.Event.Event;
+import edu.brown.cs.user.CS32Final.Entities.Event.EventState;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -55,6 +56,11 @@ public class SqliteDatabase {
                 "cost REAL, " +
                 "location TEXT, " +
                 "tags TEXT)";
+
+        String eventTags = "CREATE TABLE IF NOT EXISTS event_tags(" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "event_id INTEGER, " +
+                "tag TEXT)";
 
         String userEvent = "CREATE TABLE IF NOT EXISTS user_event(" +
                 "event_id INTEGER, " +
@@ -429,26 +435,48 @@ public class SqliteDatabase {
     public Event findEventById(int id) {
         ResultSet rs = null;
         try {
-            String sql = "SELECT owner_id, state, name, description, image, member_capacity, cost, location, tags FROM event WHERE id = ?;";
+            String sql = "SELECT owner_id, state, name, description, image, member_capacity, cost, location FROM event WHERE id = ?;";
             PreparedStatement prep = connection.prepareStatement(sql);
             prep.setInt(1, id);
-
-            List<Integer> toReturn = new ArrayList<>();
 
             rs = prep.executeQuery();
 
             while (rs.next()) {
                 int owner_id = rs.getInt(1);
-                String state = rs.getString(2);
+                EventState state = EventState.valueOf(rs.getString(2));
                 String name = rs.getString(3);
                 String description = rs.getString(4);
                 String image = rs.getString(5);
                 int member_capacity = rs.getInt(6);
                 double cost = rs.getDouble(7);
                 String location = rs.getString(8);
-                String tags = rs.getString(9);
+                List<String> tags = findTagsByEventId(id);
 
-                toReturn.add(new Event(owner_id, state, name, description, image, member_capacity, cost, location, tags));
+                return new Event(id, owner_id, state, name, description, image, member_capacity, cost, location, tags);
+            }
+        } catch(Exception e){
+            System.out.println("ERROR: SQL error");
+        } finally {
+            closeResultSet(rs);
+        }
+        return null;
+    }
+
+    public List<String> findTagsByEventId(int id) {
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT tag FROM event_tags WHERE event_id = ?;";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setInt(1, id);
+
+            List<String> toReturn = new ArrayList<>();
+
+            rs = prep.executeQuery();
+
+            while (rs.next()) {
+                String tag = rs.getString(1);
+
+                toReturn.add(tag);
             }
 
             return toReturn;
