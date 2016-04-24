@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import edu.brown.cs.user.CS32Final.Entities.Account.Account;
 import edu.brown.cs.user.CS32Final.Entities.Account.Profile;
+import edu.brown.cs.user.CS32Final.Entities.Account.Review;
 import edu.brown.cs.user.CS32Final.Entities.Event.Event;
 import edu.brown.cs.user.CS32Final.SQL.SqliteDatabase;
 import freemarker.template.Configuration;
@@ -175,7 +176,18 @@ public class GUI {
 
       Profile user =  database.findUserProfileById(id);
 
-      Map<String, Object> variables = user.getData();
+      ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+      user.getProfileData(vars);
+      List<Review> reviews = database.findReviewsByUserId(id);
+      double sum = 0;
+      for (Review a: reviews) {
+        sum += a.getRating();
+      }
+      double average = sum/reviews.size();
+      vars.put("rating", average);
+      vars.put("reviews", reviews);
+
+      Map<String, Object> variables = vars.build();
 
       return gson.toJson(variables);
     }
@@ -190,8 +202,10 @@ public class GUI {
 
       Event event =  database.findEventById(id);
 
-      Map<String, Object> variables = event.getData();
 
+      ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+      event.getEventData(vars);
+      Map<String, Object> variables = vars.build();
       return gson.toJson(variables);
     }
   }
@@ -205,8 +219,9 @@ public class GUI {
 
       Event event =  database.findEventById(id);
 
-      Map<String, Object> variables = event.getData();
-
+      ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+      event.getEventData(vars);
+      Map<String, Object> variables = vars.build();
       return gson.toJson(variables);
     }
   }
