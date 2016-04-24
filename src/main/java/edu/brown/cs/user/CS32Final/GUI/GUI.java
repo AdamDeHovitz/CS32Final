@@ -70,6 +70,7 @@ public class GUI {
     Spark.post("/event-create", new EventCreateHandler());
     Spark.post("/event-view", new EventViewHandler());
     Spark.post("/event-owner", new EventOwnerHandler());
+    Spark.post("/event-feed", new EventFeedHandler());
   }
 
   /**
@@ -225,4 +226,25 @@ public class GUI {
       return gson.toJson(variables);
     }
   }
+
+  private class EventFeedHandler implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+
+      int id = Integer.parseInt(qm.value("id"));
+      Account user = database.findUserAccountById(id);
+      List<Integer> handled = database.findEventsByOwnerId(id);
+      handled.addAll(database.findEventsByRequestedId(id));
+      handled.addAll(database.findEventsByUserId(id));
+      List<Event> events = database.findNewNearbyEvents(handled);
+
+      ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+      event.getEventData(vars);
+      Map<String, Object> variables = vars.build();
+      return gson.toJson(variables);
+    }
+  }
+
+
 }

@@ -79,6 +79,7 @@ public class SqliteDatabase {
             prep.addBatch(event);
             prep.addBatch(userEvent);
             prep.addBatch(message);
+            prep.addBatch(userRequest);
 
             prep.executeBatch();
 
@@ -326,6 +327,30 @@ public class SqliteDatabase {
         }
         return null;
     }
+    public List<Integer> findEventsByRequestedId(Integer userId) {
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT id FROM user_request WHERE owner_id = ?;";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setInt(1, userId);
+
+            List<Integer> toReturn = new ArrayList<>();
+            rs = prep.executeQuery();
+
+            while (rs.next()) {
+                int id = rs.getInt(1);
+                toReturn.add(id);
+            }
+            return toReturn;
+        } catch(Exception e){
+            System.out.println("ERROR: SQL error");
+            e.printStackTrace();
+        } finally {
+            closeResultSet(rs);
+        }
+        return null;
+    }
+
 
     public Account findUserByUsername(String username) {
         ResultSet rs = null;
