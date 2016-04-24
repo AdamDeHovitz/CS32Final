@@ -12,6 +12,7 @@ import java.util.Map;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
+import edu.brown.cs.user.CS32Final.GUI.GUI;
 import edu.brown.cs.user.CS32Final.SQL.SqliteDatabase;
 import freemarker.template.Configuration;
 import joptsimple.OptionParser;
@@ -81,7 +82,7 @@ public final class Main {
         //List<String> input = options.valuesOf(lineSpec);
 
         if (options.has("gui")) {
-            runSparkServer();
+            GUI gui = new GUI();
         } else {
             try {
                 InputStreamReader isr = new InputStreamReader(System.in, "UTF-8");
@@ -103,16 +104,16 @@ public final class Main {
     /**
      * Runs the spark server.
      */
-    private void runSparkServer() {
-        Spark.externalStaticFileLocation("src/main/resources/static");
-        Spark.exception(Exception.class, new ExceptionPrinter());
-
-        FreeMarkerEngine freeMarker = createEngine();
-
-        // Setup Spark Routes
-        Spark.get("/", new FrontHandler(), freeMarker);
-
-    }
+//    private void runSparkServer() {
+//        Spark.externalStaticFileLocation("src/main/resources/static");
+//        Spark.exception(Exception.class, new ExceptionPrinter());
+//
+//        FreeMarkerEngine freeMarker = createEngine();
+//
+//        // Setup Spark Routes
+//        Spark.get("/", new FrontHandler(), freeMarker);
+//
+//    }
 
     /**
      * Exception Printer for errors I think. I didn't write it.
