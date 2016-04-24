@@ -11,47 +11,44 @@ import java.util.List;
  */
 public class Event {
 
-  private int state;
+  private int id;
+  private EventState state;
   private String name;
-  private String id;
-  private String desc;
+  private int host_id;
+  private String description;
   private String image = null;
   private Account host;
   private List<Account> members;
   private List<Request> requests;
   private int maxMembers;
-  private int costPP;
+  private double cost;
   private String location;
   private List<String> tags;
   private Chat chat;
 
-  public Event(int state, String name, String id,
-               String desc, String image, Account host,
-               List<Account> members, List<Request> requests,
-               int maxMembers, int costPP, String location,
-               List<String> tags, Chat chat) {
+  public Event(int id, int host_id, EventState state, String name,
+               String description, String image,
+               int maxMembers, double cost, String location,
+               List<String> tags) {
+    this.id = id;
+    this.host_id = host_id;
     this.state = state;
     this.name = name;
-    this.id = id;
-    this.desc = desc;
+    this.description = description;
     this.image = image;
-    this.host = host;
-    this.members = members;
-    this.requests = requests;
     this.maxMembers = maxMembers;
-    this.costPP = costPP;
+    this.cost = cost;
     this.location = location;
     this.tags = tags;
-    this.chat = chat;
   }
 
   //read from db
 
-  public int getState() {
+  public EventState getState() {
     return state;
   }
 
-  public void setState(int state) {
+  public void setState(EventState state) {
     this.state = state;
   }
 
@@ -63,20 +60,20 @@ public class Event {
     this.name = name;
   }
 
-  public String getId() {
-    return id;
+  public int getId() {
+    return host_id;
   }
 
-  public void setId(String id) {
-    this.id = id;
+  public void setId(int id) {
+    this.host_id = id;
   }
 
   public String getDesc() {
-    return desc;
+    return description;
   }
 
   public void setDesc(String desc) {
-    this.desc = desc;
+    this.description = desc;
   }
 
   public String getImage() {
@@ -119,12 +116,12 @@ public class Event {
     this.maxMembers = maxMembers;
   }
 
-  public int getCostPP() {
-    return costPP;
+  public double getCostPP() {
+    return cost;
   }
 
-  public void setCostPP(int costPP) {
-    this.costPP = costPP;
+  public void setCostPP(double costPP) {
+    this.cost = costPP;
   }
 
   public String getLocation() {

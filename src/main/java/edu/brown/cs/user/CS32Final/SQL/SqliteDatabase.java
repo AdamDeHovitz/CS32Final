@@ -7,6 +7,7 @@ import edu.brown.cs.user.CS32Final.Entities.Account.Account;
 import edu.brown.cs.user.CS32Final.Entities.Account.Profile;
 import edu.brown.cs.user.CS32Final.Entities.Account.Review;
 import edu.brown.cs.user.CS32Final.Entities.Event.Event;
+import edu.brown.cs.user.CS32Final.Entities.Event.EventState;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -55,6 +56,11 @@ public class SqliteDatabase {
                 "cost REAL, " +
                 "location TEXT, " +
                 "tags TEXT)";
+
+        String eventTags = "CREATE TABLE IF NOT EXISTS event_tags(" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "event_id INTEGER, " +
+                "tag TEXT)";
 
         String userEvent = "CREATE TABLE IF NOT EXISTS user_event(" +
                 "event_id INTEGER, " +
@@ -271,7 +277,7 @@ public class SqliteDatabase {
                 toReturn.add(id);
             }
             return toReturn;
-        } catch(Exception e){
+        } catch (Exception e) {
             System.out.println("ERROR: SQL error");
             e.printStackTrace();
         } finally {
@@ -280,7 +286,8 @@ public class SqliteDatabase {
         return null;
     }
 
-    public List<Review> findReviewsByUserId(Integer userId) {ResultSet rs = null;
+    public List<Review> findReviewsByUserId(Integer userId) {
+        ResultSet rs = null;
         try {
             String sql = "SELECT user_id, rating, message FROM review FROM review WHERE target_id = ?;";
             PreparedStatement prep = connection.prepareStatement(sql);
@@ -296,7 +303,7 @@ public class SqliteDatabase {
                 toReturn.add(new Review(user_id, userId, rating, text ));
             }
             return toReturn;
-        } catch(Exception e){
+        } catch (Exception e) {
             System.out.println("ERROR: SQL error");
             e.printStackTrace();
         } finally {
@@ -304,7 +311,8 @@ public class SqliteDatabase {
         }
         return null;}
 
-    public List<Integer> findEventsByOwnerId(Integer userId) {
+
+    public List<Integer> findEventIdsbyOwnerId(Integer userId) {
         ResultSet rs = null;
         try {
             String sql = "SELECT id FROM event WHERE owner_id = ?;";
@@ -315,17 +323,26 @@ public class SqliteDatabase {
             rs = prep.executeQuery();
 
             while (rs.next()) {
-                int id = rs.getInt(1);
-                toReturn.add(id);
+                int event_id = rs.getInt(1);
+                toReturn.add(event_id);
             }
             return toReturn;
-        } catch(Exception e){
+        } catch (Exception e) {
             System.out.println("ERROR: SQL error");
             e.printStackTrace();
         } finally {
             closeResultSet(rs);
         }
         return null;
+    }
+
+
+    public List<Event> findEventsByOwnerId(Integer userId) {
+        List<Event> toReturn = new ArrayList<>();
+        for (Integer id: findEventIdsbyOwnerId(userId)) {
+            toReturn.add(findEventById(id));
+        }
+        return toReturn;
     }
     public List<Integer> findEventsByRequestedId(Integer userId) {
         ResultSet rs = null;
@@ -364,13 +381,46 @@ public class SqliteDatabase {
             if (rs.next()) {
                 return findUserAccountById(rs.getInt(1));
             }
-        } catch(Exception e){
+        } catch (Exception e) {
             System.out.println("ERROR: SQL error");
             e.printStackTrace();
         } finally {
             closeResultSet(rs);
         }
         return null;
+    }
+
+    public List<Event> findNewNearbyEvents(List<Integer> taken) {
+        List<Event> toReturn = new ArrayList();
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT id, owner_id, state, name, description, image, member_capacity, cost, location FROM event;";
+            PreparedStatement prep = connection.prepareStatement(sql);
+
+            rs = prep.executeQuery();
+
+            while (rs.next() && toReturn.size() < 10) {
+                Integer eventId = rs.getInt(1);
+                if (! taken.contains(eventId)) {
+                    int owner_id = rs.getInt(2);
+                    EventState state = EventState.valueOf(rs.getString(3));
+                    String name = rs.getString(4);
+                    String description = rs.getString(5);
+                    String image = rs.getString(6);
+                    int member_capacity = rs.getInt(7);
+                    double cost = rs.getDouble(8);
+                    String location = rs.getString(9);
+                    List<String> tags = findTagsByEventId(eventId);
+
+                    toReturn.add(new Event(eventId, owner_id, state, name, description, image, member_capacity, cost, location, tags));
+                }
+            }
+        } catch(Exception e){
+            System.out.println("ERROR: SQL error");
+        } finally {
+            closeResultSet(rs);
+        }
+        return toReturn;
     }
 
     public Account findUserAccountById(int id) {
@@ -451,6 +501,58 @@ public class SqliteDatabase {
     }
 
     public Event findEventById(int id) {
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT owner_id, state, name, description, image, member_capacity, cost, location FROM event WHERE id = ?;";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setInt(1, id);
+
+            rs = prep.executeQuery();
+
+            while (rs.next()) {
+                int owner_id = rs.getInt(1);
+                EventState state = EventState.valueOf(rs.getString(2));
+                String name = rs.getString(3);
+                String description = rs.getString(4);
+                String image = rs.getString(5);
+                int member_capacity = rs.getInt(6);
+                double cost = rs.getDouble(7);
+                String location = rs.getString(8);
+                List<String> tags = findTagsByEventId(id);
+
+                return new Event(id, owner_id, state, name, description, image, member_capacity, cost, location, tags);
+            }
+        } catch(Exception e){
+            System.out.println("ERROR: SQL error");
+        } finally {
+            closeResultSet(rs);
+        }
+        return null;
+    }
+
+    public List<String> findTagsByEventId(int id) {
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT tag FROM event_tags WHERE event_id = ?;";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setInt(1, id);
+
+            List<String> toReturn = new ArrayList<>();
+
+            rs = prep.executeQuery();
+
+            while (rs.next()) {
+                String tag = rs.getString(1);
+
+                toReturn.add(tag);
+            }
+
+            return toReturn;
+        } catch(Exception e){
+            System.out.println("ERROR: SQL error");
+        } finally {
+            closeResultSet(rs);
+        }
         return null;
     }
 
