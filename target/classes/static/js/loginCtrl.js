@@ -61,6 +61,8 @@ bulkAppControllers.controller("loginCtrl",
 	 		responseObject = JSON.parse(responseJSON);
 	 	});
 
+        $scope.closeModal();
+
 	 	/*
 		//$http.post("/register", regisData).
 		$http({
@@ -96,7 +98,16 @@ bulkAppControllers.controller("loginCtrl",
 
 	$scope.doLogin = function() {
 		console.log('Doing login', $scope.loginData);
-    	
+
+		$.post("/login", {
+                "username": $scope.loginData.email,
+                "password": $scope.loginData.password,
+        }, function(responseJSON) {
+	 		responseObject = JSON.parse(responseJSON);
+	 		console.log(responseObject);
+	 	});
+
+
     	$rootScope.account = {name: "Barack Obama",
     		id: 'abc123',
     		joined: 2009,
