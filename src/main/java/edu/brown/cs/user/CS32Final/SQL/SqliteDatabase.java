@@ -4,6 +4,8 @@ package edu.brown.cs.user.CS32Final.SQL;
  * Created by lc50 on 4/10/16.
  */
 import edu.brown.cs.user.CS32Final.Entities.Account.Account;
+import edu.brown.cs.user.CS32Final.Entities.Account.Profile;
+import edu.brown.cs.user.CS32Final.Entities.Event.Event;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -55,6 +57,11 @@ public class SqliteDatabase {
                 "user_id INTEGER, " +
                 "owner_id INTEGER)";
 
+        String userRequest = "CREATE TABLE IF NOT EXISTS user_request(" +
+                "event_id INTEGER, " +
+                "user_id INTEGER, " +
+                "owner_id INTEGER)";
+
         String message = "CREATE TABLE IF NOT EXISTS message(" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "event_id INTEGER, " +
@@ -88,7 +95,7 @@ public class SqliteDatabase {
 
             prep.executeQuery();
 
-        } catch(Exception e){
+        } catch(Exception e) {
             System.out.println("ERROR: SQL error");
             e.printStackTrace();
         }
@@ -278,7 +285,7 @@ public class SqliteDatabase {
             rs = prep.executeQuery();
 
             while (rs.next()) {
-                Integer id = rs.getInt(1);
+                int id = rs.getInt(1);
                 toReturn.add(id);
             }
             return toReturn;
@@ -291,7 +298,7 @@ public class SqliteDatabase {
         return null;
     }
 
-    public int findUserByUsername(String username) {
+    public Account findUserByUsername(String username) {
         ResultSet rs = null;
         try {
             String sql = "SELECT id FROM user WHERE email = ?;";
@@ -301,7 +308,7 @@ public class SqliteDatabase {
             rs = prep.executeQuery();
 
             if (rs.next()) {
-                return rs.getInt(1);
+                return findUserAccountById(rs.getInt(1));
             }
         } catch(Exception e){
             System.out.println("ERROR: SQL error");
@@ -309,7 +316,97 @@ public class SqliteDatabase {
         } finally {
             closeResultSet(rs);
         }
-        return 0;
+        return null;
+    }
+
+    public Account findUserAccountById(int id) {
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT email, password FROM user WHERE id = ?;";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setInt(1, id);
+
+            rs = prep.executeQuery();
+
+            while (rs.next()) {
+                String email = rs.getString(1);
+                String password = rs.getString(2);
+                Profile profile = findUserProfileById(id);
+
+            }
+        } catch(Exception e){
+            System.out.println("ERROR: SQL error");
+        } finally {
+            closeResultSet(rs);
+        }
+        return null;
+    }
+
+    public Profile findUserProfileById(int id) {
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT name, image FROM user WHERE id = ?;";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setInt(1, id);
+
+            rs = prep.executeQuery();
+
+            while (rs.next()) {
+
+            }
+        } catch(Exception e){
+            System.out.println("ERROR: SQL error");
+        } finally {
+            closeResultSet(rs);
+        }
+        return null;
+    }
+
+    public List<Integer> findRatingsById(int id) {
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT rating FROM review WHERE target_id = ?;";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setInt(1, id);
+
+            rs = prep.executeQuery();
+
+            while (rs.next()) {
+
+            }
+        } catch(Exception e){
+            System.out.println("ERROR: SQL error");
+        } finally {
+            closeResultSet(rs);
+        }
+        return null;
+    }
+
+    public List<Integer> findReviewsById(int id) {
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT user_id, target_id, rating, message FROM review WHERE id = ?;";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setInt(1, id);
+
+            rs = prep.executeQuery();
+
+            while (rs.next()) {
+                int user_id = rs.getInt(1);
+                int target_id = rs.getInt(2);
+                double rating = rs.getDouble(3);
+                String text = rs.getString(4);
+            }
+        } catch(Exception e){
+            System.out.println("ERROR: SQL error");
+        } finally {
+            closeResultSet(rs);
+        }
+        return null;
+    }
+
+    public Event findEventById(int id) {
+        return null;
     }
 
     private void makeConnection(String db) throws SQLException, ClassNotFoundException {

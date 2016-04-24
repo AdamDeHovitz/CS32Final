@@ -3,6 +3,8 @@ package edu.brown.cs.user.CS32Final.GUI;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import edu.brown.cs.user.CS32Final.Entities.Account.Account;
+import edu.brown.cs.user.CS32Final.Entities.Account.Profile;
+import edu.brown.cs.user.CS32Final.Entities.Event.Event;
 import edu.brown.cs.user.CS32Final.SQL.SqliteDatabase;
 import freemarker.template.Configuration;
 import spark.ExceptionHandler;
@@ -30,6 +32,7 @@ public class GUI {
 
   private final Gson gson = new Gson();
 
+  private SqliteDatabase database;
 
   private static FreeMarkerEngine createEngine() {
     Configuration config = new Configuration();
@@ -53,10 +56,17 @@ public class GUI {
 
     FreeMarkerEngine freeMarker = createEngine();
 
+    database = new SqliteDatabase("data/database.sqlite3");
+    database.createTables();
+
     // Setup Spark Routes
     // Setup Spark Routes
     Spark.get("/", new FrontHandler(), freeMarker);
+    Spark.post("/register", new RegisterHandler());
     Spark.post("/login", new LoginHandler());
+    Spark.post("/event-create", new EventCreateHandler());
+    //Spark.post("/profile", new ProfileHandler());
+    //Spark.post("/event-view", new EventViewHandler());
   }
 
   /**
@@ -88,6 +98,22 @@ public class GUI {
     }
   }
 
+  private class RegisterHandler implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+
+      String email = qm.value("email");
+      String password = qm.value("password");
+      String name = qm.value("name");
+      String image = qm.value("image");
+
+      database.insertUser(email, password, name, image);
+
+      return true;
+    }
+  }
+
   /**
    * For logging in
    */
@@ -98,18 +124,68 @@ public class GUI {
       String username = qm.value("username");
       String password = qm.value("password");
 
-      Account user =  SqliteDatabase.findUserByUsername(username);
+      Account user =  database.findUserByUsername(username);
       Map<String, Object> variables = null;
       if (user.authenticate(password)) {
         variables = user.getData();
 
-      }
-      else {
+      } else {
         System.out.println("we need something done here");
       }
-
 
       return gson.toJson(variables);
     }
   }
+
+  private class EventCreateHandler implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+
+      int owner_id = Integer.parseInt(qm.value("owner_id"));
+      String state = qm.value("state");
+      String name = qm.value("name");
+      String description = qm.value("image");
+      String image = qm.value("image");
+      int member_capacity = Integer.parseInt(qm.value("image"));
+      double cost = Double.parseDouble(qm.value("cost"));
+      String location = qm.value("location");
+      String tags = qm.value("tags");
+
+      database.insertEvent(owner_id, state, name, description, image, member_capacity, cost, location, tags);
+
+      return true;
+    }
+  }
+
+  //
+//  private class ProfileHandler implements Route {
+//    @Override
+//    public Object handle(final Request req, final Response res) {
+//      QueryParamsMap qm = req.queryMap();
+//
+//      int id = Integer.parseInt(qm.value("id"));
+//
+//      Profile user =  database.findUserProfileById(id);
+//
+//      Map<String, Object> variables = user.getData();
+//
+//      return gson.toJson(variables);
+//    }
+//  }
+//
+//  private class EventViewHandler implements Route {
+//    @Override
+//    public Object handle(final Request req, final Response res) {
+//      QueryParamsMap qm = req.queryMap();
+//
+//      int id = Integer.parseInt(qm.value("id"));
+//
+//      Event event =  database.findEventById(id);
+//
+//      Map<String, Object> variables = event.getData();
+//
+//      return gson.toJson(variables);
+//    }
+//  }
 }
