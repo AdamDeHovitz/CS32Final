@@ -12,7 +12,7 @@ import java.util.Map;
 public class Account {
 
   private Profile prof;
-  private String id;
+  private int id;
   private String email;
   private String password;
   private int joinedNotif;
@@ -21,7 +21,7 @@ public class Account {
   //private boolean hasFacebook
 
 
-  public Account(Profile prof, String id, String email,
+  public Account(Profile prof, int id, String email,
                  String password, int requestNotif, int joinedNotif) {
     this.prof = prof;
     this.id = id;
@@ -39,11 +39,11 @@ public class Account {
     this.prof = prof;
   }
 
-  public String getId() {
+  public int getId() {
     return id;
   }
 
-  public void setId(String id) {
+  public void setId(int id) {
     this.id = id;
   }
 
@@ -76,7 +76,7 @@ public class Account {
     Map<String, Object> variables = new ImmutableMap.Builder()
             .put("id", id)
             .put("picture", prof.getImage())
-            .put("rating", prof.getRating()).build();
+            .build();
   return variables;
   }
 }

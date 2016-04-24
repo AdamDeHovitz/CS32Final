@@ -5,6 +5,7 @@ package edu.brown.cs.user.CS32Final.SQL;
  */
 import edu.brown.cs.user.CS32Final.Entities.Account.Account;
 import edu.brown.cs.user.CS32Final.Entities.Account.Profile;
+import edu.brown.cs.user.CS32Final.Entities.Account.Review;
 import edu.brown.cs.user.CS32Final.Entities.Event.Event;
 
 import java.sql.*;
@@ -29,15 +30,16 @@ public class SqliteDatabase {
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "email TEXT, " +
                 "password TEXT, " +
-                "name TEXT, " +
+                "first_name TEXT, " +
+                "last_name TEXT, " +
                 "image TEXT, " +
+                "date TEXT, " +
                 "requestNotif INTEGER, " +
                 "joinedNotif INTEGER)";
 
         String review = "CREATE TABLE IF NOT EXISTS review(" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "user_id INTEGER, " +
-                "name TEXT, " +
                 "message TEXT, " +
                 "rating REAL, " +
                 "target_id INTEGER)";
@@ -67,7 +69,7 @@ public class SqliteDatabase {
         String message = "CREATE TABLE IF NOT EXISTS message(" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "event_id INTEGER, " +
-                "name TEXT, " +
+                "user_id INTEGER, " +
                 "message TEXT)";
 
         try {
@@ -85,15 +87,17 @@ public class SqliteDatabase {
         }
     }
 
-    public void insertUser(String email, String password, String name, String image) {
+    public void insertUser(String email, String password, String first_name, String last_name, String image, String date) {
 
         try {
-            String sql = "INSERT INTO user VALUES (?, ?, ?, ?)";
+            String sql = "INSERT INTO user VALUES (?, ?, ?, ?, ?)";
             PreparedStatement prep = connection.prepareStatement(sql);
             prep.setString(1, email);
             prep.setString(2, password);
-            prep.setString(3, name);
-            prep.setString(4, image);
+            prep.setString(3, first_name);
+            prep.setString(4, last_name);
+            prep.setString(5, image);
+            prep.setString(6, date);
 
             prep.executeQuery();
 
@@ -127,32 +131,31 @@ public class SqliteDatabase {
         }
     }
 
-    public void insertReview(int user_id, String name, String message, double rating, String target_id) {
+    public void insertReview(int user_id, String message, double rating, String target_id) {
 
         try {
-            String sql = "INSERT INTO review VALUES (?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO review VALUES (?, ?, ?, ?)";
             PreparedStatement prep = connection.prepareStatement(sql);
             prep.setInt(1, user_id);
-            prep.setString(2, name);
-            prep.setString(3, message);
-            prep.setDouble(4, rating);
-            prep.setString(5, target_id);
+            prep.setString(2, message);
+            prep.setDouble(3, rating);
+            prep.setString(4, target_id);
 
             prep.executeQuery();
 
-        } catch(Exception e){
+        } catch(Exception e) {
             System.out.println("ERROR: SQL error");
             e.printStackTrace();
         }
     }
 
-    public void insertMessage(int event_id, String name, String message) {
+    public void insertMessage(int event_id, int user_id, String message) {
 
         try {
             String sql = "INSERT INTO message VALUES (?, ?, ?)";
             PreparedStatement prep = connection.prepareStatement(sql);
             prep.setInt(1, event_id);
-            prep.setString(2, name);
+            prep.setInt(2, user_id);
             prep.setString(3, message);
 
             prep.executeQuery();
@@ -337,7 +340,7 @@ public class SqliteDatabase {
                 int joinedNotif = rs.getInt(4);
 
                 Profile profile = findUserProfileById(id);
-
+                return new Account(profile, id, email, password, requestNotif, joinedNotif);
             }
         } catch(Exception e){
             System.out.println("ERROR: SQL error");
@@ -350,34 +353,19 @@ public class SqliteDatabase {
     public Profile findUserProfileById(int id) {
         ResultSet rs = null;
         try {
-            String sql = "SELECT name, image FROM user WHERE id = ?;";
+            String sql = "SELECT name, image, date FROM user WHERE id = ?;";
             PreparedStatement prep = connection.prepareStatement(sql);
             prep.setInt(1, id);
 
             rs = prep.executeQuery();
 
             while (rs.next()) {
+                String name = rs.getString(1);
+                String image = rs.getString(2);
+                String date = rs.getString(3);
+                List<Integer> reviews = findReviewsById(id);
 
-            }
-        } catch(Exception e){
-            System.out.println("ERROR: SQL error");
-        } finally {
-            closeResultSet(rs);
-        }
-        return null;
-    }
-
-    public List<Integer> findRatingsById(int id) {
-        ResultSet rs = null;
-        try {
-            String sql = "SELECT rating FROM review WHERE target_id = ?;";
-            PreparedStatement prep = connection.prepareStatement(sql);
-            prep.setInt(1, id);
-
-            rs = prep.executeQuery();
-
-            while (rs.next()) {
-
+                return new Profile(name, image, date, reviews);
             }
         } catch(Exception e){
             System.out.println("ERROR: SQL error");
@@ -390,18 +378,21 @@ public class SqliteDatabase {
     public List<Integer> findReviewsById(int id) {
         ResultSet rs = null;
         try {
-            String sql = "SELECT user_id, target_id, rating, message FROM review WHERE id = ?;";
+            String sql = "SELECT id FROM review WHERE target_id = ?;";
             PreparedStatement prep = connection.prepareStatement(sql);
             prep.setInt(1, id);
+
+            List<Integer> toReturn = new ArrayList<>();
 
             rs = prep.executeQuery();
 
             while (rs.next()) {
-                int user_id = rs.getInt(1);
-                int target_id = rs.getInt(2);
-                double rating = rs.getDouble(3);
-                String text = rs.getString(4);
+                int review_id = rs.getInt(1);
+
+                toReturn.add(review_id);
             }
+
+            return toReturn;
         } catch(Exception e){
             System.out.println("ERROR: SQL error");
         } finally {
