@@ -19,16 +19,15 @@ public class Event {
   private List<Account> members;
   private List<Request> requests;
   private int maxMembers;
-  private int costPP;
+  private double cost;
   private String location;
   private List<String> tags;
   private Chat chat;
 
-  public Event(int state, String name, String id,
-               String desc, String image, Account host,
-               List<Account> members, List<Request> requests,
-               int maxMembers, int costPP, String location,
-               List<String> tags, Chat chat) {
+  public Event(String host_id, int state, String name,
+               String description, String image,
+               int maxMembers, double cost, String location,
+               List<String> tags) {
     this.state = state;
     this.name = name;
     this.id = id;
@@ -38,7 +37,7 @@ public class Event {
     this.members = members;
     this.requests = requests;
     this.maxMembers = maxMembers;
-    this.costPP = costPP;
+    this.cost = costPP;
     this.location = location;
     this.tags = tags;
     this.chat = chat;

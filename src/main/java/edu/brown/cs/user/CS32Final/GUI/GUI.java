@@ -203,7 +203,7 @@ public class GUI {
 
       int id = Integer.parseInt(qm.value("id"));
 
-      Event event =  database.findEventById(id);
+      Event event =  database.findEventsByOwnerId(id);
 
       Map<String, Object> variables = event.getData();
 
