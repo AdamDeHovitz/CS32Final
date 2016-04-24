@@ -37,8 +37,6 @@ public final class Main {
     private OptionSpec<Integer> led;
     private final Gson gson = new Gson();
 
-    private SqliteDatabase database;
-
     private Main(String[] args) {
         this.args = args;
     }
@@ -76,15 +74,11 @@ public final class Main {
         OptionParser parser = new OptionParser();
         parser.accepts("gui");
 
-        OptionSpec<String> lineSpec = parser.nonOptions()
-                .ofType(String.class);
+        //OptionSpec<String> lineSpec = parser.nonOptions()
+                //.ofType(String.class);
 
         options = parser.parse(args);
-        List<String> input = options.valuesOf(lineSpec);
-
-        database = new SqliteDatabase(input.get(input
-                .size() - 1));
-        database.createTables();
+        //List<String> input = options.valuesOf(lineSpec);
 
         if (options.has("gui")) {
             runSparkServer();

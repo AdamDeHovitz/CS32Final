@@ -1,5 +1,7 @@
 package edu.brown.cs.user.CS32Final.Entities.Account;
 
+import com.google.common.collect.ImmutableMap;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,18 +12,19 @@ public class Profile {
 
   private String name;
   private String image; //maybe an image class?
-  private List<Integer> ratings;
-  private List<Review> reviews;
+  private String date;
+  private List<Integer> reviews;
 
-  public Profile(String name, String image) {
+  public Profile(String name, String image, String date) {
     this.name = name;
     this.image = image;
+    this.date = date;
   }
 
-  public Profile(String name, String image,
-                 List<Integer> ratings, List<Review> reviews) {
-    this(name, image);
-    ratings = new ArrayList(ratings);
+  public Profile(String name, String image, String date,
+                 List<Integer> reviews) {
+    this(name, image, date);
+
     reviews = new ArrayList(reviews);
   }
 
@@ -33,18 +36,15 @@ public class Profile {
     return image;
   }
 
-  public List<Integer> getRatings() {
-    return ratings;
-  }
-  public double getRating() {
-    double average = 0;
-    for (int i: ratings) {
-      average += i;
-    }
-    return average/ratings.size();
-  }
+//  public double getRating() {
+//    double average = 0;
+//    for (int i: ratings) {
+//      average += i;
+//    }
+//    return average/ratings.size();
+//  }
 
-  public List<Review> getReviews() {
+  public List<Integer> getReviews() {
     return reviews;
   }
 
@@ -56,16 +56,18 @@ public class Profile {
     this.image = image;
   }
 
-  public void setRatings(List<Integer> ratings) {
-    this.ratings = ratings;
+  public String getDate() {
+    return date;
   }
 
-  public void setReviews(List<Review> reviews) {
+  public void setReviews(List<Integer> reviews) {
     this.reviews = reviews;
   }
 
-  public void addRating(int rate) {
-    ratings.add(rate);
+  public void getProfileData(ImmutableMap.Builder<String, Object> variables) {
+    variables.put("picture", getImage())
+            .put("data", getDate())
+            .put("name", getName());
   }
 
 }

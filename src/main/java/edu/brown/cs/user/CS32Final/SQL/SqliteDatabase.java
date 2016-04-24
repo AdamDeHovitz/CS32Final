@@ -4,6 +4,10 @@ package edu.brown.cs.user.CS32Final.SQL;
  * Created by lc50 on 4/10/16.
  */
 import edu.brown.cs.user.CS32Final.Entities.Account.Account;
+import edu.brown.cs.user.CS32Final.Entities.Account.Profile;
+import edu.brown.cs.user.CS32Final.Entities.Account.Review;
+import edu.brown.cs.user.CS32Final.Entities.Event.Event;
+import edu.brown.cs.user.CS32Final.Entities.Event.EventState;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -27,13 +31,16 @@ public class SqliteDatabase {
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "email TEXT, " +
                 "password TEXT, " +
-                "name TEXT, " +
-                "image TEXT)";
+                "first_name TEXT, " +
+                "last_name TEXT, " +
+                "image TEXT, " +
+                "date TEXT, " +
+                "requestNotif INTEGER, " +
+                "joinedNotif INTEGER)";
 
         String review = "CREATE TABLE IF NOT EXISTS review(" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "user_id INTEGER, " +
-                "name TEXT, " +
                 "message TEXT, " +
                 "rating REAL, " +
                 "target_id INTEGER)";
@@ -50,7 +57,17 @@ public class SqliteDatabase {
                 "location TEXT, " +
                 "tags TEXT)";
 
+        String eventTags = "CREATE TABLE IF NOT EXISTS event_tags(" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "event_id INTEGER, " +
+                "tag TEXT)";
+
         String userEvent = "CREATE TABLE IF NOT EXISTS user_event(" +
+                "event_id INTEGER, " +
+                "user_id INTEGER, " +
+                "owner_id INTEGER)";
+
+        String userRequest = "CREATE TABLE IF NOT EXISTS user_request(" +
                 "event_id INTEGER, " +
                 "user_id INTEGER, " +
                 "owner_id INTEGER)";
@@ -58,7 +75,7 @@ public class SqliteDatabase {
         String message = "CREATE TABLE IF NOT EXISTS message(" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "event_id INTEGER, " +
-                "name TEXT, " +
+                "user_id INTEGER, " +
                 "message TEXT)";
 
         try {
@@ -76,19 +93,21 @@ public class SqliteDatabase {
         }
     }
 
-    public void insertUser(String email, String password, String name, String image) {
+    public void insertUser(String email, String password, String first_name, String last_name, String image, String date) {
 
         try {
-            String sql = "INSERT INTO user VALUES (?, ?, ?, ?)";
+            String sql = "INSERT INTO user VALUES (?, ?, ?, ?, ?)";
             PreparedStatement prep = connection.prepareStatement(sql);
             prep.setString(1, email);
             prep.setString(2, password);
-            prep.setString(3, name);
-            prep.setString(4, image);
+            prep.setString(3, first_name);
+            prep.setString(4, last_name);
+            prep.setString(5, image);
+            prep.setString(6, date);
 
             prep.executeQuery();
 
-        } catch(Exception e){
+        } catch(Exception e) {
             System.out.println("ERROR: SQL error");
             e.printStackTrace();
         }
@@ -118,32 +137,31 @@ public class SqliteDatabase {
         }
     }
 
-    public void insertReview(int user_id, String name, String message, double rating, String target_id) {
+    public void insertReview(int user_id, String message, double rating, String target_id) {
 
         try {
-            String sql = "INSERT INTO review VALUES (?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO review VALUES (?, ?, ?, ?)";
             PreparedStatement prep = connection.prepareStatement(sql);
             prep.setInt(1, user_id);
-            prep.setString(2, name);
-            prep.setString(3, message);
-            prep.setDouble(4, rating);
-            prep.setString(5, target_id);
+            prep.setString(2, message);
+            prep.setDouble(3, rating);
+            prep.setString(4, target_id);
 
             prep.executeQuery();
 
-        } catch(Exception e){
+        } catch(Exception e) {
             System.out.println("ERROR: SQL error");
             e.printStackTrace();
         }
     }
 
-    public void insertMessage(int event_id, String name, String message) {
+    public void insertMessage(int event_id, int user_id, String message) {
 
         try {
             String sql = "INSERT INTO message VALUES (?, ?, ?)";
             PreparedStatement prep = connection.prepareStatement(sql);
             prep.setInt(1, event_id);
-            prep.setString(2, name);
+            prep.setInt(2, user_id);
             prep.setString(3, message);
 
             prep.executeQuery();
@@ -171,12 +189,12 @@ public class SqliteDatabase {
         }
     }
 
-    public List<String> findUsersByEventId(String eventId) {
+    public List<String> findUsersByEventId(Integer eventId) {
         ResultSet rs = null;
         try {
             String sql = "SELECT user_id FROM user_event WHERE event_id = ?;";
             PreparedStatement prep = connection.prepareStatement(sql);
-            prep.setString(1, eventId);
+            prep.setInt(1, eventId);
 
             List<String> toReturn = new ArrayList<>();
             rs = prep.executeQuery();
@@ -195,12 +213,12 @@ public class SqliteDatabase {
         return null;
     }
 
-    public List<Integer> findMessagesByEventId(String eventId) {
+    public List<Integer> findMessagesByEventId(Integer eventId) {
         ResultSet rs = null;
         try {
             String sql = "SELECT id FROM message WHERE event_id = ?;";
             PreparedStatement prep = connection.prepareStatement(sql);
-            prep.setString(1, eventId);
+            prep.setInt(1, eventId);
 
             List<Integer> toReturn = new ArrayList<>();
             rs = prep.executeQuery();
@@ -219,12 +237,12 @@ public class SqliteDatabase {
         return null;
     }
 
-    public List<Integer> findEventsByUserId(String userId) {
+    public List<Integer> findEventsByUserId(Integer userId) {
         ResultSet rs = null;
         try {
             String sql = "SELECT event_id FROM user_event WHERE user_id = ?;";
             PreparedStatement prep = connection.prepareStatement(sql);
-            prep.setString(1, userId);
+            prep.setInt(1, userId);
 
             List<Integer> toReturn = new ArrayList<>();
             rs = prep.executeQuery();
@@ -243,12 +261,12 @@ public class SqliteDatabase {
         return null;
     }
 
-    public List<Integer> findReviewsByUserId(String userId) {
+    public List<Integer> findReviewIDsByUserId(Integer userId) {
         ResultSet rs = null;
         try {
             String sql = "SELECT id FROM review WHERE target_id = ?;";
             PreparedStatement prep = connection.prepareStatement(sql);
-            prep.setString(1, userId);
+            prep.setInt(1, userId);
 
             List<Integer> toReturn = new ArrayList<>();
             rs = prep.executeQuery();
@@ -258,7 +276,7 @@ public class SqliteDatabase {
                 toReturn.add(id);
             }
             return toReturn;
-        } catch(Exception e){
+        } catch (Exception e) {
             System.out.println("ERROR: SQL error");
             e.printStackTrace();
         } finally {
@@ -267,22 +285,47 @@ public class SqliteDatabase {
         return null;
     }
 
-    public List<Integer> findEventsByOwnerId(String userId) {
+    public List<Review> findReviewsByUserId(Integer userId) {
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT user_id, rating, message FROM review FROM review WHERE target_id = ?;";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setInt(1, userId);
+
+            List<Review> toReturn = new ArrayList<>();
+            rs = prep.executeQuery();
+
+            while (rs.next()) {
+                int user_id = rs.getInt(1);
+                double rating = rs.getDouble(2);
+                String text = rs.getString(3);
+                toReturn.add(new Review(user_id, userId, rating, text ));
+            }
+            return toReturn;
+        } catch (Exception e) {
+            System.out.println("ERROR: SQL error");
+            e.printStackTrace();
+        } finally {
+            closeResultSet(rs);
+        }
+        return null;}
+
+    public List<Event> findEventsByOwnerId(Integer userId) {
         ResultSet rs = null;
         try {
             String sql = "SELECT id FROM event WHERE owner_id = ?;";
             PreparedStatement prep = connection.prepareStatement(sql);
-            prep.setString(1, userId);
+            prep.setInt(1, userId);
 
-            List<Integer> toReturn = new ArrayList<>();
+            List<Event> toReturn = new ArrayList<>();
             rs = prep.executeQuery();
 
             while (rs.next()) {
-                Integer id = rs.getInt(1);
-                toReturn.add(id);
+                int event_id = rs.getInt(1);
+                toReturn.add(findEventById(event_id));
             }
             return toReturn;
-        } catch(Exception e){
+        } catch (Exception e) {
             System.out.println("ERROR: SQL error");
             e.printStackTrace();
         } finally {
@@ -291,7 +334,7 @@ public class SqliteDatabase {
         return null;
     }
 
-    public int findUserByUsername(String username) {
+    public Account findUserByUsername(String username) {
         ResultSet rs = null;
         try {
             String sql = "SELECT id FROM user WHERE email = ?;";
@@ -301,15 +344,148 @@ public class SqliteDatabase {
             rs = prep.executeQuery();
 
             if (rs.next()) {
-                return rs.getInt(1);
+                return findUserAccountById(rs.getInt(1));
             }
-        } catch(Exception e){
+        } catch (Exception e) {
             System.out.println("ERROR: SQL error");
             e.printStackTrace();
         } finally {
             closeResultSet(rs);
         }
-        return 0;
+        return null;
+    }
+
+    public Account findUserAccountById(int id) {
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT email, password, requestNotif, joinedNotif FROM user WHERE id = ?;";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setInt(1, id);
+
+            rs = prep.executeQuery();
+
+            while (rs.next()) {
+                String email = rs.getString(1);
+                String password = rs.getString(2);
+                int requestNotif = rs.getInt(3);
+                int joinedNotif = rs.getInt(4);
+
+                Profile profile = findUserProfileById(id);
+                return new Account(profile, id, email, password, requestNotif, joinedNotif);
+            }
+        } catch(Exception e){
+            System.out.println("ERROR: SQL error");
+        } finally {
+            closeResultSet(rs);
+        }
+        return null;
+    }
+
+    public Profile findUserProfileById(int id) {
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT name, image, date FROM user WHERE id = ?;";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setInt(1, id);
+
+            rs = prep.executeQuery();
+
+            while (rs.next()) {
+                String name = rs.getString(1);
+                String image = rs.getString(2);
+                String date = rs.getString(3);
+                List<Integer> reviews = findReviewsById(id);
+
+                return new Profile(name, image, date, reviews);
+            }
+        } catch(Exception e){
+            System.out.println("ERROR: SQL error");
+        } finally {
+            closeResultSet(rs);
+        }
+        return null;
+    }
+
+    public List<Integer> findReviewsById(int id) {
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT id FROM review WHERE target_id = ?;";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setInt(1, id);
+
+            List<Integer> toReturn = new ArrayList<>();
+
+            rs = prep.executeQuery();
+
+            while (rs.next()) {
+                int review_id = rs.getInt(1);
+
+                toReturn.add(review_id);
+            }
+
+            return toReturn;
+        } catch(Exception e){
+            System.out.println("ERROR: SQL error");
+        } finally {
+            closeResultSet(rs);
+        }
+        return null;
+    }
+
+    public Event findEventById(int id) {
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT owner_id, state, name, description, image, member_capacity, cost, location FROM event WHERE id = ?;";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setInt(1, id);
+
+            rs = prep.executeQuery();
+
+            while (rs.next()) {
+                int owner_id = rs.getInt(1);
+                EventState state = EventState.valueOf(rs.getString(2));
+                String name = rs.getString(3);
+                String description = rs.getString(4);
+                String image = rs.getString(5);
+                int member_capacity = rs.getInt(6);
+                double cost = rs.getDouble(7);
+                String location = rs.getString(8);
+                List<String> tags = findTagsByEventId(id);
+
+                return new Event(id, owner_id, state, name, description, image, member_capacity, cost, location, tags);
+            }
+        } catch(Exception e){
+            System.out.println("ERROR: SQL error");
+        } finally {
+            closeResultSet(rs);
+        }
+        return null;
+    }
+
+    public List<String> findTagsByEventId(int id) {
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT tag FROM event_tags WHERE event_id = ?;";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setInt(1, id);
+
+            List<String> toReturn = new ArrayList<>();
+
+            rs = prep.executeQuery();
+
+            while (rs.next()) {
+                String tag = rs.getString(1);
+
+                toReturn.add(tag);
+            }
+
+            return toReturn;
+        } catch(Exception e){
+            System.out.println("ERROR: SQL error");
+        } finally {
+            closeResultSet(rs);
+        }
+        return null;
     }
 
     private void makeConnection(String db) throws SQLException, ClassNotFoundException {

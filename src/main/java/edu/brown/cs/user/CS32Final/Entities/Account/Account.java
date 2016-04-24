@@ -2,6 +2,7 @@ package edu.brown.cs.user.CS32Final.Entities.Account;
 
 import com.google.common.collect.ImmutableMap;
 import edu.brown.cs.user.CS32Final.Entities.Event.Event;
+import edu.brown.cs.user.CS32Final.SQL.SqliteDatabase;
 
 import java.util.List;
 import java.util.Map;
@@ -12,30 +13,23 @@ import java.util.Map;
 public class Account {
 
   private Profile prof;
-  private String id;
+  private int id;
   private String email;
   private String password;
-  private List<Event> pending;
-  private List<Event> joined;
-  private List<Event> created;
-  private int jnotif;
-  private int hnotif;
+  private int joinedNotif;
+  private int requestNotif;
 
   //private boolean hasFacebook
 
 
-  public Account(Profile prof, String id, String email,
-                 List<Event> pending, List<Event> joined,
-                 List<Event> created, String password, int jnotif, int hnotif) {
+  public Account(Profile prof, int id, String email,
+                 String password, int requestNotif, int joinedNotif) {
     this.prof = prof;
     this.id = id;
     this.email = email;
-    this.pending = pending;
-    this.joined = joined;
-    this.created = created;
     this.password = password;
-    this.jnotif = jnotif;
-    this.hnotif = hnotif;
+    this.joinedNotif = joinedNotif;
+    this.requestNotif = requestNotif;
   }
 
   public Profile getProf() {
@@ -46,11 +40,11 @@ public class Account {
     this.prof = prof;
   }
 
-  public String getId() {
+  public int getId() {
     return id;
   }
 
-  public void setId(String id) {
+  public void setId(int id) {
     this.id = id;
   }
 
@@ -62,62 +56,27 @@ public class Account {
     this.email = email;
   }
 
-  public List<Event> getPending() {
-    return pending;
-  }
-
-  public void setPending(List<Event> pending) {
-    this.pending = pending;
-  }
-
-  private boolean removeFrom(Event toRemove, List<Event> list) {
-    boolean removed = false;
-    int c = 0;
-    while (!removed && c < list.size()) {
-      if (toRemove.equals(list.get(c))) {
-        list.remove(c);
-        removed = true;
-      }
-      c++;
-    }
-    return removed;
-  }
-
-  public boolean removePending(Event a) {
-    return removeFrom(a, getPending());
-  }
-
-  public List<Event> getJoined() {
-    return joined;
-  }
-
-  public void setJoined(List<Event> joined) {
-    this.joined = joined;
-  }
-  public boolean removeJoined(Event a) {
-    return removeFrom(a, getJoined());
-  }
-
-  public List<Event> getCreated() {
-    return created;
-  }
-
-  public void setCreated(List<Event> created) {
-    this.created = created;
-  }
-  public boolean removeCreated(Event a) {
-    return removeFrom(a, getCreated());
-  }
+//  private boolean removeFrom(Event toRemove, List<Event> list) {
+//    boolean removed = false;
+//    int c = 0;
+//    while (!removed && c < list.size()) {
+//      if (toRemove.equals(list.get(c))) {
+//        list.remove(c);
+//        removed = true;
+//      }
+//      c++;
+//    }
+//    return removed;
+//  }
 
   public boolean authenticate(String password) {
     return password.equals(this.password);
   }
 
-  public Map<String, Object> getData() {
-    Map<String, Object> variables = new ImmutableMap.Builder()
-            .put("id", id)
+  public void getLoginData(ImmutableMap.Builder<String, Object> variables) {
+    variables.put("id", id)
             .put("picture", prof.getImage())
-            .put("rating", prof.getRating()).build();
-  return variables;
+            .put("data", prof.getDate())
+            .put("name", prof.getName());
   }
 }
