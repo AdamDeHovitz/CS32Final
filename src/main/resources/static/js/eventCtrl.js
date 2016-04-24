@@ -20,7 +20,6 @@ bulkAppControllers.controller("eventCtrl",
 	   });
 	 };
 	 
-	
 	// get event info from server
 	$scope.event = {
 			title: "Watermelon",
