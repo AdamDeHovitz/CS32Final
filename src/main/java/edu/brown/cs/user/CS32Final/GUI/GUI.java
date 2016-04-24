@@ -30,8 +30,9 @@ import java.util.Map;
  */
 public class GUI {
 
+  SqliteDatabase database;
+
   private final Gson gson = new Gson();
-  private SqliteDatabase database;
 
   private static FreeMarkerEngine createEngine() {
     Configuration config = new Configuration();
@@ -63,9 +64,11 @@ public class GUI {
     Spark.get("/", new FrontHandler(), freeMarker);
     Spark.post("/register", new RegisterHandler());
     Spark.post("/login", new LoginHandler());
+    Spark.post("/profile", new ProfileHandler());
+
     Spark.post("/event-create", new EventCreateHandler());
-    //Spark.post("/profile", new ProfileHandler());
-    //Spark.post("/event-view", new EventViewHandler());
+    Spark.post("/event-view", new EventViewHandler());
+    Spark.post("/event-owner", new EventOwnerHandler());
   }
 
   /**
@@ -104,10 +107,12 @@ public class GUI {
 
       String email = qm.value("email");
       String password = qm.value("password");
-      String name = qm.value("name");
+      String first_name = qm.value("first_name");
+      String last_name = qm.value("last_name");
       String image = qm.value("image");
+      String date = "19 May, 2016";
 
-      database.insertUser(email, password, name, image);
+      database.insertUser(email, password, first_name, last_name, image, date);
 
       return true;
     }
@@ -129,7 +134,9 @@ public class GUI {
         ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
         user.getLoginData(vars);
         vars.put("reviews", database.findReviewsByUserId(user.getId()));
+        variables = vars.build();
       } else {
+        // TODO: if user enters wrong password
         System.out.println("we need something done here");
       }
 
@@ -158,34 +165,49 @@ public class GUI {
     }
   }
 
-  //
-//  private class ProfileHandler implements Route {
-//    @Override
-//    public Object handle(final Request req, final Response res) {
-//      QueryParamsMap qm = req.queryMap();
-//
-//      int id = Integer.parseInt(qm.value("id"));
-//
-//      Profile user =  database.findUserProfileById(id);
-//
-//      Map<String, Object> variables = user.getData();
-//
-//      return gson.toJson(variables);
-//    }
-//  }
-//
-//  private class EventViewHandler implements Route {
-//    @Override
-//    public Object handle(final Request req, final Response res) {
-//      QueryParamsMap qm = req.queryMap();
-//
-//      int id = Integer.parseInt(qm.value("id"));
-//
-//      Event event =  database.findEventById(id);
-//
-//      Map<String, Object> variables = event.getData();
-//
-//      return gson.toJson(variables);
-//    }
-//  }
+
+  private class ProfileHandler implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+
+      int id = Integer.parseInt(qm.value("id"));
+
+      Profile user =  database.findUserProfileById(id);
+
+      Map<String, Object> variables = user.getData();
+
+      return gson.toJson(variables);
+    }
+  }
+
+  private class EventViewHandler implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+
+      int id = Integer.parseInt(qm.value("id"));
+
+      Event event =  database.findEventById(id);
+
+      Map<String, Object> variables = event.getData();
+
+      return gson.toJson(variables);
+    }
+  }
+
+  private class EventOwnerHandler implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+
+      int id = Integer.parseInt(qm.value("id"));
+
+      Event event =  database.findEventById(id);
+
+      Map<String, Object> variables = event.getData();
+
+      return gson.toJson(variables);
+    }
+  }
 }
