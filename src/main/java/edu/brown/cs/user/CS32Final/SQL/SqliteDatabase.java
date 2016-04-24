@@ -1,5 +1,14 @@
 package edu.brown.cs.user.CS32Final.SQL;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by lc50 on 4/10/16.
  */
@@ -8,10 +17,6 @@ import edu.brown.cs.user.CS32Final.Entities.Account.Profile;
 import edu.brown.cs.user.CS32Final.Entities.Account.Review;
 import edu.brown.cs.user.CS32Final.Entities.Event.Event;
 import edu.brown.cs.user.CS32Final.Entities.Event.EventState;
-
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class SqliteDatabase {
     private Connection connection;
@@ -96,7 +101,7 @@ public class SqliteDatabase {
     public void insertUser(String email, String password, String first_name, String last_name, String image, String date) {
 
         try {
-            String sql = "INSERT INTO user VALUES (?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO user VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement prep = connection.prepareStatement(sql);
             prep.setString(1, email);
             prep.setString(2, password);

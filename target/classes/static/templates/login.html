@@ -40,7 +40,9 @@
     	<span class="input-label">First Name*</span>
    		<input type="text" name="firstName" ng-model="registerData.firstName" required>
   		</label>
-  		<div class="form-errors" ng-messages="forms.registerForm.firstName.$error" 
+  		<div class="form-errors" 
+  		ng-show="forms.registerForm.firstName.$touched && forms.registerForm.firstName.$invalid " 
+  		ng-messages="forms.registerForm.firstName.$error" 
   		ng-show="forms.registerForm.firstName.$touched">
         <div class="form-error" ng-message="required">Your first name is required.</div>
     	</div>
@@ -86,7 +88,7 @@
     	<span class="input-label">
     		<span class="input-label">Re-Type Password*</span>
    			<input type="password" name="passwordMatch" 
-   			ng-model="registerData.passwordMatch" equals="{{password}}" required>
+   			ng-model="registerData.passwordMatch" equals="{{registerData.password}}" required>
   		</label>
   		<div class="form-errors" ng-messages="forms.registerForm.passwordMatch.$error" 
   		ng-show="forms.registerForm.passwordMatch.$touched">
