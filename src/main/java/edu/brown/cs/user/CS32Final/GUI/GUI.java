@@ -33,8 +33,6 @@ public class GUI {
   private final Gson gson = new Gson();
   private SqliteDatabase database;
 
-  private SqliteDatabase database;
-
   private static FreeMarkerEngine createEngine() {
     Configuration config = new Configuration();
     File templates = new File("src/main/resources/spark/template/freemarker");
@@ -125,18 +123,15 @@ public class GUI {
       String username = qm.value("username");
       String password = qm.value("password");
 
-<<<<<<< HEAD
-=======
-      Account user =  database.findUserByUsername(username);
->>>>>>> cb188d189b83748a96b46b1b15a4823e71b2f9fa
       Map<String, Object> variables = null;
-      /*Account user =  database.findUserByUsername(username);
+      Account user =  database.findUserByUsername(username);
       if (user.authenticate(password)) {
-        variables = user.getData();
-
+        ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+        user.getLoginData(vars);
+        vars.put("reviews", database.findReviewsByUserId(user.getId()));
       } else {
         System.out.println("we need something done here");
-      }*/
+      }
 
       return gson.toJson(variables);
     }

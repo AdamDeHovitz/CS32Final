@@ -6,10 +6,10 @@ package edu.brown.cs.user.CS32Final.Entities.Account;
 public class Review {
   private int author;
   private int subject;
-  private int rating;
+  private double rating;
   private String text;
 
-  public Review(int author, int subject, int rating, String text) {
+  public Review(int author, int subject, double rating, String text) {
     this.author = author;
     this.subject = subject;
     this.rating = rating;
@@ -32,11 +32,11 @@ public class Review {
     this.subject = subject;
   }
 
-  public int getRating() {
+  public double getRating() {
     return rating;
   }
 
-  public void setRating(int rating) {
+  public void setRating(double rating) {
     this.rating = rating;
   }
 

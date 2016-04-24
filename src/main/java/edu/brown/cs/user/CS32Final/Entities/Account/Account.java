@@ -2,6 +2,7 @@ package edu.brown.cs.user.CS32Final.Entities.Account;
 
 import com.google.common.collect.ImmutableMap;
 import edu.brown.cs.user.CS32Final.Entities.Event.Event;
+import edu.brown.cs.user.CS32Final.SQL.SqliteDatabase;
 
 import java.util.List;
 import java.util.Map;
@@ -12,7 +13,7 @@ import java.util.Map;
 public class Account {
 
   private Profile prof;
-  private String id;
+  private int id;
   private String email;
   private String password;
   private int joinedNotif;
@@ -21,7 +22,7 @@ public class Account {
   //private boolean hasFacebook
 
 
-  public Account(Profile prof, String id, String email,
+  public Account(Profile prof, int id, String email,
                  String password, int requestNotif, int joinedNotif) {
     this.prof = prof;
     this.id = id;
@@ -39,11 +40,11 @@ public class Account {
     this.prof = prof;
   }
 
-  public String getId() {
+  public int getId() {
     return id;
   }
 
-  public void setId(String id) {
+  public void setId(int id) {
     this.id = id;
   }
 
@@ -72,11 +73,10 @@ public class Account {
     return password.equals(this.password);
   }
 
-  public Map<String, Object> getData() {
-    Map<String, Object> variables = new ImmutableMap.Builder()
-            .put("id", id)
+  public void getLoginData(ImmutableMap.Builder<String, Object> variables) {
+    variables.put("id", id)
             .put("picture", prof.getImage())
-            .put("rating", prof.getRating()).build();
-  return variables;
+            .put("data", prof.getDate())
+            .put("name", prof.getName());
   }
 }

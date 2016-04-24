@@ -5,6 +5,7 @@ package edu.brown.cs.user.CS32Final.SQL;
  */
 import edu.brown.cs.user.CS32Final.Entities.Account.Account;
 import edu.brown.cs.user.CS32Final.Entities.Account.Profile;
+import edu.brown.cs.user.CS32Final.Entities.Account.Review;
 import edu.brown.cs.user.CS32Final.Entities.Event.Event;
 
 import java.sql.*;
@@ -180,12 +181,12 @@ public class SqliteDatabase {
         }
     }
 
-    public List<String> findUsersByEventId(String eventId) {
+    public List<String> findUsersByEventId(Integer eventId) {
         ResultSet rs = null;
         try {
             String sql = "SELECT user_id FROM user_event WHERE event_id = ?;";
             PreparedStatement prep = connection.prepareStatement(sql);
-            prep.setString(1, eventId);
+            prep.setInt(1, eventId);
 
             List<String> toReturn = new ArrayList<>();
             rs = prep.executeQuery();
@@ -204,12 +205,12 @@ public class SqliteDatabase {
         return null;
     }
 
-    public List<Integer> findMessagesByEventId(String eventId) {
+    public List<Integer> findMessagesByEventId(Integer eventId) {
         ResultSet rs = null;
         try {
             String sql = "SELECT id FROM message WHERE event_id = ?;";
             PreparedStatement prep = connection.prepareStatement(sql);
-            prep.setString(1, eventId);
+            prep.setInt(1, eventId);
 
             List<Integer> toReturn = new ArrayList<>();
             rs = prep.executeQuery();
@@ -228,12 +229,12 @@ public class SqliteDatabase {
         return null;
     }
 
-    public List<Integer> findEventsByUserId(String userId) {
+    public List<Integer> findEventsByUserId(Integer userId) {
         ResultSet rs = null;
         try {
             String sql = "SELECT event_id FROM user_event WHERE user_id = ?;";
             PreparedStatement prep = connection.prepareStatement(sql);
-            prep.setString(1, userId);
+            prep.setInt(1, userId);
 
             List<Integer> toReturn = new ArrayList<>();
             rs = prep.executeQuery();
@@ -252,12 +253,12 @@ public class SqliteDatabase {
         return null;
     }
 
-    public List<Integer> findReviewsByUserId(String userId) {
+    public List<Integer> findReviewIDsByUserId(Integer userId) {
         ResultSet rs = null;
         try {
             String sql = "SELECT id FROM review WHERE target_id = ?;";
             PreparedStatement prep = connection.prepareStatement(sql);
-            prep.setString(1, userId);
+            prep.setInt(1, userId);
 
             List<Integer> toReturn = new ArrayList<>();
             rs = prep.executeQuery();
@@ -276,12 +277,36 @@ public class SqliteDatabase {
         return null;
     }
 
-    public List<Integer> findEventsByOwnerId(String userId) {
+    public List<Review> findReviewsByUserId(Integer userId) {ResultSet rs = null;
+        try {
+            String sql = "SELECT user_id, rating, message FROM review FROM review WHERE target_id = ?;";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setInt(1, userId);
+
+            List<Review> toReturn = new ArrayList<>();
+            rs = prep.executeQuery();
+
+            while (rs.next()) {
+                int user_id = rs.getInt(1);
+                double rating = rs.getDouble(2);
+                String text = rs.getString(3);
+                toReturn.add(new Review(user_id, userId, rating, text ));
+            }
+            return toReturn;
+        } catch(Exception e){
+            System.out.println("ERROR: SQL error");
+            e.printStackTrace();
+        } finally {
+            closeResultSet(rs);
+        }
+        return null;}
+
+    public List<Integer> findEventsByOwnerId(Integer userId) {
         ResultSet rs = null;
         try {
             String sql = "SELECT id FROM event WHERE owner_id = ?;";
             PreparedStatement prep = connection.prepareStatement(sql);
-            prep.setString(1, userId);
+            prep.setInt(1, userId);
 
             List<Integer> toReturn = new ArrayList<>();
             rs = prep.executeQuery();

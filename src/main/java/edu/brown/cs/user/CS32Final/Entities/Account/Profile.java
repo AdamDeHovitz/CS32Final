@@ -54,6 +54,10 @@ public class Profile {
     this.image = image;
   }
 
+  public String getDate() {
+    return date;
+  }
+
   public void setReviews(List<Integer> reviews) {
     this.reviews = reviews;
   }
