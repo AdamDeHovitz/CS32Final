@@ -69,8 +69,8 @@ public class GUI {
     Spark.post("/event-create", new EventCreateHandler());
     Spark.post("/event-view", new EventViewHandler());
     Spark.post("/event-owner", new EventOwnerHandler());
-    Spark.post("/event-joined", new EventOwnerHandler());
-    Spark.post("/event-owner", new EventOwnerHandler());
+    Spark.post("/event-joined", new EventJoinedHandler());
+    Spark.post("/event-pending", new EventPendingHandler());
   }
 
   /**
@@ -211,6 +211,38 @@ public class GUI {
   }
 
   private class EventOwnerHandler implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+
+      int id = Integer.parseInt(qm.value("id"));
+
+      List<Event> events =  database.findEventsByOwnerId(id);
+
+      ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+      event.getEventData(vars);
+      Map<String, Object> variables = vars.build();
+      return gson.toJson(variables);
+    }
+  }
+
+  private class EventJoinedHandler implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+
+      int id = Integer.parseInt(qm.value("id"));
+
+      List<Event> events =  database.findEventsByOwnerId(id);
+
+      ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+      event.getEventData(vars);
+      Map<String, Object> variables = vars.build();
+      return gson.toJson(variables);
+    }
+  }
+
+  private class EventPendingHandler implements Route {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
