@@ -1,5 +1,14 @@
 edu/brown/cs/user/CS32Final/Main$1.class
+edu/brown/cs/user/CS32Final/Entities/Account/Profile.class
 edu/brown/cs/user/CS32Final/Main$ExceptionPrinter.class
 edu/brown/cs/user/CS32Final/SQL/SqliteDatabase.class
+edu/brown/cs/user/CS32Final/Entities/Event/Event.class
 edu/brown/cs/user/CS32Final/Main$FrontHandler.class
+edu/brown/cs/user/CS32Final/Entities/Chat/Chat.class
+edu/brown/cs/user/CS32Final/JsonUtil.class
+edu/brown/cs/user/CS32Final/Entities/Account/Account.class
+edu/brown/cs/user/CS32Final/Entities/Event/Request.class
+edu/brown/cs/user/CS32Final/Entities/Account/Review.class
 edu/brown/cs/user/CS32Final/Main.class
+edu/brown/cs/user/CS32Final/Entities/Chat/Message.class
+edu/brown/cs/user/CS32Final/GUI/GUI$1.class

@@ -1,6 +1,68 @@
-bulkAppControllers.controller("loginCtrl", function($scope, $rootScope, $timeout, $state, $rootScope, $ionicViewSwitcher) {
+bulkAppControllers.controller("loginCtrl", 
+	function($scope, $rootScope, $state, $rootScope, $ionicViewSwitcher, 
+		$ionicModal, $http) {
 
 	$scope.loginData = {};
+	$scope.registerData = {};
+	$scope.forms = {};
+
+	$ionicModal.fromTemplateUrl('register-modal.html', {
+	    scope: $scope,
+	    animation: 'slide-in-up'
+	  }).then(function(modal) {
+	    $scope.modal = modal;
+	  });
+	  $scope.openModal = function() {
+	    $scope.modal.show();
+	  };
+	  $scope.closeModal = function() {
+	    $scope.modal.hide();
+	    $scope.registerData = {};
+	  	$scope.forms.registerForm.$setPristine();
+	  	$scope.forms.registerForm.$setUntouched();
+
+	  };
+	  //Cleanup the modal when we're done with it!
+	  $scope.$on('$destroy', function() {
+	    $scope.modal.remove();
+	  });
+	  // Execute action on hide modal
+	  $scope.$on('modal.hidden', function() {
+	    // Execute action
+	  });
+	  // Execute action on remove modal
+	  $scope.$on('modal.removed', function() {
+	    // Execute action
+	});
+
+	//TODO: resize when something touched to make sure can scroll (scrolldel.resize)
+
+	$scope.doRegister = function() {
+		console.log('Doing register', $scope.registerData);
+
+		var curData = $scope.registerData;
+		var regisData = $.param({
+            json: JSON.stringify({
+                firstName: curData.firstName,
+                lastName: curData.lastName,
+                email: curData.email,
+                password: curData.password,
+                img: curData.img
+            })
+        });
+
+		$http({
+  			method: 'POST',
+  			data: regisData,
+  			url: '/someUrl'
+		}).then(function successCallback(response) {
+		    // this callback will be called asynchronously
+		    // when the response is available
+		  }, function errorCallback(response) {
+		    // called asynchronously if an error occurs
+		    // or server returns response with an error status.
+		  });
+	};
 
 	$scope.doLogin = function() {
 		console.log('Doing login', $scope.loginData);
@@ -16,7 +78,6 @@ bulkAppControllers.controller("loginCtrl", function($scope, $rootScope, $timeout
 	    // code if using a login system
     	$ionicViewSwitcher.nextDirection('forward');
 	    $state.go("tab.feed");
-	    
   	};
 });
 /*

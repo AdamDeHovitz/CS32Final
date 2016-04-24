@@ -19,6 +19,7 @@
      <!-- Again, we're serving up the unminified source for clarity. -->
      <script src="js/jquery-2.1.1.js"></script>
 	 <script src="js/ionic.bundle.min.js"></script> 
+	 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular-messages.js"></script>
 	 <script src="js/app.js"></script>
 	 <script src="js/loginCtrl.js"></script>
 	 <script src="js/feedCtrl.js"></script>

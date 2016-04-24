@@ -15,7 +15,7 @@ public class Event {
   private String id;
   private String desc;
   private String image = null;
-  private Account Host;
+  private Account host;
   private List<Account> members;
   private List<Request> requests;
   private int maxMembers;
@@ -34,7 +34,7 @@ public class Event {
     this.id = id;
     this.desc = desc;
     this.image = image;
-    Host = host;
+    this.host = host;
     this.members = members;
     this.requests = requests;
     this.maxMembers = maxMembers;
@@ -43,6 +43,8 @@ public class Event {
     this.tags = tags;
     this.chat = chat;
   }
+
+  //read from db
 
   public int getState() {
     return state;
@@ -85,11 +87,11 @@ public class Event {
   }
 
   public Account getHost() {
-    return Host;
+    return host;
   }
 
   public void setHost(Account host) {
-    Host = host;
+    this.host = host;
   }
 
   public List<Account> getMembers() {
