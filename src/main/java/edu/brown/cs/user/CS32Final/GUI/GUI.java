@@ -14,6 +14,7 @@ import edu.brown.cs.user.CS32Final.Entities.Account.Account;
 import edu.brown.cs.user.CS32Final.Entities.Account.Profile;
 import edu.brown.cs.user.CS32Final.Entities.Account.Review;
 import edu.brown.cs.user.CS32Final.Entities.Event.Event;
+import edu.brown.cs.user.CS32Final.Entities.Event.EventState;
 import edu.brown.cs.user.CS32Final.SQL.SqliteDatabase;
 import freemarker.template.Configuration;
 import spark.ExceptionHandler;
@@ -79,6 +80,8 @@ public class GUI {
     Spark.post("/event-owner", new EventOwnerHandler());
     Spark.post("/event-joined", new EventJoinedHandler());
     Spark.post("/event-pending", new EventPendingHandler());
+    Spark.post("/event-creating", new EventCreationHandler());
+    Spark.post("/event-joining", new EventRequestHandler());
   }
 
   /**
@@ -219,23 +222,6 @@ public class GUI {
     }
   }
 
-  private class EventOwnerHandler implements Route {
-    @Override
-    public Object handle(final Request req, final Response res) {
-      QueryParamsMap qm = req.queryMap();
-
-      int id = Integer.parseInt(qm.value("id"));
-
-      List<Event> events = database.findEventsByOwnerId(id);
-
-      ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
-      vars.put("events", events);
-      Map<String, Object> variables = vars.build();
-      return gson.toJson(variables);
-    }
-  }
-
-
   private class EventFeedHandler implements Route {
 
     @Override
@@ -251,6 +237,22 @@ public class GUI {
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       vars.put("events", events);
 
+      Map<String, Object> variables = vars.build();
+      return gson.toJson(variables);
+    }
+  }
+
+  private class EventOwnerHandler implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+
+      int id = Integer.parseInt(qm.value("id"));
+
+      List<Event> events = database.findEventsByOwnerId(id);
+
+      ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+      vars.put("events", events);
       Map<String, Object> variables = vars.build();
       return gson.toJson(variables);
     }
@@ -275,6 +277,45 @@ public class GUI {
   }
 
   private class EventPendingHandler implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+
+      int id = Integer.parseInt(qm.value("id"));
+
+      List<Event> events = database.findEventsByOwnerId(id);
+
+      ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+      //event.getEventData(vars);
+      Map<String, Object> variables = vars.build();
+      return gson.toJson(variables);
+    }
+  }
+
+
+  private class EventRequestHandler implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+
+      int id = Integer.parseInt(qm.value("id"));
+      int eventId = Integer.parseInt(qm.value("eventId"));
+
+      Event event = database.findEventById(eventId);
+      if (event.getState() != EventState.OPEN) {
+        // TODO: event isn't open
+      }
+      database.requestUserIntoEvent(eventId, id, event.getHost().getId());
+      database.incrementHostRequestNotif(event.getHost().getRequestNotif());
+
+      ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+      //event.getEventData(vars);
+      Map<String, Object> variables = vars.build();
+      return gson.toJson(variables);
+    }
+  }
+
+  private class EventCreationHandler implements Route {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
