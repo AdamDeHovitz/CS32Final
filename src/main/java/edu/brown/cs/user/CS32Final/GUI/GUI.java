@@ -81,7 +81,8 @@ public class GUI {
     Spark.post("/event-joined", new EventJoinedHandler());
     Spark.post("/event-pending", new EventPendingHandler());
     Spark.post("/event-creating", new EventCreationHandler());
-    Spark.post("/event-joining", new EventRequestHandler());
+    Spark.post("/event-request", new RequestEventHandler());
+    Spark.post("/event-join", new JoinEventHandler());
   }
 
   /**
@@ -115,9 +116,8 @@ public class GUI {
 
   private class RegisterHandler implements Route {
     @Override
-    public Object handle(final Request req, final Response res) {
+    public Object handle(final Request req, final Response arg1) {
       QueryParamsMap qm = req.queryMap();
-      System.out.println(req.body());
 
       String email = qm.value("email");
       String password = qm.value("password");
@@ -149,14 +149,19 @@ public class GUI {
       if (user.authenticate(password)) {
         ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
         user.getLoginData(vars);
+        // TODO: account for sql error
         vars.put("reviews", database.findReviewsByUserId(user.getId()));
+        vars.put("hasError", false);
         variables = vars.build();
+        return gson.toJson(variables);
       } else {
-        // TODO: if user enters wrong password
-        System.out.println("we need something done here");
+        ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+        vars.put("hasError", true);
+        vars.put("errorMsg", "Username or password is incorrect.");
+        variables = vars.build();
+        return gson.toJson(variables);
       }
 
-      return gson.toJson(variables);
     }
   }
 
@@ -296,7 +301,7 @@ public class GUI {
   }
 
 
-  private class EventRequestHandler implements Route {
+  private class RequestEventHandler implements Route {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
@@ -309,7 +314,26 @@ public class GUI {
         // TODO: event isn't open
       }
       database.requestUserIntoEvent(eventId, id, event.getHost().getId());
-      database.incrementHostRequestNotif(event.getHost().getRequestNotif());
+      database.incrementHostRequestNotif(event.getHost().getId());
+
+      ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+      //event.getEventData(vars);
+      Map<String, Object> variables = vars.build();
+      return gson.toJson(variables);
+    }
+  }
+
+  private class JoinEventHandler implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+
+      int id = Integer.parseInt(qm.value("id"));
+      int eventId = Integer.parseInt(qm.value("eventId"));
+
+      Event event = database.findEventById(eventId);
+      database.insertUserIntoEvent(eventId, id, event.getHost().getId());
+      database.incrementJoinedNotif(id);
 
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       //event.getEventData(vars);
