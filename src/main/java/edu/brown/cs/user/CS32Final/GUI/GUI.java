@@ -35,6 +35,10 @@ public class GUI {
 
   private final Gson gson = new Gson();
 
+  public GUI() {
+    runSparkServer();
+  }
+
   private static FreeMarkerEngine createEngine() {
     Configuration config = new Configuration();
     File templates = new File("src/main/resources/spark/template/freemarker");
@@ -52,6 +56,7 @@ public class GUI {
    * Runs the spark server.
    */
   private void runSparkServer() {
+    System.out.println("spark server running");
     Spark.externalStaticFileLocation("src/main/resources/static");
     Spark.exception(Exception.class, new ExceptionPrinter());
 
@@ -239,7 +244,7 @@ public class GUI {
       List<Event> events =  database.findEventsByOwnerId(id);
 
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
-      event.getEventData(vars);
+      //event.getEventData(vars);
       Map<String, Object> variables = vars.build();
       return gson.toJson(variables);
     }
@@ -255,7 +260,7 @@ public class GUI {
       List<Event> events =  database.findEventsByOwnerId(id);
 
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
-      event.getEventData(vars);
+      //event.getEventData(vars);
       Map<String, Object> variables = vars.build();
       return gson.toJson(variables);
     }

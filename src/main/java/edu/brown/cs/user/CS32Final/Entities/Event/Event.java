@@ -19,7 +19,6 @@ public class Event {
   private String image = null;
   private Account host;
   private List<Account> members;
-  private List<Request> requests;
   private int maxMembers;
   private double cost;
   private String location;
@@ -97,14 +96,6 @@ public class Event {
 
   public void setMembers(List<Account> members) {
     this.members = members;
-  }
-
-  public List<Request> getRequests() {
-    return requests;
-  }
-
-  public void setRequests(List<Request> requests) {
-    this.requests = requests;
   }
 
   public int getMaxMembers() {
