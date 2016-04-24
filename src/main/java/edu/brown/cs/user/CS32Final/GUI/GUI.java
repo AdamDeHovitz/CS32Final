@@ -31,6 +31,7 @@ import java.util.Map;
 public class GUI {
 
   private final Gson gson = new Gson();
+  private SqliteDatabase database;
 
   private SqliteDatabase database;
 
@@ -124,14 +125,18 @@ public class GUI {
       String username = qm.value("username");
       String password = qm.value("password");
 
+<<<<<<< HEAD
+=======
       Account user =  database.findUserByUsername(username);
+>>>>>>> cb188d189b83748a96b46b1b15a4823e71b2f9fa
       Map<String, Object> variables = null;
+      /*Account user =  database.findUserByUsername(username);
       if (user.authenticate(password)) {
         variables = user.getData();
 
       } else {
         System.out.println("we need something done here");
-      }
+      }*/
 
       return gson.toJson(variables);
     }
