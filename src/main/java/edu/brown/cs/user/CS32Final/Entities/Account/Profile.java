@@ -1,5 +1,7 @@
 package edu.brown.cs.user.CS32Final.Entities.Account;
 
+import com.google.common.collect.ImmutableMap;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,5 +64,10 @@ public class Profile {
     this.reviews = reviews;
   }
 
+  public void getProfileData(ImmutableMap.Builder<String, Object> variables) {
+    variables.put("picture", getImage())
+            .put("data", getDate())
+            .put("name", getName());
+  }
 
 }

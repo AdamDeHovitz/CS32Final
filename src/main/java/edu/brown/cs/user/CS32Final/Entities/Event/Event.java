@@ -1,5 +1,6 @@
 package edu.brown.cs.user.CS32Final.Entities.Event;
 
+import com.google.common.collect.ImmutableMap;
 import edu.brown.cs.user.CS32Final.Entities.Account.Account;
 import edu.brown.cs.user.CS32Final.Entities.Chat.Chat;
 
@@ -148,4 +149,20 @@ public class Event {
   public void setChat(Chat chat) {
     this.chat = chat;
   }
+
+  public void getEventData(ImmutableMap.Builder<String, Object> variables) {
+    variables.put("eventId", id)
+            .put("title", getName())
+            .put("author", getHost().getProf().getName())
+            .put("authorId", getHost().getId())
+            .put("authorImg", getHost().getProf().getImage())
+            .put("img", getImage())
+            .put("location", getLocation())
+            .put("description", getDesc())
+            .put("price", getCostPP())
+            .put("CurMemberNum", getMembers().size())
+            .put("desiredMembers", getMaxMembers())
+            .put("tags", new String[0]);
+  }
+
 }
