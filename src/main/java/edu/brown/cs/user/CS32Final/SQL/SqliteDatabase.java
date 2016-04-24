@@ -96,7 +96,7 @@ public class SqliteDatabase {
     public void insertUser(String email, String password, String first_name, String last_name, String image, String date) {
 
         try {
-            String sql = "INSERT INTO user VALUES (?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO user VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement prep = connection.prepareStatement(sql);
             prep.setString(1, email);
             prep.setString(2, password);
