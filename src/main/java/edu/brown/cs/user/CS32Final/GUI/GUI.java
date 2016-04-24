@@ -14,6 +14,7 @@ import edu.brown.cs.user.CS32Final.Entities.Account.Account;
 import edu.brown.cs.user.CS32Final.Entities.Account.Profile;
 import edu.brown.cs.user.CS32Final.Entities.Account.Review;
 import edu.brown.cs.user.CS32Final.Entities.Event.Event;
+import edu.brown.cs.user.CS32Final.Entities.Event.EventState;
 import edu.brown.cs.user.CS32Final.SQL.SqliteDatabase;
 import freemarker.template.Configuration;
 import spark.ExceptionHandler;
@@ -114,6 +115,7 @@ public class GUI {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
+      System.out.println(req.body());
 
       String email = qm.value("email");
       String password = qm.value("password");
@@ -122,6 +124,7 @@ public class GUI {
       String image = qm.value("image");
       String date = "19 May, 2016";
 
+      System.out.println(email);
       database.insertUser(email, password, first_name, last_name, image, date);
 
       return true;
@@ -264,10 +267,10 @@ public class GUI {
       int id = Integer.parseInt(qm.value("id"));
 
 
-      List<Event> events = database.findEventsByOwnerId(id);
+      List<Event> events = database.findJoinedEventsByUserId(id);
 
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
-      //event.getEventData(vars);
+      vars.put("events", events);
 
       Map<String, Object> variables = vars.build();
       return gson.toJson(variables);
@@ -281,10 +284,11 @@ public class GUI {
 
       int id = Integer.parseInt(qm.value("id"));
 
-      List<Event> events = database.findEventsByOwnerId(id);
+      List<Event> events = database.findPendingEventsByUserId(id);
 
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
-      //event.getEventData(vars);
+      vars.put("events", events);
+
       Map<String, Object> variables = vars.build();
       return gson.toJson(variables);
     }

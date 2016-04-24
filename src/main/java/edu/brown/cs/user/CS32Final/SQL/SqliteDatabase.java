@@ -329,7 +329,6 @@ public class SqliteDatabase {
             return toReturn;
         } catch (Exception e) {
             System.out.println("ERROR: SQL error");
-            e.printStackTrace();
         } finally {
             closeResultSet(rs);
         }
@@ -339,7 +338,7 @@ public class SqliteDatabase {
 
     public List<Event> findEventsByOwnerId(Integer userId) {
         List<Event> toReturn = new ArrayList<>();
-        for (Integer id: findEventIdsbyOwnerId(userId)) {
+        for (Integer id : findEventIdsbyOwnerId(userId)) {
             toReturn.add(findEventById(id));
         }
         return toReturn;
@@ -550,6 +549,54 @@ public class SqliteDatabase {
             return toReturn;
         } catch(Exception e){
             System.out.println("ERROR: SQL error");
+        } finally {
+            closeResultSet(rs);
+        }
+        return null;
+    }
+
+    public List<Event> findJoinedEventsByUserId(int userId) {
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT event_id FROM event_user WHERE user_id = ?;";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setInt(1, userId);
+
+            List<Event> toReturn = new ArrayList<>();
+            rs = prep.executeQuery();
+
+            while (rs.next()) {
+                int event_id = rs.getInt(1);
+                toReturn.add(findEventById(event_id));
+            }
+            return toReturn;
+        } catch (Exception e) {
+            System.out.println("ERROR: SQL error");
+            e.printStackTrace();
+        } finally {
+            closeResultSet(rs);
+        }
+        return null;
+    }
+
+    public List<Event> findPendingEventsByUserId(int userId) {
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT event_id FROM user_request WHERE user_id = ?;";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setInt(1, userId);
+
+            List<Event> toReturn = new ArrayList<>();
+            rs = prep.executeQuery();
+
+            while (rs.next()) {
+                int event_id = rs.getInt(1);
+                toReturn.add(findEventById(event_id));
+            }
+            return toReturn;
+        } catch (Exception e) {
+            System.out.println("ERROR: SQL error");
+            e.printStackTrace();
         } finally {
             closeResultSet(rs);
         }
