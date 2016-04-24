@@ -112,9 +112,9 @@ public class GUI {
 
   private class RegisterHandler implements Route {
     @Override
-    public Object handle(final Request req, final Response res) {
+    public Object handle(final Request req, final Response arg1) {
       QueryParamsMap qm = req.queryMap();
-
+      System.out.println(req.params());
       String email = qm.value("email");
       String password = qm.value("password");
       String first_name = qm.value("firstName");
@@ -144,14 +144,19 @@ public class GUI {
       if (user.authenticate(password)) {
         ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
         user.getLoginData(vars);
+        // TODO: account for sql error
         vars.put("reviews", database.findReviewsByUserId(user.getId()));
+        vars.put("hasError", false);
         variables = vars.build();
+        return gson.toJson(variables);
       } else {
-        // TODO: if user enters wrong password
-        System.out.println("we need something done here");
+        ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+        vars.put("hasError", true);
+        vars.put("errorMsg", "Username or password is incorrect.");
+        variables = vars.build();
+        return gson.toJson(variables);
       }
 
-      return gson.toJson(variables);
     }
   }
 

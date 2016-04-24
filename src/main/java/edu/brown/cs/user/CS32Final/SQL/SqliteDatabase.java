@@ -40,8 +40,8 @@ public class SqliteDatabase {
                 "last_name TEXT, " +
                 "image TEXT, " +
                 "date TEXT, " +
-                "requestNotif INTEGER, " +
-                "joinedNotif INTEGER)";
+                "requestNotif INTEGER DEFAULT 0, " +
+                "joinedNotif INTEGER DEFAULT 0)";
 
         String review = "CREATE TABLE IF NOT EXISTS review(" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -102,7 +102,8 @@ public class SqliteDatabase {
     public void insertUser(String email, String password, String first_name, String last_name, String image, String date) {
 
         try {
-            String sql = "INSERT INTO user VALUES (?, ?, ?, ?, ?, ?)";
+
+            String sql = "INSERT INTO user (email, password, first_name, last_name, image, date) VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement prep = connection.prepareStatement(sql);
             prep.setString(1, email);
             prep.setString(2, password);
@@ -111,7 +112,7 @@ public class SqliteDatabase {
             prep.setString(5, image);
             prep.setString(6, date);
 
-            prep.executeQuery();
+            prep.executeUpdate();
 
         } catch(Exception e) {
             System.out.println("ERROR: SQL error");

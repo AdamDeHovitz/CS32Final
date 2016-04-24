@@ -41,21 +41,49 @@ bulkAppControllers.controller("loginCtrl",
 		console.log('Doing register', $scope.registerData);
 
 		var curData = $scope.registerData;
-		var regisData = $.param({
-            json: JSON.stringify({
+		var regisData = {
                 firstName: curData.firstName,
                 lastName: curData.lastName,
                 email: curData.email,
                 password: curData.password,
                 image: curData.img
-            })
-        });
+        };
+        console.log(regisData);
 
+        
+        $.post("/register", {
+                "firstName": curData.firstName,
+                "lastName": curData.lastName,
+                "email": curData.email,
+                "password": curData.password,
+                "image": curData.img
+        }, function(responseJSON) {
+	 		responseObject = JSON.parse(responseJSON);
+	 	});
+
+	 	/*
+		//$http.post("/register", regisData).
 		$http({
   			method: 'POST',
-  			data: regisData,
-  			url: '/register'
-		}).then(function successCallback(response) {
+  			url: '/register',
+  			contentType: 'application/json',
+  			data: regisData
+		}).
+		
+		$http.post("/register", {
+                'firstName': curData.firstName,
+                'lastName': curData.lastName,
+                'email': curData.email,
+                'password': curData.password,
+                'image': curData.img
+            }).*/
+		/*$http({
+  			method: 'POST',
+  			url: '/register',
+  			headers : {'Content-Type': 'application/x-www-form-urlencoded'},
+  			data: regisData
+		}).
+		then(function successCallback(response) {
 			console.log("success");
 		    // this callback will be called asynchronously
 		    // when the response is available
@@ -63,7 +91,7 @@ bulkAppControllers.controller("loginCtrl",
 		  	console.log("failure");
 		    // called asynchronously if an error occurs
 		    // or server returns response with an error status.
-		  });
+		  });*/
 	};
 
 	$scope.doLogin = function() {
