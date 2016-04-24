@@ -1,0 +1,47 @@
+input[type="number"] {
+  width: 3em;
+}
+
+.ion-ios-arrow-right {
+	opacity: .4;
+}
+
+.bar-footer .button-block {
+	margin: 0px !important;
+}
+
+.title {
+ 	color: #111; 
+ 	font-family: 'Helvetica Neue', sans-serif; 
+ 	font-weight: bold !important; 
+ 	letter-spacing: 0px; 
+	text-shadow: none;
+	text-align: center;
+}
+
+[nav-view-transition][nav-view-direction] {
+background-color: transparent !important;
+}
+
+.stressed {
+	padding-right: 10px;
+    color: #262626;
+    text-decoration: none;
+}
+
+.full-image {
+	max-width: 300px;
+}
+
+label.item.has-error {
+	border-bottom: 2px solid red;
+}
+
+.form-errors {
+	margin: 5px 0;
+}
+
+.form-error {
+	padding: 2px 0 2px 16px;
+	color: red;
+}
