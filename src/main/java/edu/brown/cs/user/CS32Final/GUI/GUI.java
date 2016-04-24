@@ -29,6 +29,7 @@ import java.util.Map;
 public class GUI {
 
   private final Gson gson = new Gson();
+  private SqliteDatabase database;
 
 
   private static FreeMarkerEngine createEngine() {
@@ -98,15 +99,15 @@ public class GUI {
       String username = qm.value("username");
       String password = qm.value("password");
 
-      Account user =  SqliteDatabase.findUserByUsername(username);
       Map<String, Object> variables = null;
+      /*Account user =  database.findUserByUsername(username);
       if (user.authenticate(password)) {
         variables = user.getData();
 
       }
       else {
         System.out.println("we need something done here");
-      }
+      }*/
 
 
       return gson.toJson(variables);
