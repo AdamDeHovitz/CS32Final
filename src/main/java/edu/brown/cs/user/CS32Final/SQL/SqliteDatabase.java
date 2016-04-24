@@ -190,6 +190,89 @@ public class SqliteDatabase {
         }
     }
 
+    public void requestUserIntoEvent(int event_id, int user_id, int owner_id) {
+
+        try {
+            String sql = "INSERT INTO user_request VALUES (?, ?, ?)";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setInt(1, event_id);
+            prep.setInt(2, user_id);
+            prep.setInt(3, owner_id);
+
+            prep.executeQuery();
+
+        } catch(Exception e){
+            System.out.println("ERROR: SQL error");
+            e.printStackTrace();
+        }
+    }
+
+    public void incrementHostRequestNotif(int user_id) {
+
+        try {
+            String sql = "UPDATE users " +
+                    "SET requestNotif = requestNotif + 1 " +
+                    "WHERE id = ?;";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            //prep.setInt(1, notif);
+            prep.setInt(1, user_id);
+            prep.executeQuery();
+
+        } catch(Exception e){
+            System.out.println("ERROR: SQL error");
+            e.printStackTrace();
+        }
+    }
+    public void incrementJoinedNotif(int user_id) {
+
+        try {
+            String sql = "UPDATE users " +
+                    "SET joinedNotif = joinedNotif + 1 " +
+                    "WHERE id = ?;";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            //prep.setInt(1, notif);
+            prep.setInt(1, user_id);
+            prep.executeQuery();
+
+        } catch(Exception e){
+            System.out.println("ERROR: SQL error");
+            e.printStackTrace();
+        }
+    }
+
+    public void setHostRequestNotif(int user_id, int notif) {
+
+        try {
+            String sql = "UPDATE users " +
+                    "SET requestNotif = ? " +
+                    "WHERE id = ?;";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setInt(1, notif);
+            prep.setInt(2, user_id);
+            prep.executeQuery();
+
+        } catch(Exception e){
+            System.out.println("ERROR: SQL error");
+            e.printStackTrace();
+        }
+    }
+    public void setJoinedNotif(int user_id, int notif) {
+
+        try {
+            String sql = "UPDATE users " +
+                    "SET joinedNotif = ? " +
+                    "WHERE id = ?;";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setInt(1, notif);
+            prep.setInt(2, user_id);
+            prep.executeQuery();
+
+        } catch(Exception e){
+            System.out.println("ERROR: SQL error");
+            e.printStackTrace();
+        }
+    }
+
     public List<String> findUsersByEventId(Integer eventId) {
         ResultSet rs = null;
         try {

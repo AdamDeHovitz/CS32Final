@@ -36,6 +36,22 @@ public class Account {
     return prof;
   }
 
+  public int getJoinedNotif() {
+    return joinedNotif;
+  }
+
+  public void setJoinedNotif(int joinedNotif) {
+    this.joinedNotif = joinedNotif;
+  }
+
+  public int getRequestNotif() {
+    return requestNotif;
+  }
+
+  public void setRequestNotif(int requestNotif) {
+    this.requestNotif = requestNotif;
+  }
+
   public void setProf(Profile prof) {
     this.prof = prof;
   }
