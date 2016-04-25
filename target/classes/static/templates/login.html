@@ -1,0 +1,134 @@
+<ion-view view-title="login">
+<ion-content ng-controller="loginCtrl" class="padding">
+<h1>Bulki</h1>
+<<<<<<< HEAD
+	<form name="forms.loginForm" ng-submit="doLogin()">
+	<div class="list">
+	  <label class="item item-input"
+	  ng-class="{'has-error': forms.loginForm.email.$touched && forms.loginForm.email.$invalid }">
+=======
+	<form name="loginForm" ng-submit="doLogin()">
+	<div class="list">
+	  <label class="item item-input"
+	  ng-class="{'has-error': loginForm.email.$touched && loginForm.email.$invalid }">
+>>>>>>> 58687b0c82a6c08a10ecaa94cc1fa591a3a5d9cf
+	    <span class="input-label">Email</span>
+	    <input type="email" name="email" ng-model="loginData.email" required>
+	  </label>
+	  
+	  <label class="item item-input"
+<<<<<<< HEAD
+	  ng-class="{'has-error': forms.loginForm.password.$touched && forms.loginForm.password.$invalid }">
+=======
+	  ng-class="{'has-error': loginForm.password.$touched && loginForm.password.$invalid }">
+>>>>>>> 58687b0c82a6c08a10ecaa94cc1fa591a3a5d9cf
+	    <span class="input-label">Password</span>
+	    <input type="password" name="password" ng-model="loginData.password" required>
+	  </label>
+	</div>
+	
+<<<<<<< HEAD
+	<button ng-disabled="forms.loginForm.$invalid" class="button button-block button-positive">
+=======
+	<button ng-disabled="loginForm.$invalid" class="button button-block button-positive">
+>>>>>>> 58687b0c82a6c08a10ecaa94cc1fa591a3a5d9cf
+	Login
+	</button>
+	</form>
+	<div style="text-align:center;">
+		Don't have an Account? <br> 
+		<button class="button button-clear button-positive" ng-click="openModal();">
+  		Register Here
+		</button>
+	</div>
+</ion-content>
+</ion-view>
+
+<script id="register-modal.html" type="text/ng-template">
+<ion-modal-view>
+    <ion-header-bar>
+      <h1 class="title">Registration</h1>
+	 <button class="button button-icon icon ion-ios-close-outline" ng-click="closeModal();"></button>
+    </ion-header-bar>
+    <ion-content class="padding">
+    <form name="forms.registerForm" ng-submit="doRegister()">
+      <div class="list">
+  		<label class="item item-input"
+  		ng-class="{ 'has-error': forms.registerForm.firstName.$touched && forms.registerForm.firstName.$invalid }">
+    	<span class="input-label">First Name*</span>
+   		<input type="text" name="firstName" ng-model="registerData.firstName" required>
+  		</label>
+  		<div class="form-errors" 
+  		ng-show="forms.registerForm.firstName.$touched && forms.registerForm.firstName.$invalid " 
+  		ng-messages="forms.registerForm.firstName.$error">
+        <div class="form-error" ng-message="required">Your first name is required.</div>
+    	</div>
+    	
+    	<label class="item item-input"
+  		ng-class="{ 'has-error': forms.registerForm.lastName.$touched && forms.registerForm.lastName.$invalid }">
+    	<span class="input-label">Last Name*</span>
+   		<input type="text" name="lastName" ng-model="registerData.lastName" required>
+  		</label>
+  		<div class="form-errors" 
+  		ng-show="forms.registerForm.lastName.$touched && forms.registerForm.lastName.$invalid"
+  		ng-messages="forms.registerForm.lastName.$error">
+        <div class="form-error" ng-message="required">Your last name is required.</div>
+    	</div>
+  		
+  		<label class="item item-input" 
+  		ng-class="{ 'has-error': forms.registerForm.email.$touched && forms.registerForm.email.$invalid }">
+    	<span class="input-label">Email*</span>
+   		<input type="email" name="email" ng-model="registerData.email" required>
+  		</label>
+  		<div class="form-errors" 
+  		ng-show="forms.registerForm.email.$touched && forms.registerForm.email.$invalid"
+  		ng-messages="forms.registerForm.email.$error">
+        <div class="form-error" ng-message="email">Not a valid email.</div>
+        <div class="form-error" ng-message="required">Your email is required.</div>
+    	</div>
+    	
+		<label class="item item-input"
+  		ng-class="{ 'has-error': forms.registerForm.password.$touched && forms.registerForm.password.$invalid }">
+    	    		<span class="input-label">Password*</span>
+   		<input type="password" name="password" ng-model="registerData.password"  
+   		ng-minlength="5" ng-maxlength="25" required>
+  		</label>
+  		<div class="form-errors" 
+  		ng-show="forms.registerForm.password.$touched && forms.registerForm.password.$invalid"
+  		ng-messages="forms.registerForm.password.$error">
+        <div class="form-error" ng-message="required">Your password is required.</div>
+    	<div class="form-error" ng-message="minlength">Your password must be 5 character.</div>
+    	<div class="form-error" ng-message="maxlength">Your password cannot be longer than 25 characters.</div>
+    	
+    	</div>
+  		
+  		
+  		<label class="item item-input"
+  		ng-class="{ 'has-error': forms.registerForm.passwordMatch.$touched && forms.registerForm.passwordMatch.$invalid }">
+    	<span class="input-label">
+    		<span class="input-label">Re-Type Password*</span>
+   			<input type="password" name="passwordMatch" 
+   			ng-model="registerData.passwordMatch" equals="{{registerData.password}}" required>
+  		</label>
+  		<div class="form-errors" 
+  		ng-show="forms.registerForm.passwordMatch.$touched && forms.registerForm.passwordMatch.$invalid"
+  		ng-messages="forms.registerForm.passwordMatch.$error">
+  		<div class="form-error" ng-message="equals">Your passwords do not match.</div>
+        <div class="form-error" ng-message="required">Your password is required.</div>
+    	</div>
+  		
+		<label class="item item-input">
+    		<span class="input-label">Image URL</span>
+   			<input type="text">
+  		</label>
+
+		</div>
+		<br><br>
+		<button ng-disabled="registerForm.$invalid" class="button button-block button-positive">Register</button>
+		
+	</form>
+    </ion-content>
+	<ion-footer-bar> 
+	</ion-footer-bar>
+</ion-modal-view>
+</script>

@@ -130,7 +130,6 @@ public class GUI {
       String first_name = qm.value("firstName");
       String last_name = qm.value("lastName");
       String image = qm.value("image");
-      System.out.println(image);
       String date = "19 May, 2016";
 
       try {
@@ -174,7 +173,7 @@ public class GUI {
         variables = vars.build();
         return gson.toJson(variables);
       }
-      
+
         if (user.authenticate(password)) {
           ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
 

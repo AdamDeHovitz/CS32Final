@@ -1,22 +1,22 @@
 <ion-view view-title="login">
 <ion-content ng-controller="loginCtrl" class="padding">
 <h1>Bulki</h1>
-	<form name="loginForm" ng-submit="doLogin()">
+	<form name="forms.loginForm" ng-submit="doLogin()">
 	<div class="list">
 	  <label class="item item-input"
-	  ng-class="{'has-error': loginForm.email.$touched && loginForm.email.$invalid }">
+	  ng-class="{'has-error': forms.loginForm.email.$touched && forms.loginForm.email.$invalid }">
 	    <span class="input-label">Email</span>
 	    <input type="email" name="email" ng-model="loginData.email" required>
 	  </label>
 	  
 	  <label class="item item-input"
-	  ng-class="{'has-error': loginForm.password.$touched && loginForm.password.$invalid }">
+	  ng-class="{'has-error': forms.loginForm.password.$touched && forms.loginForm.password.$invalid }">
 	    <span class="input-label">Password</span>
 	    <input type="password" name="password" ng-model="loginData.password" required>
 	  </label>
 	</div>
 	
-	<button ng-disabled="loginForm.$invalid" class="button button-block button-positive">
+	<button ng-disabled="forms.loginForm.$invalid" class="button button-block button-positive">
 	Login
 	</button>
 	</form>
