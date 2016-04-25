@@ -85,6 +85,7 @@ public class SqliteDatabase {
         prep.addBatch(userEvent);
         prep.addBatch(message);
         prep.addBatch(userRequest);
+        prep.addBatch(eventTags);
 
         prep.executeBatch();
 
