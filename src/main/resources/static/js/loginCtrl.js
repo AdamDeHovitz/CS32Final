@@ -103,22 +103,21 @@ bulkAppControllers.controller("loginCtrl",
                 "username": $scope.loginData.email,
                 "password": $scope.loginData.password,
         }, function(responseJSON) {
-	 		responseObject = JSON.parse(responseJSON);
-	 		console.log(responseObject);
+        	responseObject = JSON.parse(responseJSON);
+        	if (responseObject.hasError) {
+        		//TODO: show error
+        	} else {
+	        	$rootScope.account = {name: responseObject.name,
+	    		id: responseObject.id,
+	    		joined: responseObject.date,
+	    		rating: 5,
+	    		img: responseObject.picture,
+	    		reviews: responseObject.reviews};
+	    		$rootScope.authenticated = true;
+	    		$ionicViewSwitcher.nextDirection('forward');
+	    		$state.go("tab.feed");
+	 		}
 	 	});
-
-
-    	$rootScope.account = {name: "Barack Obama",
-    		id: 'abc123',
-    		joined: 2009,
-    		rating: 5,
-    		img: 'http://a5.files.biography.com/image/upload/c_fill,cs_srgb,dpr_1.0,g_face,h_300,q_80,w_300/MTE4MDAzNDEwNzg5ODI4MTEw.jpg',
-    		reviews: []};
-
-	    // Simulate a login delay. Remove this and replace with your login
-	    // code if using a login system
-    	$ionicViewSwitcher.nextDirection('forward');
-	    $state.go("tab.feed");
   	};
 });
 /*

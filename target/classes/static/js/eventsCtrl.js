@@ -1,4 +1,5 @@
-bulkAppControllers.controller("eventsCtrl", function($scope, $http, $ionicModal, $state, $timeout) {
+bulkAppControllers.controller("eventsCtrl", 
+	function($scope, $rootScope, $http, $ionicModal, $state, $timeout) {
 	
 	$scope.newMyEvents = true;
 	$scope.newMyEventsNum = 0; 
@@ -6,6 +7,7 @@ bulkAppControllers.controller("eventsCtrl", function($scope, $http, $ionicModal,
 	$scope.newJoinedEventsNum = 0; 
 	$scope.newPendingEvents = false;
 	$scope.newPendingEventsNum = 0; 
+	$scope.creationData = {};
 	
 	$scope.goPending = function() {
 		$timeout(function(){
@@ -31,6 +33,19 @@ bulkAppControllers.controller("eventsCtrl", function($scope, $http, $ionicModal,
 		}, 1000);
 		$state.go('tab.joined-events');
 	};
+
+	$scope.createEvent = function() {
+		$scope.creationData["owner_id"] = $rootScope.account.id;
+		$scope.creationData["tags"] = [];
+		console.log()
+		$.post("/event-create", $scope.creationData, function(responseJSON) {
+			responseObject = JSON.parse(responseJSON);
+			console.log(responseObject);
+		});
+		var curData = $scope.creationData;
+		//TODO: need to reset data?
+
+	}
 	
 	$ionicModal.fromTemplateUrl('new-event-modal.html', {
 	    scope: $scope,
