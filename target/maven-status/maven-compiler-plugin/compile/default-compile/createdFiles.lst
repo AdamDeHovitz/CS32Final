@@ -2,10 +2,7 @@ edu/brown/cs/user/CS32Final/GUI/GUI$ProfileHandler.class
 edu/brown/cs/user/CS32Final/Entities/Event/EventState.class
 edu/brown/cs/user/CS32Final/Entities/Account/Profile.class
 edu/brown/cs/user/CS32Final/Main$ExceptionPrinter.class
-<<<<<<< HEAD
 edu/brown/cs/user/CS32Final/SQL/SqliteDatabase.class
-=======
->>>>>>> 079153847f07588a4e903ace1bc217709c879daa
 edu/brown/cs/user/CS32Final/Entities/Event/Event.class
 edu/brown/cs/user/CS32Final/GUI/GUI$EventFeedHandler.class
 edu/brown/cs/user/CS32Final/GUI/GUI$EventPendingHandler.class
@@ -14,10 +11,7 @@ edu/brown/cs/user/CS32Final/Main$FrontHandler.class
 edu/brown/cs/user/CS32Final/Entities/Chat/Chat.class
 edu/brown/cs/user/CS32Final/JsonUtil.class
 edu/brown/cs/user/CS32Final/GUI/GUI$EventViewHandler.class
-<<<<<<< HEAD
 edu/brown/cs/user/CS32Final/GUI/GUI.class
-=======
->>>>>>> 079153847f07588a4e903ace1bc217709c879daa
 edu/brown/cs/user/CS32Final/GUI/GUI$EventOwnerHandler.class
 edu/brown/cs/user/CS32Final/GUI/GUI$LoginHandler.class
 edu/brown/cs/user/CS32Final/GUI/GUI$EventCreateHandler.class
@@ -28,10 +22,7 @@ edu/brown/cs/user/CS32Final/GUI/GUI$RemoveEventHandler.class
 edu/brown/cs/user/CS32Final/Entities/Account/Review.class
 edu/brown/cs/user/CS32Final/GUI/GUI$EventJoinedHandler.class
 edu/brown/cs/user/CS32Final/GUI/GUI$JoinEventHandler.class
-<<<<<<< HEAD
 edu/brown/cs/user/CS32Final/GUI/GUI$CloseEventHandler.class
-=======
->>>>>>> 079153847f07588a4e903ace1bc217709c879daa
 edu/brown/cs/user/CS32Final/Main.class
 edu/brown/cs/user/CS32Final/GUI/GUI$FrontHandler.class
 edu/brown/cs/user/CS32Final/GUI/GUI$ExceptionPrinter.class

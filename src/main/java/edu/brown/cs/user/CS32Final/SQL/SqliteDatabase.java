@@ -96,24 +96,19 @@ public class SqliteDatabase {
                             String image, int member_capacity, double cost, String location, String[][] tags)
             throws SQLException {
 
-        try {
-            String sql = "INSERT INTO event (owner_id, state, name, description, image, member_capacity, cost, location) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-            PreparedStatement prep = connection.prepareStatement(sql);
-            prep.setInt(1, owner_id);
-            prep.setString(2, state);
-            prep.setString(3, name);
-            prep.setString(4, description);
-            prep.setString(5, image);
-            prep.setInt(6, member_capacity);
-            prep.setDouble(7, cost);
-            prep.setString(8, location);
 
-            prep.executeUpdate();
-
-        } catch(Exception e){
-            System.out.println("ERROR: SQL error");
-            e.printStackTrace();
-        }
+        String sql = "INSERT INTO event (owner_id, state, name, description, " +
+                "image, member_capacity, cost, location) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        PreparedStatement prep = connection.prepareStatement(sql);
+        prep.setInt(1, owner_id);
+        prep.setString(2, state);
+        prep.setString(3, name);
+        prep.setString(4, description);
+        prep.setString(5, image);
+        prep.setInt(6, member_capacity);
+        prep.setDouble(7, cost);
+        prep.setString(8, location);
+        prep.executeUpdate();
     }
 
     public void insertUser(String email, String password, String first_name,
