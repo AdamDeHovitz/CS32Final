@@ -24,6 +24,11 @@ bulkAppControllers.controller("eventCtrl",
 	$scope.confirmJoin = function() {
 		console.log("joining");
 		$scope.isMember = true;
+		$scope.event.CurMemberNum = $scope.event.CurMemberNum + 1;
+		/*$.post("/event-join", {id: $rootScope.account.id, eventId: $scope.eventId}, 
+		function(responseJSON) {
+			responseObject = JSON.parse(responseJSON);
+		}*/
 	}
 
 	$scope.confirmClose = function() {
@@ -32,6 +37,8 @@ bulkAppControllers.controller("eventCtrl",
 
 	$scope.confirmLeave = function() {
 		console.log("leaving");
+		$scope.event.CurMemberNum = $scope.event.CurMemberNum - 1;
+
 		$scope.isMember = false;
 	}
 	 
