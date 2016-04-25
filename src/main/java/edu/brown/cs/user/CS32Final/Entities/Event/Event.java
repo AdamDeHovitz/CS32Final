@@ -141,9 +141,10 @@ public class Event {
             .put("location", getLocation())
             .put("description", getDesc())
             .put("price", getCostPP())
+            .put("members", getMembers())
             .put("CurMemberNum", getMembers().size())
             .put("desiredMembers", getMaxMembers())
-            .put("tags", new String[0]);
+            .put("tags", getTags());
   }
 
 }
