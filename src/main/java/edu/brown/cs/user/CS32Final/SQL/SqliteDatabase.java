@@ -94,6 +94,7 @@ public class SqliteDatabase {
     public void insertEvent(int owner_id, String state, String name, String description,
                             String image, int member_capacity, double cost, String location, String[][] tags) {
 
+
         try {
             String sql = "INSERT INTO event (owner_id, state, name, description, image, member_capacity, cost, location) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement prep = connection.prepareStatement(sql);
