@@ -378,7 +378,7 @@ public class SqliteDatabase {
     public List<Review> findReviewsByUserId(Integer userId) {
         ResultSet rs = null;
         try {
-            String sql = "SELECT user_id, rating, message FROM review FROM review WHERE target_id = ?;";
+            String sql = "SELECT user_id, rating, message FROM review WHERE target_id = ?;";
             PreparedStatement prep = connection.prepareStatement(sql);
             prep.setInt(1, userId);
 
