@@ -85,6 +85,7 @@ public class SqliteDatabase {
         prep.addBatch(userEvent);
         prep.addBatch(message);
         prep.addBatch(userRequest);
+        prep.addBatch(eventTags);
 
         prep.executeBatch();
 
@@ -92,7 +93,8 @@ public class SqliteDatabase {
     }
 
     public void insertEvent(int owner_id, String state, String name, String description,
-                            String image, int member_capacity, double cost, String location, String[][] tags) {
+                            String image, int member_capacity, double cost, String location, String[][] tags)
+            throws SQLException {
 
         try {
             String sql = "INSERT INTO event (owner_id, state, name, description, image, member_capacity, cost, location) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -388,7 +390,7 @@ public class SqliteDatabase {
     public List<Integer> findEventsByRequestedId(Integer userId) throws SQLException {
         ResultSet rs = null;
         try {
-            String sql = "SELECT id FROM user_request WHERE owner_id = ?;";
+            String sql = "SELECT event_id FROM user_request WHERE user_id = ?;";
             PreparedStatement prep = connection.prepareStatement(sql);
             prep.setInt(1, userId);
 

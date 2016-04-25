@@ -188,9 +188,9 @@ public class GUI {
     public Object handle(final Request req, final Response res) {
       System.out.println("creating event");
       QueryParamsMap qm = req.queryMap();
-
+      System.out.println("reached handler");
       int owner_id = Integer.parseInt(qm.value("owner_id"));
-      String state = "open";
+      String state = "OPEN";
       String name = qm.value("name");
       String description = qm.value("description");
       String image = qm.value("image");
@@ -199,6 +199,7 @@ public class GUI {
       String location = qm.value("location");
       String[][] tags = gson.fromJson(qm.value("tags"), String[][].class);
 
+      System.out.println("about to go to db methods");
       try {
         database.insertEvent(owner_id, state, name, description, image, member_capacity, cost, location, tags);
       } catch(Exception e) {
@@ -285,7 +286,6 @@ public class GUI {
         System.out.println("ERROR: SQL error");
         e.printStackTrace();
       }
-
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       vars.put("events", events);
 
