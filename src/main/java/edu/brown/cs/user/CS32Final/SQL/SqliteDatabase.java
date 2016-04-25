@@ -479,7 +479,6 @@ public class SqliteDatabase {
     }
 
     public Profile findUserProfileById(int id) {
-        System.out.println(id);
         ResultSet rs = null;
         try {
             String sql = "SELECT first_name, last_name, image, date FROM user WHERE id = ?;";
@@ -529,6 +528,7 @@ public class SqliteDatabase {
     }
 
     public Event findEventById(int id) throws SQLException {
+
         ResultSet rs = null;
         try {
             String sql = "SELECT owner_id, state, name, description, image, member_capacity, cost, location FROM event WHERE id = ?;";

@@ -57,7 +57,6 @@ public class GUI {
    * Runs the spark server.
    */
   private void runSparkServer() {
-    System.out.println("spark server running");
     Spark.externalStaticFileLocation("src/main/resources/static");
     Spark.exception(Exception.class, new ExceptionPrinter());
 
@@ -201,9 +200,9 @@ public class GUI {
   private class EventCreateHandler implements Route {
     @Override
     public Object handle(final Request req, final Response res) {
-      System.out.println("creating event");
+
       QueryParamsMap qm = req.queryMap();
-      System.out.println("reached handler");
+
       int owner_id = Integer.parseInt(qm.value("owner_id"));
       String state = "OPEN";
       String name = qm.value("name");
@@ -256,7 +255,11 @@ public class GUI {
       for (Review a : reviews) {
         sum += a.getRating();
       }
-      double average = sum / reviews.size();
+
+      double average = 0;
+      if (!reviews.isEmpty()) {
+        average = sum / reviews.size();
+      }
       vars.put("rating", average);
       vars.put("reviews", reviews);
 
@@ -298,17 +301,16 @@ public class GUI {
       int id = Integer.parseInt(qm.value("id"));
       List<Event> events = null;
       try {
-      List<Integer> handled = database.findEventIdsbyOwnerId(id);
-      handled.addAll(database.findEventsByRequestedId(id));
-      handled.addAll(database.findEventsByUserId(id));
-      events = database.findNewNearbyEvents(handled);
+        List<Integer> handled = database.findEventIdsbyOwnerId(id);
+        handled.addAll(database.findEventsByRequestedId(id));
+        handled.addAll(database.findEventsByUserId(id));
+        events = database.findNewNearbyEvents(handled);
       } catch(Exception e) {
         System.out.println("ERROR: SQL error");
         e.printStackTrace();
       }
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       vars.put("events", events);
-      System.out.println(events);
 
       Map<String, Object> variables = vars.build();
       return gson.toJson(variables);
