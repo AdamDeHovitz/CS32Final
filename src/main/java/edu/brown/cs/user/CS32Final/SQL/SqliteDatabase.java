@@ -9,9 +9,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by lc50 on 4/10/16.
- */
 import edu.brown.cs.user.CS32Final.Entities.Account.Account;
 import edu.brown.cs.user.CS32Final.Entities.Account.Profile;
 import edu.brown.cs.user.CS32Final.Entities.Account.Review;
@@ -98,7 +95,7 @@ public class SqliteDatabase {
                             String image, int member_capacity, double cost, String location, String[][] tags) {
 
         try {
-            String sql = "INSERT INTO event (owner_id, state, name, description, image, member_capacity cost, location) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO event (owner_id, state, name, description, image, member_capacity, cost, location) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement prep = connection.prepareStatement(sql);
             prep.setInt(1, owner_id);
             prep.setString(2, state);
@@ -182,6 +179,21 @@ public class SqliteDatabase {
         prep.executeQuery();
 
     }
+
+    public void removeEvent(int event_id) throws SQLException {
+
+
+        String sql = "DELETE FROM user_event WHERE event_id = ?;";
+        PreparedStatement prep = connection.prepareStatement(sql);
+        prep.setInt(1, event_id);
+        prep.executeQuery();
+
+        sql = "DELETE FROM events WHERE event_id = ?;";
+        prep = connection.prepareStatement(sql);
+        prep.setInt(1, event_id);
+        prep.executeQuery();
+    }
+
 
     public void requestUserIntoEvent(int event_id, int user_id, int owner_id) throws SQLException {
         String sql = "INSERT INTO user_request VALUES (?, ?, ?)";

@@ -86,10 +86,10 @@ public class GUI {
     Spark.post("/event-owner", new EventOwnerHandler());
     Spark.post("/event-joined", new EventJoinedHandler());
     Spark.post("/event-pending", new EventPendingHandler());
-    Spark.post("/event-creating", new EventCreationHandler());
     Spark.post("/event-request", new RequestEventHandler());
     Spark.post("/event-join", new JoinEventHandler());
     Spark.post("/event-remove", new RemoveEventHandler());
+    Spark.post("/close-event", new CloseEventHandler());
   }
 
   /**
@@ -439,15 +439,22 @@ public class GUI {
     }
   }
 
-  private class EventCreationHandler implements Route {
+  private class CloseEventHandler implements Route {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
 
       int id = Integer.parseInt(qm.value("id"));
+      int eventId = Integer.parseInt(qm.value("eventId"));
 
       try {
-      List<Event> events = database.findEventsByOwnerId(id);
+        Event event = database.findEventById(eventId);
+        if (event.getHost().getId() == id) {
+          database.removeEvent(eventId);
+        }
+        else {
+          //TODO: tell them they don't have permission
+        }
       } catch(Exception e) {
         System.out.println("ERROR: SQL error");
         e.printStackTrace();
@@ -459,4 +466,5 @@ public class GUI {
       return gson.toJson(variables);
     }
   }
+
 }
