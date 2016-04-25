@@ -199,13 +199,18 @@ public class GUI {
       String[][] tags = gson.fromJson(qm.value("tags"), String[][].class);
 
       System.out.println("about to go to db methods");
+      int event_id = -1;
       try {
-      database.insertEvent(owner_id, state, name, description, image, member_capacity, cost, location, tags);
+        database.insertEvent(owner_id, state, name, description, image, member_capacity, cost, location, tags);
       } catch(Exception e) {
         System.out.println("ERROR: SQL error");
-        //handle this
+        e.printStackTrace();
       }
-      return true;
+
+      ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+      vars.put("success", true);
+      vars.put("id", event_id);
+      return vars.build();
     }
   }
 
