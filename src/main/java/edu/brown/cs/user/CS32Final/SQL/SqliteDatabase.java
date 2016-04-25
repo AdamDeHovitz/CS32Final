@@ -96,21 +96,24 @@ public class SqliteDatabase {
                             String image, int member_capacity, double cost, String location, String[][] tags)
             throws SQLException {
 
-        System.out.println("preparing to insert event");
-        String sql = "INSERT INTO event (owner_id, state, name, description, image, member_capacity, cost, location) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        PreparedStatement prep = connection.prepareStatement(sql);
-        prep.setInt(1, owner_id);
-        prep.setString(2, state);
-        prep.setString(3, name);
-        prep.setString(4, description);
-        prep.setString(5, image);
-        prep.setInt(6, member_capacity);
-        prep.setDouble(7, cost);
-        prep.setString(8, location);
-        System.out.println("Statement prepared");
-        prep.executeUpdate();
-        System.out.println("Inserted!");
+        try {
+            String sql = "INSERT INTO event (owner_id, state, name, description, image, member_capacity, cost, location) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setInt(1, owner_id);
+            prep.setString(2, state);
+            prep.setString(3, name);
+            prep.setString(4, description);
+            prep.setString(5, image);
+            prep.setInt(6, member_capacity);
+            prep.setDouble(7, cost);
+            prep.setString(8, location);
 
+            prep.executeUpdate();
+
+        } catch(Exception e){
+            System.out.println("ERROR: SQL error");
+            e.printStackTrace();
+        }
     }
 
     public void insertUser(String email, String password, String first_name,
@@ -137,7 +140,7 @@ public class SqliteDatabase {
         prep.setDouble(3, rating);
         prep.setString(4, target_id);
 
-        prep.executeQuery();
+        prep.executeUpdate();
     }
 
     public void insertMessage(int event_id, int user_id, String message) throws SQLException {
@@ -148,7 +151,7 @@ public class SqliteDatabase {
         prep.setInt(2, user_id);
         prep.setString(3, message);
 
-        prep.executeQuery();
+        prep.executeUpdate();
 
     }
 
@@ -161,7 +164,7 @@ public class SqliteDatabase {
         prep.setInt(2, user_id);
         prep.setInt(3, owner_id);
 
-        prep.executeQuery();
+        prep.executeUpdate();
 
     }
 
@@ -377,7 +380,7 @@ public class SqliteDatabase {
     }
 
 
-    public List<Event> findEventsByOwnerId(Integer userId) throws SQLException{
+    public List<Event> findEventsByOwnerId(Integer userId) throws SQLException {
         List<Event> toReturn = new ArrayList<>();
         for (Integer id : findEventIdsbyOwnerId(userId)) {
             toReturn.add(findEventById(id));
@@ -454,7 +457,7 @@ public class SqliteDatabase {
         return toReturn;
     }
 
-    public Account findUserAccountById(int id) throws SQLException{
+    public Account findUserAccountById(int id) throws SQLException {
         ResultSet rs = null;
         try {
             String sql = "SELECT email, password, requestNotif, joinedNotif FROM user WHERE id = ?;";
@@ -478,7 +481,8 @@ public class SqliteDatabase {
         return null;
     }
 
-    public Profile findUserProfileById(int id) throws SQLException{
+    public Profile findUserProfileById(int id) {
+        System.out.println(id);
         ResultSet rs = null;
         try {
             String sql = "SELECT first_name, last_name, image, date FROM user WHERE id = ?;";
@@ -487,7 +491,7 @@ public class SqliteDatabase {
 
             rs = prep.executeQuery();
 
-            while (rs.next()) {
+            if (rs.next()) {
                 String firstName = rs.getString(1);
                 String lastName = rs.getString(2);
                 String image = rs.getString(3);
@@ -496,6 +500,8 @@ public class SqliteDatabase {
 
                 return new Profile(firstName, lastName, image, date, reviews);
             }
+        } catch (SQLException e) {
+            System.out.println("error in find user profile :(");
         } finally {
             closeResultSet(rs);
         }
