@@ -85,7 +85,7 @@ public class GUI {
     Spark.post("/event-joined", new EventJoinedHandler());
     Spark.post("/event-pending", new EventPendingHandler());
     Spark.post("/event-request", new RequestEventHandler());
-    Spark.post("/event-join", new JoinEventHandler());
+    Spark.post("/event-accept", new AcceptEventHandler());
     Spark.post("/event-remove", new RemoveEventHandler());
     Spark.post("/close-event", new CloseEventHandler());
   }
@@ -213,7 +213,6 @@ public class GUI {
       String location = qm.value("location");
       String[][] tags = gson.fromJson(qm.value("tags"), String[][].class);
 
-      System.out.println("about to go to db methods");
       int event_id = -1;
       try {
         database.insertEvent(owner_id, state, name, description, image, member_capacity, cost, location, tags);
@@ -414,7 +413,7 @@ public class GUI {
     }
   }
 
-  private class JoinEventHandler implements Route {
+  private class AcceptEventHandler implements Route {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
@@ -488,5 +487,4 @@ public class GUI {
       return gson.toJson(variables);
     }
   }
-
 }

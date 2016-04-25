@@ -72,7 +72,7 @@ public class Profile {
 
   public void getProfileData(ImmutableMap.Builder<String, Object> variables) {
     variables.put("picture", getImage())
-            .put("data", getDate())
+            .put("date", getDate())
             .put("name", getName());
   }
 
