@@ -1,6 +1,12 @@
-bulkAppControllers.controller("accountCtrl", function($scope, $http, $rootScope) {
+bulkAppControllers.controller("accountCtrl", function($scope, $http, $rootScope, $state) {
 
 		console.log($rootScope.account);
+
+		$scope.logOut = function() {
+			$rootScope.account = {};
+			$rootScope.authenticated = false;
+			$state.go('login');
+		}
 		/*
 		if (!$rootScope.userId) {
 			$location.path("/");

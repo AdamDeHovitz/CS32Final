@@ -1,6 +1,6 @@
 bulkAppControllers.controller("loginCtrl", 
 	function($scope, $rootScope, $state, $rootScope, $ionicViewSwitcher, 
-		$ionicModal, $http) {
+		$ionicModal, $http, $ionicPopup) {
 
 	$scope.loginData = {};
 	$scope.registerData = {};
@@ -96,6 +96,20 @@ bulkAppControllers.controller("loginCtrl",
 		  });*/
 	};
 
+	$scope.showAlert = function() {
+	   var alertPopup = $ionicPopup.alert({
+	     title: 'Authentication Failed',
+	     template: 'Username or password is incorrect.'
+	   });
+
+	   alertPopup.then(function(res) {
+	   		$scope.loginData = {};
+		  	$scope.forms.loginForm.$setPristine();
+		  	$scope.forms.loginForm.$setUntouched();
+	     
+	   });
+	 };
+
 	$scope.doLogin = function() {
 		console.log('Doing login', $scope.loginData);
 
@@ -103,9 +117,10 @@ bulkAppControllers.controller("loginCtrl",
                 "username": $scope.loginData.email,
                 "password": $scope.loginData.password,
         }, function(responseJSON) {
+        	console.log(responseJSON);
         	responseObject = JSON.parse(responseJSON);
         	if (responseObject.hasError) {
-        		//TODO: show error
+        		$scope.showAlert();
         	} else {
 	        	$rootScope.account = {name: responseObject.name,
 	    		id: responseObject.id,
