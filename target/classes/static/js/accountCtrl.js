@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 bulkAppControllers.controller("accountCtrl", 
 	function($scope, $http, $rootScope, $state, $ionicViewSwitcher) {
 
@@ -10,11 +9,6 @@ bulkAppControllers.controller("accountCtrl",
 			$ionicViewSwitcher.nextDirection('forward');
 			$state.go('login');
 		}
-=======
-bulkAppControllers.controller("accountCtrl", function($scope, $http, $rootScope) {
-
-		console.log($rootScope.account);
->>>>>>> 58687b0c82a6c08a10ecaa94cc1fa591a3a5d9cf
 		/*
 		if (!$rootScope.userId) {
 			$location.path("/");

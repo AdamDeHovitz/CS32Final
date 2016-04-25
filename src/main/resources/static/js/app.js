@@ -135,7 +135,7 @@ bulkApp.config(function($stateProvider, $urlRouterProvider) {
             }
          })
          .state('tab.account-reviews', {
-            url: '/account-review/:userId',
+            url: '/account-reviews/:userId',
             views: {
                 'tab-account': {
                     templateUrl: 'templates/reviews.html',

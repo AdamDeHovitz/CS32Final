@@ -3,6 +3,13 @@ bulkAppControllers.controller("eventCtrl",
 
 	var eventId = $stateParams.eventId;
 	console.log(eventId);
+	console.log($state.current.name);
+	if ($state.current.name == "tab.events-event") {
+		console.log("events")
+		$scope.curProfileUrl = "events-profile";
+	} else {
+		$scope.curProfileUrl = "profile";
+	}
 	
 	 // A confirm dialog
 	 $scope.showConfirm = function(title, message, success) {
@@ -24,7 +31,13 @@ bulkAppControllers.controller("eventCtrl",
 	$scope.confirmJoin = function() {
 		console.log("joining");
 		$scope.isMember = true;
-	}
+		$scope.event.CurMemberNum = $scope.event.CurMemberNum + 1;
+		$.post("/event-join", {id: $rootScope.account.id, eventId: $scope.eventId}, 
+			function(responseJSON) {
+				responseObject = JSON.parse(responseJSON);
+				console.log(responseObject);
+		});
+	};
 
 	$scope.confirmClose = function() {
 		console.log("closing");
@@ -32,6 +45,8 @@ bulkAppControllers.controller("eventCtrl",
 
 	$scope.confirmLeave = function() {
 		console.log("leaving");
+		$scope.event.CurMemberNum = $scope.event.CurMemberNum - 1;
+
 		$scope.isMember = false;
 	}
 	 
@@ -52,7 +67,11 @@ bulkAppControllers.controller("eventCtrl",
 
 	
 	 $scope.goAuthor = function() {
-		 $state.go('tab.profile',{userId: $scope.event.authorId});
+	 	if ($state.current.name == "tab.events-event") {
+	 		$state.go('tab.events-profile',{userId: $scope.event.authorId});
+	 	} else {
+		 	$state.go('tab.profile',{userId: $scope.event.authorId});
+		}
 	 }
 
 		/*

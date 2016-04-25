@@ -1,14 +1,17 @@
 bulkAppControllers.controller("loginCtrl", 
 	function($scope, $rootScope, $state, $rootScope, $ionicViewSwitcher, 
-<<<<<<< HEAD
 		$ionicModal, $http, $ionicPopup) {
-=======
-		$ionicModal, $http) {
->>>>>>> 58687b0c82a6c08a10ecaa94cc1fa591a3a5d9cf
 
 	$scope.loginData = {};
 	$scope.registerData = {};
 	$scope.forms = {};
+	
+	$scope.$on('$ionicView.enter', function() {
+	  	$scope.forms.registerForm.$setPristine();
+	  	$scope.forms.registerForm.$setUntouched();
+	});
+
+
 
 	$ionicModal.fromTemplateUrl('register-modal.html', {
 	    scope: $scope,
@@ -100,7 +103,6 @@ bulkAppControllers.controller("loginCtrl",
 		  });*/
 	};
 
-<<<<<<< HEAD
 	$scope.showAlert = function() {
 	   var alertPopup = $ionicPopup.alert({
 	     title: 'Authentication Failed',
@@ -111,8 +113,6 @@ bulkAppControllers.controller("loginCtrl",
 	   });
 	 };
 
-=======
->>>>>>> 58687b0c82a6c08a10ecaa94cc1fa591a3a5d9cf
 	$scope.doLogin = function() {
 		console.log('Doing login', $scope.loginData);
 
@@ -120,16 +120,10 @@ bulkAppControllers.controller("loginCtrl",
                 "username": $scope.loginData.email,
                 "password": $scope.loginData.password,
         }, function(responseJSON) {
-<<<<<<< HEAD
         	console.log(responseJSON);
         	responseObject = JSON.parse(responseJSON);
         	if (responseObject.hasError) {
         		$scope.showAlert();
-=======
-        	responseObject = JSON.parse(responseJSON);
-        	if (responseObject.hasError) {
-        		//TODO: show error
->>>>>>> 58687b0c82a6c08a10ecaa94cc1fa591a3a5d9cf
         	} else {
 	        	$rootScope.account = {name: responseObject.name,
 	    		id: responseObject.id,
@@ -140,14 +134,10 @@ bulkAppControllers.controller("loginCtrl",
 	    		$rootScope.authenticated = true;
 	    		$ionicViewSwitcher.nextDirection('forward');
 	    		$state.go("tab.feed");
-<<<<<<< HEAD
 	 		};
 	 		$scope.loginData = {};
 		  	$scope.forms.loginForm.$setPristine();
 		  	$scope.forms.loginForm.$setUntouched();
-=======
-	 		}
->>>>>>> 58687b0c82a6c08a10ecaa94cc1fa591a3a5d9cf
 	 	});
   	};
 });
