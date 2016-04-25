@@ -32,11 +32,14 @@ bulkAppControllers.controller("eventCtrl",
 		console.log("joining");
 		$scope.isMember = true;
 		$scope.event.CurMemberNum = $scope.event.CurMemberNum + 1;
-		/*$.post("/event-join", {id: $rootScope.account.id, eventId: $scope.eventId}, 
-		function(responseJSON) {
-			responseObject = JSON.parse(responseJSON);
-		}*/
-	}
+		var postParams = {id: $rootScope.account.id, eventId: eventId};
+		console.log(postParams);
+		$.post("/event-join", postParams, 
+			function(responseJSON) {
+				responseObject = JSON.parse(responseJSON);
+				console.log(responseObject);
+		});
+	};
 
 	$scope.confirmClose = function() {
 		console.log("closing");
@@ -45,6 +48,12 @@ bulkAppControllers.controller("eventCtrl",
 	$scope.confirmLeave = function() {
 		console.log("leaving");
 		$scope.event.CurMemberNum = $scope.event.CurMemberNum - 1;
+		var postParams = {id: $rootScope.account.id, eventId: eventId};
+		$.post("/event-remove", postParams, 
+				function(responseJSON) {
+					responseObject = JSON.parse(responseJSON);
+					console.log(responseObject);
+		});
 
 		$scope.isMember = false;
 	}

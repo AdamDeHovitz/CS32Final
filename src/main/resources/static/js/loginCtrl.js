@@ -5,6 +5,13 @@ bulkAppControllers.controller("loginCtrl",
 	$scope.loginData = {};
 	$scope.registerData = {};
 	$scope.forms = {};
+	
+	$scope.$on('$ionicView.enter', function() {
+	  	$scope.forms.registerForm.$setPristine();
+	  	$scope.forms.registerForm.$setUntouched();
+	});
+
+
 
 	$ionicModal.fromTemplateUrl('register-modal.html', {
 	    scope: $scope,
