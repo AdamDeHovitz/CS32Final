@@ -343,6 +343,7 @@ public class GUI {
   private class EventJoinedHandler implements Route {
     @Override
     public Object handle(final Request req, final Response res) {
+      System.out.println("JOIN HANDLER");
       QueryParamsMap qm = req.queryMap();
 
       int id = Integer.parseInt(qm.value("id"));
