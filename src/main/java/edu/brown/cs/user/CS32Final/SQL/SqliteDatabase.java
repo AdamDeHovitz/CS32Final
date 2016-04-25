@@ -92,7 +92,22 @@ public class SqliteDatabase {
 
     }
 
-    public void insertEvent(int owner_id, String state, String name, String description,
+  /**
+   * Method for inserting a user, with all the following information, into the
+   * db.
+   * @param owner_id
+   * @param state
+   * @param name
+   * @param description
+   * @param image
+   * @param member_capacity
+   * @param cost
+   * @param location
+   * @param tags
+   * @throws SQLException
+   */
+    public void insertEvent(int owner_id, String state, String name,
+                            String description,
                             String image, int member_capacity, double cost, String location, String[][] tags)
             throws SQLException {
 
