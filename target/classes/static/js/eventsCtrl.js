@@ -39,6 +39,7 @@ bulkAppControllers.controller("eventsCtrl",
 		$scope.creationData["tags"] = [];
 		
 		$.post("/event-create", $scope.creationData, function(responseJSON) {
+			console.log(responseJSON);
 			responseObject = JSON.parse(responseJSON);
 			console.log(responseObject);
 		});
