@@ -92,27 +92,24 @@ public class SqliteDatabase {
     }
 
     public void insertEvent(int owner_id, String state, String name, String description,
-                            String image, int member_capacity, double cost, String location, String[][] tags) {
+                            String image, int member_capacity, double cost, String location, String[][] tags)
+            throws SQLException {
 
+        System.out.println("preparing to insert event");
+        String sql = "INSERT INTO event (owner_id, state, name, description, image, member_capacity, cost, location) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        PreparedStatement prep = connection.prepareStatement(sql);
+        prep.setInt(1, owner_id);
+        prep.setString(2, state);
+        prep.setString(3, name);
+        prep.setString(4, description);
+        prep.setString(5, image);
+        prep.setInt(6, member_capacity);
+        prep.setDouble(7, cost);
+        prep.setString(8, location);
+        System.out.println("Statement prepared");
+        prep.executeUpdate();
+        System.out.println("Inserted!");
 
-        try {
-            String sql = "INSERT INTO event (owner_id, state, name, description, image, member_capacity, cost, location) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-            PreparedStatement prep = connection.prepareStatement(sql);
-            prep.setInt(1, owner_id);
-            prep.setString(2, state);
-            prep.setString(3, name);
-            prep.setString(4, description);
-            prep.setString(5, image);
-            prep.setInt(6, member_capacity);
-            prep.setDouble(7, cost);
-            prep.setString(8, location);
-
-            prep.executeUpdate();
-
-        } catch(Exception e){
-            System.out.println("ERROR: SQL error");
-            e.printStackTrace();
-        }
     }
 
     public void insertUser(String email, String password, String first_name,
@@ -389,7 +386,7 @@ public class SqliteDatabase {
     public List<Integer> findEventsByRequestedId(Integer userId) throws SQLException {
         ResultSet rs = null;
         try {
-            String sql = "SELECT id FROM user_request WHERE owner_id = ?;";
+            String sql = "SELECT event_id FROM user_request WHERE user_id = ?;";
             PreparedStatement prep = connection.prepareStatement(sql);
             prep.setInt(1, userId);
 
