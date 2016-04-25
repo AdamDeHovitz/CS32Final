@@ -142,7 +142,7 @@ public class Event {
             .put("description", getDesc())
             .put("price", getCostPP())
             .put("members", getMembers())
-            .put("CurMemberNum", getMembers().size())
+            .put("CurMemberNum", 1 + getMembers().size())
             .put("desiredMembers", getMaxMembers())
             .put("tags", getTags());
   }

@@ -71,8 +71,8 @@ public class GUI {
     }
 
     // Setup Spark Routes
-    // Setup Spark Routes
     Spark.get("/", new FrontHandler(), freeMarker);
+    Spark.get("/home", new FrontHandler(), freeMarker);
 
     Spark.post("/register", new RegisterHandler());
     Spark.post("/login", new LoginHandler());
@@ -87,7 +87,8 @@ public class GUI {
     Spark.post("/event-request", new RequestEventHandler());
     Spark.post("/event-join", new JoinEventHandler());
     Spark.post("/event-remove", new RemoveEventHandler());
-    Spark.post("/close-event", new CloseEventHandler());
+
+    Spark.post("/delete-event", new DeleteEventHandler());
   }
 
   /**
@@ -398,7 +399,10 @@ public class GUI {
         e.printStackTrace();
       }
       if (event.getState() != EventState.OPEN) {
-        // TODO: event isn't open
+        ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+        vars.put("hasError", true);
+        vars.put("errorMsg", "Event is closed");
+        Map<String, Object> variables = vars.build();
       }
       try {
         database.requestUserIntoEvent(eventId, id, event.getHost().getId());
@@ -411,6 +415,7 @@ public class GUI {
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       //event.getEventData(vars);
       Map<String, Object> variables = vars.build();
+      vars.put("hasError", false);
       return gson.toJson(variables);
     }
   }
@@ -424,9 +429,9 @@ public class GUI {
       int eventId = Integer.parseInt(qm.value("eventId"));
 
       try {
-      Event event = database.findEventById(eventId);
-      database.insertUserIntoEvent(eventId, id, event.getHost().getId());
-      database.incrementJoinedNotif(id);
+        Event event = database.findEventById(eventId);
+        database.insertUserIntoEvent(eventId, id, event.getHost().getId());
+        database.incrementJoinedNotif(id);
       } catch(Exception e) {
         System.out.println("ERROR: SQL error");
         e.printStackTrace();
@@ -435,6 +440,7 @@ public class GUI {
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       //event.getEventData(vars);
       Map<String, Object> variables = vars.build();
+      vars.put("hasError", false);
       return gson.toJson(variables);
     }
   }
@@ -462,7 +468,7 @@ public class GUI {
     }
   }
 
-  private class CloseEventHandler implements Route {
+  private class DeleteEventHandler implements Route {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
