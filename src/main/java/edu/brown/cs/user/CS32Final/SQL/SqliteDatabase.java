@@ -109,7 +109,7 @@ public class SqliteDatabase {
             prep.setDouble(7, cost);
             prep.setString(8, location);
 
-            prep.executeQuery();
+            prep.executeUpdate();
 
         } catch(Exception e){
             System.out.println("ERROR: SQL error");
@@ -141,7 +141,7 @@ public class SqliteDatabase {
         prep.setDouble(3, rating);
         prep.setString(4, target_id);
 
-        prep.executeQuery();
+        prep.executeUpdate();
     }
 
     public void insertMessage(int event_id, int user_id, String message) throws SQLException {
@@ -152,7 +152,7 @@ public class SqliteDatabase {
         prep.setInt(2, user_id);
         prep.setString(3, message);
 
-        prep.executeQuery();
+        prep.executeUpdate();
 
     }
 
@@ -160,6 +160,20 @@ public class SqliteDatabase {
 
 
         String sql = "INSERT INTO user_event VALUES (?, ?, ?)";
+        PreparedStatement prep = connection.prepareStatement(sql);
+        prep.setInt(1, event_id);
+        prep.setInt(2, user_id);
+        prep.setInt(3, owner_id);
+
+        prep.executeUpdate();
+
+    }
+
+    public void removeUserFromEvent(int event_id, int user_id, int owner_id) throws SQLException {
+
+
+        String sql = "DELETE FROM user_event WHERE event_id = ?" +
+                "user_id = ?, owner_id = ?;";
         PreparedStatement prep = connection.prepareStatement(sql);
         prep.setInt(1, event_id);
         prep.setInt(2, user_id);

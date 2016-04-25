@@ -89,6 +89,7 @@ public class GUI {
     Spark.post("/event-creating", new EventCreationHandler());
     Spark.post("/event-request", new RequestEventHandler());
     Spark.post("/event-join", new JoinEventHandler());
+    Spark.post("/event-remove", new RemoveEventHandler());
   }
 
   /**
@@ -403,6 +404,29 @@ public class GUI {
       Event event = database.findEventById(eventId);
       database.insertUserIntoEvent(eventId, id, event.getHost().getId());
       database.incrementJoinedNotif(id);
+      } catch(Exception e) {
+        System.out.println("ERROR: SQL error");
+        e.printStackTrace();
+      }
+
+      ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+      //event.getEventData(vars);
+      Map<String, Object> variables = vars.build();
+      return gson.toJson(variables);
+    }
+  }
+
+  private class RemoveEventHandler implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+
+      int id = Integer.parseInt(qm.value("id"));
+      int eventId = Integer.parseInt(qm.value("eventId"));
+
+      try {
+        Event event = database.findEventById(eventId);
+        database.removeUserFromEvent(eventId, id, event.getHost().getId());
       } catch(Exception e) {
         System.out.println("ERROR: SQL error");
         e.printStackTrace();
