@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -115,7 +114,7 @@ public class GUI {
     @Override
     public ModelAndView handle(Request req, Response res) {
       Map<String, Object> variables =
-              ImmutableMap.of("title", "Type Away!", "content", "");
+              ImmutableMap.of("title", "Bulki", "content", "");
       return new ModelAndView(variables, "main.ftl");
     }
   }
@@ -256,7 +255,11 @@ public class GUI {
       for (Review a : reviews) {
         sum += a.getRating();
       }
-      double average = sum / reviews.size();
+
+      double average = 0;
+      if (!reviews.isEmpty()) {
+        average = sum / reviews.size();
+      }
       vars.put("rating", average);
       vars.put("reviews", reviews);
 

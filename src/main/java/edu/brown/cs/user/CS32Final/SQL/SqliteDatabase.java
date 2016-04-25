@@ -526,6 +526,7 @@ public class SqliteDatabase {
     }
 
     public Event findEventById(int id) throws SQLException {
+
         ResultSet rs = null;
         try {
             String sql = "SELECT owner_id, state, name, description, image, member_capacity, cost, location FROM event WHERE id = ?;";

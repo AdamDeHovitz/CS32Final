@@ -23,12 +23,13 @@
 
 <script id="new-event-modal.html" type="text/ng-template">
 <ion-modal-view>
-	<form name="eventCreate" ng-submit="createEvent()">
 
 	<ion-header-bar>
       <h1 class="title">Create a New Event</h1>
 	 <button class="button button-icon icon ion-ios-close-outline" ng-click="closeModal();"></button>
     </ion-header-bar>
+   	<form name="eventCreate" ng-submit="createEvent()">
+    
     <ion-content class="padding">
       <div class="list">
   		<label class="item item-input">

@@ -1,9 +1,9 @@
 bulkAppControllers.controller("eventsCtrl", 
 	function($scope, $rootScope, $http, $ionicModal, $state, $timeout) {
 	
-	$scope.newMyEvents = true;
+	$scope.newMyEvents = false;
 	$scope.newMyEventsNum = 0; 
-	$scope.newJoinedEvents = true;
+	$scope.newJoinedEvents = false;
 	$scope.newJoinedEventsNum = 0; 
 	$scope.newPendingEvents = false;
 	$scope.newPendingEventsNum = 0; 
@@ -39,10 +39,14 @@ bulkAppControllers.controller("eventsCtrl",
 		$scope.creationData["tags"] = [];
 		
 		$.post("/event-create", $scope.creationData, function(responseJSON) {
+			console.log(responseJSON);
 			responseObject = JSON.parse(responseJSON);
 			console.log(responseObject);
 		});
 		var curData = $scope.creationData;
+		$scope.closeModal();
+		$state.go('tab.my-events');
+
 		//TODO: need to reset data?
 
 	}
