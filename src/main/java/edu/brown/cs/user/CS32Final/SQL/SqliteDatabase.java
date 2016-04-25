@@ -378,7 +378,7 @@ public class SqliteDatabase {
     }
 
 
-    public List<Event> findEventsByOwnerId(Integer userId) throws SQLException{
+    public List<Event> findEventsByOwnerId(Integer userId) throws SQLException {
         List<Event> toReturn = new ArrayList<>();
         for (Integer id : findEventIdsbyOwnerId(userId)) {
             toReturn.add(findEventById(id));
@@ -455,7 +455,7 @@ public class SqliteDatabase {
         return toReturn;
     }
 
-    public Account findUserAccountById(int id) throws SQLException{
+    public Account findUserAccountById(int id) throws SQLException {
         ResultSet rs = null;
         try {
             String sql = "SELECT email, password, requestNotif, joinedNotif FROM user WHERE id = ?;";
@@ -479,7 +479,8 @@ public class SqliteDatabase {
         return null;
     }
 
-    public Profile findUserProfileById(int id) throws SQLException{
+    public Profile findUserProfileById(int id) {
+        System.out.println(id);
         ResultSet rs = null;
         try {
             String sql = "SELECT first_name, last_name, image, date FROM user WHERE id = ?;";
@@ -488,7 +489,7 @@ public class SqliteDatabase {
 
             rs = prep.executeQuery();
 
-            while (rs.next()) {
+            if (rs.next()) {
                 String firstName = rs.getString(1);
                 String lastName = rs.getString(2);
                 String image = rs.getString(3);
@@ -497,6 +498,8 @@ public class SqliteDatabase {
 
                 return new Profile(firstName, lastName, image, date, reviews);
             }
+        } catch (SQLException e) {
+            System.out.println("error in find user profile :(");
         } finally {
             closeResultSet(rs);
         }
