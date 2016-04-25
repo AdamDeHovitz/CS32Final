@@ -19,6 +19,7 @@ edu/brown/cs/user/CS32Final/GUI/GUI$EventCreateHandler.class
 edu/brown/cs/user/CS32Final/Entities/Account/Account.class
 edu/brown/cs/user/CS32Final/GUI/GUI$RegisterHandler.class
 edu/brown/cs/user/CS32Final/Entities/Event/Request.class
+edu/brown/cs/user/CS32Final/GUI/GUI$RemoveEventHandler.class
 edu/brown/cs/user/CS32Final/Entities/Account/Review.class
 edu/brown/cs/user/CS32Final/GUI/GUI$EventJoinedHandler.class
 edu/brown/cs/user/CS32Final/GUI/GUI$JoinEventHandler.class

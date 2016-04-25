@@ -58,8 +58,7 @@ public class SqliteDatabase {
                 "image TEXT, " +
                 "member_capacity INT, " +
                 "cost REAL, " +
-                "location TEXT, " +
-                "tags TEXT)";
+                "location TEXT)";
 
         String eventTags = "CREATE TABLE IF NOT EXISTS event_tags(" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -95,6 +94,29 @@ public class SqliteDatabase {
 
     }
 
+    public void insertEvent(int owner_id, String state, String name, String description,
+                            String image, int member_capacity, double cost, String location, String[][] tags) {
+
+        try {
+            String sql = "INSERT INTO event (owner_id, state, name, description, image, member_capacity cost, location) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setInt(1, owner_id);
+            prep.setString(2, state);
+            prep.setString(3, name);
+            prep.setString(4, description);
+            prep.setString(5, image);
+            prep.setInt(6, member_capacity);
+            prep.setDouble(7, cost);
+            prep.setString(8, location);
+
+            prep.executeQuery();
+
+        } catch(Exception e){
+            System.out.println("ERROR: SQL error");
+            e.printStackTrace();
+        }
+    }
+
     public void insertUser(String email, String password, String first_name,
                            String last_name, String image, String date) throws SQLException {
         String sql = "INSERT INTO user (email, password, first_name," +
@@ -109,25 +131,6 @@ public class SqliteDatabase {
 
         prep.executeUpdate();
 
-
-    }
-
-    public void insertEvent(int owner_id, String state, String name, String description,
-                            String image, int member_capacity, double cost, String location, String tags) throws SQLException {
-
-        String sql = "INSERT INTO event VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        PreparedStatement prep = connection.prepareStatement(sql);
-        prep.setInt(1, owner_id);
-        prep.setString(2, state);
-        prep.setString(3, name);
-        prep.setString(4, description);
-        prep.setString(5, image);
-        prep.setInt(6, member_capacity);
-        prep.setDouble(7, cost);
-        prep.setString(8, location);
-        prep.setString(9, tags);
-
-        prep.executeQuery();
     }
 
     public void insertReview(int user_id, String message, double rating, String target_id) throws SQLException {
@@ -157,6 +160,20 @@ public class SqliteDatabase {
 
 
         String sql = "INSERT INTO user_event VALUES (?, ?, ?)";
+        PreparedStatement prep = connection.prepareStatement(sql);
+        prep.setInt(1, event_id);
+        prep.setInt(2, user_id);
+        prep.setInt(3, owner_id);
+
+        prep.executeQuery();
+
+    }
+
+    public void removeUserFromEvent(int event_id, int user_id, int owner_id) throws SQLException {
+
+
+        String sql = "DELETE FROM user_event WHERE event_id = ?" +
+                "user_id = ?, owner_id = ?;";
         PreparedStatement prep = connection.prepareStatement(sql);
         prep.setInt(1, event_id);
         prep.setInt(2, user_id);
