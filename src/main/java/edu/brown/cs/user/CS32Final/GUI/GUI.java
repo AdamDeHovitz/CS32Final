@@ -186,6 +186,7 @@ public class GUI {
   private class EventCreateHandler implements Route {
     @Override
     public Object handle(final Request req, final Response res) {
+      System.out.println("creating event");
       QueryParamsMap qm = req.queryMap();
 
       int owner_id = Integer.parseInt(qm.value("owner_id"));
@@ -199,7 +200,7 @@ public class GUI {
       String[][] tags = gson.fromJson(qm.value("tags"), String[][].class);
 
       try {
-      database.insertEvent(owner_id, state, name, description, image, member_capacity, cost, location, tags);
+        database.insertEvent(owner_id, state, name, description, image, member_capacity, cost, location, tags);
       } catch(Exception e) {
         System.out.println("ERROR: SQL error");
         //handle this
