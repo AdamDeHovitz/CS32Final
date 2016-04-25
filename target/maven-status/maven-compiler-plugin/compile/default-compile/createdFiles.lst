@@ -1,7 +1,10 @@
 edu/brown/cs/user/CS32Final/GUI/GUI$ProfileHandler.class
 edu/brown/cs/user/CS32Final/GUI/GUI$EventCreationHandler.class
 edu/brown/cs/user/CS32Final/Entities/Event/EventState.class
+<<<<<<< HEAD
+=======
 edu/brown/cs/user/CS32Final/Entities/Account/Profile.class
+>>>>>>> f8537eba77bc2ca000e3c4d0fb4edc9e2d286159
 edu/brown/cs/user/CS32Final/Main$ExceptionPrinter.class
 edu/brown/cs/user/CS32Final/SQL/SqliteDatabase.class
 edu/brown/cs/user/CS32Final/Entities/Event/Event.class

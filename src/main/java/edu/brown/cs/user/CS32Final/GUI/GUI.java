@@ -189,14 +189,14 @@ public class GUI {
       QueryParamsMap qm = req.queryMap();
 
       int owner_id = Integer.parseInt(qm.value("owner_id"));
-      String state = qm.value("state");
+      String state = "open";
       String name = qm.value("name");
-      String description = qm.value("image");
+      String description = qm.value("description");
       String image = qm.value("image");
-      int member_capacity = Integer.parseInt(qm.value("image"));
+      int member_capacity = Integer.parseInt(qm.value("members"));
       double cost = Double.parseDouble(qm.value("cost"));
       String location = qm.value("location");
-      String tags = qm.value("tags");
+      String[][] tags = gson.fromJson(qm.value("tags"), String[][].class);
 
       try {
       database.insertEvent(owner_id, state, name, description, image, member_capacity, cost, location, tags);
