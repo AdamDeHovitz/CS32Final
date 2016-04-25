@@ -59,8 +59,7 @@ public class SqliteDatabase {
                 "image TEXT, " +
                 "member_capacity INT, " +
                 "cost REAL, " +
-                "location TEXT, " +
-                "tags TEXT)";
+                "location TEXT)";
 
         String eventTags = "CREATE TABLE IF NOT EXISTS event_tags(" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -121,10 +120,10 @@ public class SqliteDatabase {
     }
 
     public void insertEvent(int owner_id, String state, String name, String description,
-                            String image, int member_capacity, double cost, String location, String tags) {
+                            String image, int member_capacity, double cost, String location, String[][] tags) {
 
         try {
-            String sql = "INSERT INTO event VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO event VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement prep = connection.prepareStatement(sql);
             prep.setInt(1, owner_id);
             prep.setString(2, state);
@@ -134,7 +133,6 @@ public class SqliteDatabase {
             prep.setInt(6, member_capacity);
             prep.setDouble(7, cost);
             prep.setString(8, location);
-            prep.setString(9, tags);
 
             prep.executeQuery();
 
@@ -378,7 +376,7 @@ public class SqliteDatabase {
     public List<Review> findReviewsByUserId(Integer userId) {
         ResultSet rs = null;
         try {
-            String sql = "SELECT user_id, rating, message FROM review FROM review WHERE target_id = ?;";
+            String sql = "SELECT user_id, rating, message FROM review WHERE target_id = ?;";
             PreparedStatement prep = connection.prepareStatement(sql);
             prep.setInt(1, userId);
 
