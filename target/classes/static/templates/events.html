@@ -36,19 +36,23 @@
   			</label>
   		<label class="item item-input">
     		<span class="input-label">Location</span>
-   		 <input type="text">
+   		 <input type="text" ng-model="creationData.location">
   			</label>
+       <label class="item item-input">
+        <span class="input-label">Image</span>
+       <input type="text" ng-model="creationData.image">
+        </label>
   		<label class="item item-input">
     		<span class="input-label">Total Price</span>
-   			<input type="number">
+   			<input type="number" ng-model="creationData.cost">
   		</label>
 		<label class="item item-input">
     		<span class="input-label">Member Number</span>
-   			<input type="number">
+   			<input type="number" ng-model="creationData.members">
   		</label>
 		<label class="item item-input item-stacked-label">
 		<span class="input-label">Description</span>
-		<textarea></textarea>
+		<textarea ng-model="creationData.description"></textarea>
   		</label>
 
 	</div>

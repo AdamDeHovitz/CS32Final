@@ -126,7 +126,6 @@ public class GUI {
       String image = qm.value("image");
       String date = "19 May, 2016";
 
-      System.out.println(email);
       database.insertUser(email, password, first_name, last_name, image, date);
 
       return true;
@@ -146,8 +145,10 @@ public class GUI {
       Map<String, Object> variables = null;
 
       Account user = database.findUserByUsername(username);
+
       if (user.authenticate(password)) {
         ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+
         user.getLoginData(vars);
         // TODO: account for sql error
         vars.put("reviews", database.findReviewsByUserId(user.getId()));

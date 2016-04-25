@@ -92,7 +92,7 @@ public class Account {
   public void getLoginData(ImmutableMap.Builder<String, Object> variables) {
     variables.put("id", id)
             .put("picture", prof.getImage())
-            .put("data", prof.getDate())
+            .put("date", prof.getDate())
             .put("name", prof.getName());
   }
 }
