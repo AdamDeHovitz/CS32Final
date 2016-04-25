@@ -10,33 +10,35 @@ import java.util.List;
  */
 public class Profile {
 
-  private String name;
+  private String firstName;
+  private String lastName;
   private String image; //maybe an image class?
   private String date;
   private List<Integer> reviews;
 
-  public Profile(String name, String image, String date) {
-    this.name = name;
+  public Profile(String firstName, String lastName, String image, String date) {
+    this.firstName = firstName;
+    this.lastName = lastName;
     if (image == null) {
       this.image = "http://41.media.tumblr.com/5e24cd5a9db4856a7fc5" +
               "6a76efa2c9c2/tumblr_ndgox2cITl1r2wp90o1_1280.jpg";
-    }
-    else {
+    } else {
       this.image = image;
     }
+
     this.date = date;
 
   }
 
-  public Profile(String name, String image, String date,
+  public Profile(String firstName, String lastName, String image, String date,
                  List<Integer> reviews) {
-    this(name, image, date);
+    this(firstName, lastName, image, date);
 
     reviews = new ArrayList(reviews);
   }
 
   public String getName() {
-    return name;
+    return firstName + " " + lastName;
   }
 
   public String getImage() {
@@ -55,9 +57,6 @@ public class Profile {
     return reviews;
   }
 
-  public void setName(String name) {
-    this.name = name;
-  }
 
   public void setImage(String image) {
     this.image = image;
