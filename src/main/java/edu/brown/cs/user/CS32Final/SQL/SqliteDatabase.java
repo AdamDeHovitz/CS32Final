@@ -482,7 +482,6 @@ public class SqliteDatabase {
     }
 
     public Profile findUserProfileById(int id) {
-        System.out.println(id);
         ResultSet rs = null;
         try {
             String sql = "SELECT first_name, last_name, image, date FROM user WHERE id = ?;";
