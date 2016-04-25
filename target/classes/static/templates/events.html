@@ -1,0 +1,66 @@
+<ion-view view-title="Events">
+  <ion-content class="padding">
+  	<button class="button button-block button-positive" ng-click="openModal();">Create Event</button>
+	<div class="list">
+	<a class="item item-icon-right" href="" ng-click="goMyEvents();">
+		My Events
+	<span class="badge badge-positive" ng-show="newMyEvents">{{newMyEventsNum}}</span>
+	<i class="icon ion-ios-arrow-right" ng-hide="newMyEvents"></i>
+	</a>
+	<a class="item item-icon-right" href="" ng-click="goJoined();">
+		Joined Events
+	<span class="badge badge-positive" ng-show="newJoinedEvents">{{newJoinedEventsNum}}</span>
+	<i class="icon ion-ios-arrow-right" ng-hide="newJoinedEvents"></i>
+	</a>
+	<a class="item item-icon-right" href="" ng-click="goPending();">
+		Pending Events
+	<span class="badge badge-positive" ng-show="newPendingEvents">{{newPendingEventsNum}}</span>
+	<i class="icon ion-ios-arrow-right" ng-hide="newPendingEvents"></i>
+	</a>
+	</div>
+  </ion-content>
+</ion-view>
+
+<script id="new-event-modal.html" type="text/ng-template">
+<ion-modal-view>
+	<form name="eventCreate" ng-submit="createEvent()">
+
+	<ion-header-bar>
+      <h1 class="title">Create a New Event</h1>
+	 <button class="button button-icon icon ion-ios-close-outline" ng-click="closeModal();"></button>
+    </ion-header-bar>
+    <ion-content class="padding">
+      <div class="list">
+  		<label class="item item-input">
+    		<span class="input-label">Title</span>
+   		 <input type="text" ng-model="creationData.name">
+  			</label>
+  		<label class="item item-input">
+    		<span class="input-label">Location</span>
+   		 <input type="text" ng-model="creationData.location">
+  			</label>
+       <label class="item item-input">
+        <span class="input-label">Image</span>
+       <input type="text" ng-model="creationData.image">
+        </label>
+  		<label class="item item-input">
+    		<span class="input-label">Total Price</span>
+   			<input type="number" ng-model="creationData.cost">
+  		</label>
+		<label class="item item-input">
+    		<span class="input-label">Member Number</span>
+   			<input type="number" ng-model="creationData.members">
+  		</label>
+		<label class="item item-input item-stacked-label">
+		<span class="input-label">Description</span>
+		<textarea ng-model="creationData.description"></textarea>
+  		</label>
+	   </div>
+    </ion-content>
+	<ion-footer-bar> 
+ <button class="button button-block button-positive">Create</button>
+	</ion-footer-bar>
+	</form>
+
+</ion-modal-view>
+</script>
