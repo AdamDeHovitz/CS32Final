@@ -136,7 +136,7 @@ public class GUI {
       database.insertUser(email, password, first_name, last_name, image, date);
       } catch(Exception e) {
         System.out.println("ERROR: SQL error");
-        //TODO: handle this
+        e.printStackTrace();
       }
 
       return true;
@@ -154,15 +154,36 @@ public class GUI {
       String password = qm.value("password");
 
       Map<String, Object> variables = null;
+      Account user;
       try {
-        Account user = database.findUserByUsername(username);
-
+        user = database.findUserByUsername(username);
+      } catch (Exception e) {
+        System.out.println("ERROR: SQL error in find username");
+        e.printStackTrace();
+        ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+        vars.put("hasError", true);
+        vars.put("errorMsg", "Username is incorrect.");
+        variables = vars.build();
+        return gson.toJson(variables);
+      }
+      if (user == null) {
+        ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+        vars.put("hasError", true);
+        vars.put("errorMsg", "Username is incorrect.");
+        variables = vars.build();
+        return gson.toJson(variables);
+      }
+      
         if (user.authenticate(password)) {
           ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
 
           user.getLoginData(vars);
           // TODO: account for sql error
-          vars.put("reviews", database.findReviewsByUserId(user.getId()));
+          try {
+            vars.put("reviews", database.findReviewsByUserId(user.getId()));
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
           vars.put("hasError", false);
           variables = vars.build();
           return gson.toJson(variables);
@@ -173,11 +194,6 @@ public class GUI {
           variables = vars.build();
           return gson.toJson(variables);
         }
-      } catch (Exception e) {
-        System.out.println("ERROR: SQL error in find username");
-        //TODO: handle it
-        return null;
-      }
 
     }
   }
