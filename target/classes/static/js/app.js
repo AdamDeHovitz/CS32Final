@@ -80,6 +80,15 @@ bulkApp.config(function($stateProvider, $urlRouterProvider) {
     			}
     		}
  		 })
+        .state('tab.events-event', {
+            url: '/events-event/:eventId',
+            views: {
+                'tab-events': {
+                    templateUrl: 'templates/event.html',
+                    controller: 'eventCtrl'
+                }
+            }
+         })
  		 .state('tab.profile', {
  		 	url: '/profile/:userId',
     		views: {
