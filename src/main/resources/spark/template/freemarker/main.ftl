@@ -30,6 +30,7 @@
 	 <script src="js/joinedEventsCtrl.js"></script>
 	 <script src="js/eventCtrl.js"></script>
 	 <script src="js/profileCtrl.js"></script>
+	 <script src="js/reviewsCtrl.js"></script>
      <script src="js/main.js"></script>
   </body>
   <!-- See http://html5boilerplate.com/ for a good place to start

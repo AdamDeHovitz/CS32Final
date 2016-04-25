@@ -98,6 +98,15 @@ bulkApp.config(function($stateProvider, $urlRouterProvider) {
     			},
     		}
  		 })
+        .state('tab.events-profile', {
+            url: '/events-profile/:userId',
+            views: {
+                'tab-events': {
+                    templateUrl: 'templates/profile.html',
+                    controller: 'profileCtrl'
+                },
+            }
+         })
  		 .state('tab.account-profile', {
  		 	url: '/account-profile/:userId',
     		views: {
@@ -106,7 +115,34 @@ bulkApp.config(function($stateProvider, $urlRouterProvider) {
     				controller: 'profileCtrl'
     			},
     		}
- 		 });
+ 		 })
+        .state('tab.reviews', {
+            url: '/reviews/:userId',
+            views: {
+                'tab-feed': {
+                    templateUrl: 'templates/reviews.html',
+                    controller: 'reviewsCtrl'
+                },
+            }
+         })
+        .state('tab.events-reviews', {
+            url: '/events-reviews/:userId',
+            views: {
+                'tab-events': {
+                    templateUrl: 'templates/reviews.html',
+                    controller: 'reviewsCtrl'
+                },
+            }
+         })
+         .state('tab.account-reviews', {
+            url: '/account-review/:userId',
+            views: {
+                'tab-account': {
+                    templateUrl: 'templates/reviews.html',
+                    controller: 'reviewsCtrl'
+                },
+            }
+         });
 
 
 	$urlRouterProvider.otherwise('/');
