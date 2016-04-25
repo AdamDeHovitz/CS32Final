@@ -17,8 +17,15 @@ public class Profile {
 
   public Profile(String name, String image, String date) {
     this.name = name;
-    this.image = image;
+    if (image == null) {
+      this.image = "http://41.media.tumblr.com/5e24cd5a9db4856a7fc5" +
+              "6a76efa2c9c2/tumblr_ndgox2cITl1r2wp90o1_1280.jpg";
+    }
+    else {
+      this.image = image;
+    }
     this.date = date;
+
   }
 
   public Profile(String name, String image, String date,
