@@ -92,7 +92,22 @@ public class SqliteDatabase {
 
     }
 
-    public void insertEvent(int owner_id, String state, String name, String description,
+  /**
+   * Method for inserting a user, with all the following information, into the
+   * db.
+   * @param owner_id
+   * @param state
+   * @param name
+   * @param description
+   * @param image
+   * @param member_capacity
+   * @param cost
+   * @param location
+   * @param tags
+   * @throws SQLException
+   */
+    public void insertEvent(int owner_id, String state, String name,
+                            String description,
                             String image, int member_capacity, double cost, String location, String[][] tags)
             throws SQLException {
 
@@ -128,7 +143,7 @@ public class SqliteDatabase {
     }
 
     public void insertReview(int user_id, String message, double rating, String target_id) throws SQLException {
-        String sql = "INSERT INTO review VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO review (user_id, message, rating, target_id) VALUES (?, ?, ?, ?)";
         PreparedStatement prep = connection.prepareStatement(sql);
         prep.setInt(1, user_id);
         prep.setString(2, message);
@@ -140,7 +155,7 @@ public class SqliteDatabase {
 
     public void insertMessage(int event_id, int user_id, String message) throws SQLException {
 
-        String sql = "INSERT INTO message VALUES (?, ?, ?)";
+        String sql = "INSERT INTO message (event_id, user_id, message) VALUES (?, ?, ?)";
         PreparedStatement prep = connection.prepareStatement(sql);
         prep.setInt(1, event_id);
         prep.setInt(2, user_id);
@@ -153,7 +168,7 @@ public class SqliteDatabase {
     public void insertUserIntoEvent(int event_id, int user_id, int owner_id) throws SQLException {
 
 
-        String sql = "INSERT INTO user_event VALUES (?, ?, ?)";
+        String sql = "INSERT INTO user_event (event_id, user_id, owner_id) VALUES (?, ?, ?)";
         PreparedStatement prep = connection.prepareStatement(sql);
         prep.setInt(1, event_id);
         prep.setInt(2, user_id);
@@ -164,8 +179,6 @@ public class SqliteDatabase {
     }
 
     public void removeUserFromEvent(int event_id, int user_id, int owner_id) throws SQLException {
-
-
         String sql = "DELETE FROM user_event WHERE event_id = ?" +
                 "user_id = ?, owner_id = ?;";
         PreparedStatement prep = connection.prepareStatement(sql);
@@ -177,9 +190,16 @@ public class SqliteDatabase {
 
     }
 
+    public void setEventState(int event_id, String state) throws SQLException {
+
+        String sql = "UPDATE events SET status = ? WHERE id = ?;";
+        PreparedStatement prep = connection.prepareStatement(sql);
+        prep.setString(1, state);
+        prep.setInt(2, event_id);
+        prep.executeQuery();
+    }
+
     public void removeEvent(int event_id) throws SQLException {
-
-
         String sql = "DELETE FROM user_event WHERE event_id = ?;";
         PreparedStatement prep = connection.prepareStatement(sql);
         prep.setInt(1, event_id);
@@ -584,7 +604,7 @@ public class SqliteDatabase {
     public List<Event> findJoinedEventsByUserId(int userId) throws SQLException {
         ResultSet rs = null;
         try {
-            String sql = "SELECT event_id FROM event_user WHERE user_id = ?;";
+            String sql = "SELECT event_id FROM user_event WHERE user_id = ?;";
             PreparedStatement prep = connection.prepareStatement(sql);
             prep.setInt(1, userId);
 

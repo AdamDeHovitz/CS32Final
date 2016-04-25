@@ -48,6 +48,7 @@ bulkAppControllers.controller("eventCtrl",
 	$scope.confirmLeave = function() {
 		console.log("leaving");
 		$scope.event.CurMemberNum = $scope.event.CurMemberNum - 1;
+		var postParams = {id: $rootScope.account.id, eventId: eventId};
 		$.post("/event-remove", postParams, 
 				function(responseJSON) {
 					responseObject = JSON.parse(responseJSON);
