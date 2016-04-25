@@ -7,7 +7,7 @@
     <img src="{{event.authorImg}}" ng-click="goAuthor();">
     <h2><b>{{event.title}}</b></h2>
     
-    by <a class="stressed" href="#/tab/profile/{{event.authorId}}">{{event.author}}</a>
+    by <a class="stressed" href="#/tab/{{curProfileUrl}}/{{event.authorId}}">{{event.author}}</a>
 
   </div>
   
@@ -16,7 +16,7 @@
   </div>
   <div class="item item-divider">
   Location: {{event.location}} <br>
-    <b>${{event.price}}</b>/person
+    <b>${{(event.price / event.desiredMembers)}}</b>/person
   </div>
   <div class="item item-body" style="text-align:center;">
     <p>

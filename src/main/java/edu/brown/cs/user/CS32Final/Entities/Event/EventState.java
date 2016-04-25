@@ -7,5 +7,6 @@ package edu.brown.cs.user.CS32Final.Entities.Event;
 public enum EventState {
     OPEN,
     CLOSED,
+    STARTED,
     DONE
 }
