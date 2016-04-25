@@ -9,9 +9,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by lc50 on 4/10/16.
- */
 import edu.brown.cs.user.CS32Final.Entities.Account.Account;
 import edu.brown.cs.user.CS32Final.Entities.Account.Profile;
 import edu.brown.cs.user.CS32Final.Entities.Account.Review;
