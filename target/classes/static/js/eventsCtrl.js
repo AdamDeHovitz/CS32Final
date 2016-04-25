@@ -6,6 +6,7 @@ bulkAppControllers.controller("eventsCtrl", function($scope, $http, $ionicModal,
 	$scope.newJoinedEventsNum = 0; 
 	$scope.newPendingEvents = false;
 	$scope.newPendingEventsNum = 0; 
+	$scope.creationData = {};
 	
 	$scope.goPending = function() {
 		$timeout(function(){
@@ -31,6 +32,15 @@ bulkAppControllers.controller("eventsCtrl", function($scope, $http, $ionicModal,
 		}, 1000);
 		$state.go('tab.joined-events');
 	};
+
+	$scope.createEvent = function() {
+		$post("/event-create", $scope.creationData, function(responseJSON) {
+			responseObject = JSON.parse(responseJSON);
+			console.log(responseObject);
+		});
+		var curData = $scope.creationData;
+
+	}
 	
 	$ionicModal.fromTemplateUrl('new-event-modal.html', {
 	    scope: $scope,
