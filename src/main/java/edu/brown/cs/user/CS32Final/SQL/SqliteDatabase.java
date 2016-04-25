@@ -180,6 +180,21 @@ public class SqliteDatabase {
 
     }
 
+    public void removeEvent(int event_id) throws SQLException {
+
+
+        String sql = "DELETE FROM user_event WHERE event_id = ?;";
+        PreparedStatement prep = connection.prepareStatement(sql);
+        prep.setInt(1, event_id);
+        prep.executeQuery();
+
+        sql = "DELETE FROM events WHERE event_id = ?;";
+        prep = connection.prepareStatement(sql);
+        prep.setInt(1, event_id);
+        prep.executeQuery();
+    }
+
+
     public void requestUserIntoEvent(int event_id, int user_id, int owner_id) throws SQLException {
         String sql = "INSERT INTO user_request VALUES (?, ?, ?)";
         PreparedStatement prep = connection.prepareStatement(sql);
