@@ -175,7 +175,7 @@ public class GUI {
           return gson.toJson(variables);
         }
       } catch (Exception e) {
-        System.out.println("ERROR: SQL error");
+        System.out.println("ERROR: SQL error in find username");
         //TODO: handle it
         return null;
       }
@@ -186,6 +186,7 @@ public class GUI {
   private class EventCreateHandler implements Route {
     @Override
     public Object handle(final Request req, final Response res) {
+      System.out.println("creating event");
       QueryParamsMap qm = req.queryMap();
       System.out.println("reached handler");
       int owner_id = Integer.parseInt(qm.value("owner_id"));
@@ -222,12 +223,9 @@ public class GUI {
 
       int id = Integer.parseInt(qm.value("id"));
       Profile user = null;
-      try {
-        user = database.findUserProfileById(id);
-      } catch(Exception e) {
-        System.out.println("ERROR: SQL error");
-        e.printStackTrace();
-      }
+
+      user = database.findUserProfileById(id);
+
 
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       user.getProfileData(vars);
@@ -235,9 +233,10 @@ public class GUI {
       try {
         reviews = database.findReviewsByUserId(id);
       } catch(Exception e) {
-        System.out.println("ERROR: SQL error");
+        System.out.println("ERROR: SQL error in find reviews");
         e.printStackTrace();
       }
+
       double sum = 0;
       for (Review a : reviews) {
         sum += a.getRating();
