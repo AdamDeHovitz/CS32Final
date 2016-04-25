@@ -164,8 +164,6 @@ public class SqliteDatabase {
     }
 
     public void removeUserFromEvent(int event_id, int user_id, int owner_id) throws SQLException {
-
-
         String sql = "DELETE FROM user_event WHERE event_id = ?" +
                 "user_id = ?, owner_id = ?;";
         PreparedStatement prep = connection.prepareStatement(sql);
@@ -177,9 +175,16 @@ public class SqliteDatabase {
 
     }
 
+    public void setEventState(int event_id, String state) throws SQLException {
+
+        String sql = "UPDATE events SET status = ? WHERE id = ?;";
+        PreparedStatement prep = connection.prepareStatement(sql);
+        prep.setString(1, state);
+        prep.setInt(2, event_id);
+        prep.executeQuery();
+    }
+
     public void removeEvent(int event_id) throws SQLException {
-
-
         String sql = "DELETE FROM user_event WHERE event_id = ?;";
         PreparedStatement prep = connection.prepareStatement(sql);
         prep.setInt(1, event_id);
