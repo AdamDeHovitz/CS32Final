@@ -1,5 +1,4 @@
 edu/brown/cs/user/CS32Final/GUI/GUI$ProfileHandler.class
-edu/brown/cs/user/CS32Final/GUI/GUI$EventCreationHandler.class
 edu/brown/cs/user/CS32Final/Entities/Event/EventState.class
 edu/brown/cs/user/CS32Final/Entities/Account/Profile.class
 edu/brown/cs/user/CS32Final/Main$ExceptionPrinter.class
@@ -23,6 +22,7 @@ edu/brown/cs/user/CS32Final/GUI/GUI$RemoveEventHandler.class
 edu/brown/cs/user/CS32Final/Entities/Account/Review.class
 edu/brown/cs/user/CS32Final/GUI/GUI$EventJoinedHandler.class
 edu/brown/cs/user/CS32Final/GUI/GUI$JoinEventHandler.class
+edu/brown/cs/user/CS32Final/GUI/GUI$CloseEventHandler.class
 edu/brown/cs/user/CS32Final/Main.class
 edu/brown/cs/user/CS32Final/GUI/GUI$FrontHandler.class
 edu/brown/cs/user/CS32Final/GUI/GUI$ExceptionPrinter.class
