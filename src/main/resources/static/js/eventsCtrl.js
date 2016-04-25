@@ -1,9 +1,9 @@
 bulkAppControllers.controller("eventsCtrl", 
 	function($scope, $rootScope, $http, $ionicModal, $state, $timeout) {
 	
-	$scope.newMyEvents = true;
+	$scope.newMyEvents = false;
 	$scope.newMyEventsNum = 0; 
-	$scope.newJoinedEvents = true;
+	$scope.newJoinedEvents = false;
 	$scope.newJoinedEventsNum = 0; 
 	$scope.newPendingEvents = false;
 	$scope.newPendingEventsNum = 0; 

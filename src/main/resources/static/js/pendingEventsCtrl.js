@@ -1,4 +1,4 @@
-bulkAppControllers.controller("pendingEventsCtrl", function($scope, $http) {
+bulkAppControllers.controller("pendingEventsCtrl", function($scope, $rootScope, $http) {
 	$scope.curTitle = "Pending Events";
 	$scope.curEvents = [];
 

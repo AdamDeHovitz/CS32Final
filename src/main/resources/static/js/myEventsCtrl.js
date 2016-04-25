@@ -1,4 +1,4 @@
-bulkAppControllers.controller("myEventsCtrl", function($scope, $http) {
+bulkAppControllers.controller("myEventsCtrl", function($scope, $rootScope, $http) {
 	$scope.curTitle = "My Events";
 	$scope.curEvents = [];
 

@@ -1,4 +1,4 @@
-bulkAppControllers.controller("joinedEventsCtrl", function($scope, $http) {
+bulkAppControllers.controller("joinedEventsCtrl", function($scope, $rootScope, $http) {
 	$scope.curTitle = "Joined Events";
 	$scope.curEvents = [];
 
