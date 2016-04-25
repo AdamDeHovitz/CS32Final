@@ -5,20 +5,42 @@ bulkAppControllers.controller("eventCtrl",
 	console.log(eventId);
 	
 	 // A confirm dialog
-	 $scope.showConfirm = function() {
+	 $scope.showConfirm = function(title, message, success) {
 	   var confirmPopup = $ionicPopup.confirm({
-	     title: 'Confirm Join',
-	     template: 'Are you sure you want to join this event?'
+	     title: title,
+	     template: message
 	   });
 
 	   confirmPopup.then(function(res) {
 	     if(res) {
-	       console.log('You are sure');
-	     } else {
+		 	success();
+		 } else {
 	       console.log('You are not sure');
 	     }
 	   });
 	 };
+
+
+	$scope.confirmJoin = function() {
+		console.log("joining");
+		$scope.isMember = true;
+		$scope.event.CurMemberNum = $scope.event.CurMemberNum + 1;
+		/*$.post("/event-join", {id: $rootScope.account.id, eventId: $scope.eventId}, 
+		function(responseJSON) {
+			responseObject = JSON.parse(responseJSON);
+		}*/
+	}
+
+	$scope.confirmClose = function() {
+		console.log("closing");
+	}
+
+	$scope.confirmLeave = function() {
+		console.log("leaving");
+		$scope.event.CurMemberNum = $scope.event.CurMemberNum - 1;
+
+		$scope.isMember = false;
+	}
 	 
 	$.post("/event-view", {id: eventId}, function(responseJSON) {
 			responseObject = JSON.parse(responseJSON);

@@ -172,7 +172,7 @@ public class GUI {
         variables = vars.build();
         return gson.toJson(variables);
       }
-      
+
         if (user.authenticate(password)) {
           ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
 
