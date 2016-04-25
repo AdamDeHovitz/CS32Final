@@ -1,10 +1,12 @@
-bulkAppControllers.controller("accountCtrl", function($scope, $http, $rootScope, $state) {
+bulkAppControllers.controller("accountCtrl", 
+	function($scope, $http, $rootScope, $state, $ionicViewSwitcher) {
 
 		console.log($rootScope.account);
 
 		$scope.logOut = function() {
 			$rootScope.account = {};
 			$rootScope.authenticated = false;
+			$ionicViewSwitcher.nextDirection('forward');
 			$state.go('login');
 		}
 		/*

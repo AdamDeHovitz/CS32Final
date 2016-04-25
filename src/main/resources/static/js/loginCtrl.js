@@ -103,10 +103,6 @@ bulkAppControllers.controller("loginCtrl",
 	   });
 
 	   alertPopup.then(function(res) {
-	   		$scope.loginData = {};
-		  	$scope.forms.loginForm.$setPristine();
-		  	$scope.forms.loginForm.$setUntouched();
-	     
 	   });
 	 };
 
@@ -131,7 +127,10 @@ bulkAppControllers.controller("loginCtrl",
 	    		$rootScope.authenticated = true;
 	    		$ionicViewSwitcher.nextDirection('forward');
 	    		$state.go("tab.feed");
-	 		}
+	 		};
+	 		$scope.loginData = {};
+		  	$scope.forms.loginForm.$setPristine();
+		  	$scope.forms.loginForm.$setUntouched();
 	 	});
   	};
 });
