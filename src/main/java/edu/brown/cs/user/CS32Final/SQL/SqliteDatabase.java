@@ -251,18 +251,18 @@ public class SqliteDatabase {
 
     }
 
-    public List<String> findUsersByEventId(Integer eventId) throws SQLException {
+    public List<Integer> findUsersByEventId(Integer eventId) throws SQLException {
         ResultSet rs = null;
         try {
             String sql = "SELECT user_id FROM user_event WHERE event_id = ?;";
             PreparedStatement prep = connection.prepareStatement(sql);
             prep.setInt(1, eventId);
 
-            List<String> toReturn = new ArrayList<>();
+            List<Integer> toReturn = new ArrayList<>();
             rs = prep.executeQuery();
 
             while (rs.next()) {
-                String id = rs.getString(1);
+                int id = rs.getInt(1);
                 toReturn.add(id);
             }
             return toReturn;
@@ -434,6 +434,7 @@ public class SqliteDatabase {
                 Integer eventId = rs.getInt(1);
                 if (! taken.contains(eventId)) {
                     int owner_id = rs.getInt(2);
+                    Account host = findUserAccountById(owner_id);
                     EventState state = EventState.valueOf(rs.getString(3));
                     String name = rs.getString(4);
                     String description = rs.getString(5);
@@ -442,8 +443,9 @@ public class SqliteDatabase {
                     double cost = rs.getDouble(8);
                     String location = rs.getString(9);
                     List<String> tags = findTagsByEventId(eventId);
+                    List<Integer> members = findUsersByEventId(eventId);
 
-                    toReturn.add(new Event(eventId, owner_id, state, name, description, image, member_capacity, cost, location, tags));
+                    toReturn.add(new Event(eventId, state, name, description, image, host, members, member_capacity, cost, location, tags));
                 }
             }
         } finally {
@@ -537,6 +539,7 @@ public class SqliteDatabase {
 
             while (rs.next()) {
                 int owner_id = rs.getInt(1);
+                Account host = findUserAccountById(owner_id);
                 EventState state = EventState.valueOf(rs.getString(2));
                 String name = rs.getString(3);
                 String description = rs.getString(4);
@@ -545,8 +548,9 @@ public class SqliteDatabase {
                 double cost = rs.getDouble(7);
                 String location = rs.getString(8);
                 List<String> tags = findTagsByEventId(id);
+                List<Integer> members = findUsersByEventId(id);
 
-                return new Event(id, owner_id, state, name, description, image, member_capacity, cost, location, tags);
+                return new Event(id, state, name, description, image, host, members, member_capacity, cost, location, tags);
             }
         } finally {
             closeResultSet(rs);

@@ -14,31 +14,32 @@ public class Event {
   private int id;
   private EventState state;
   private String name;
-  private int host_id;
   private String description;
   private String image = null;
   private Account host;
-  private List<Account> members;
+  private List<Integer> members;
   private int maxMembers;
   private double cost;
   private String location;
   private List<String> tags;
 
-  public Event(int id, int host_id, EventState state, String name,
-               String description, String image,
-               int maxMembers, double cost, String location,
-               List<String> tags) {
+  public Event(int id, EventState state, String name,
+               String description, String image, Account host,
+               List<Integer> members, int maxMembers, double cost,
+               String location, List<String> tags) {
     this.id = id;
-    this.host_id = host_id;
     this.state = state;
     this.name = name;
     this.description = description;
     this.image = image;
+    this.host = host;
+    this.members = members;
     this.maxMembers = maxMembers;
     this.cost = cost;
     this.location = location;
     this.tags = tags;
   }
+
 
   //read from db
 
@@ -56,14 +57,6 @@ public class Event {
 
   public void setName(String name) {
     this.name = name;
-  }
-
-  public int getId() {
-    return host_id;
-  }
-
-  public void setId(int id) {
-    this.host_id = id;
   }
 
   public String getDesc() {
@@ -90,11 +83,11 @@ public class Event {
     this.host = host;
   }
 
-  public List<Account> getMembers() {
+  public List<Integer> getMembers() {
     return members;
   }
 
-  public void setMembers(List<Account> members) {
+  public void setMembers(List<Integer> members) {
     this.members = members;
   }
 
