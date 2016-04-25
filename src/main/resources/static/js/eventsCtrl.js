@@ -43,6 +43,9 @@ bulkAppControllers.controller("eventsCtrl",
 			console.log(responseObject);
 		});
 		var curData = $scope.creationData;
+		$scope.closeModal();
+		$state.go('tab.my-events');
+
 		//TODO: need to reset data?
 
 	}
