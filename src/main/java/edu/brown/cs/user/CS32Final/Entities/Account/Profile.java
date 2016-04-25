@@ -20,8 +20,8 @@ public class Profile {
     this.firstName = firstName;
     this.lastName = lastName;
     if (image == null) {
-      this.image = "http://41.media.tumblr.com/5e24cd5a9db4856a7fc5" +
-              "6a76efa2c9c2/tumblr_ndgox2cITl1r2wp90o1_1280.jpg";
+      this.image = "http://images.vectorhq.com/images/previews/ab9/" +
+              "magician-outline-clip-art-76335.jpg";
     } else {
       this.image = image;
     }
