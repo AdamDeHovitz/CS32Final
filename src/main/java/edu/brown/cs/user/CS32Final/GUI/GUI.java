@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -63,8 +64,13 @@ public class GUI {
 
     FreeMarkerEngine freeMarker = createEngine();
 
-    database = new SqliteDatabase("data/database.sqlite3");
-    database.createTables();
+    try {
+      database = new SqliteDatabase("data/database.sqlite3");
+      database.createTables();
+    } catch(Exception e) {
+      System.out.println("ERROR: SQL error");
+      e.printStackTrace();
+    }
 
     // Setup Spark Routes
     // Setup Spark Routes
@@ -126,7 +132,12 @@ public class GUI {
       String image = qm.value("image");
       String date = "19 May, 2016";
 
+      try {
       database.insertUser(email, password, first_name, last_name, image, date);
+      } catch(Exception e) {
+        System.out.println("ERROR: SQL error");
+        //TODO: handle this
+      }
 
       return true;
     }
@@ -143,24 +154,29 @@ public class GUI {
       String password = qm.value("password");
 
       Map<String, Object> variables = null;
+      try {
+        Account user = database.findUserByUsername(username);
 
-      Account user = database.findUserByUsername(username);
+        if (user.authenticate(password)) {
+          ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
 
-      if (user.authenticate(password)) {
-        ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
-
-        user.getLoginData(vars);
-        // TODO: account for sql error
-        vars.put("reviews", database.findReviewsByUserId(user.getId()));
-        vars.put("hasError", false);
-        variables = vars.build();
-        return gson.toJson(variables);
-      } else {
-        ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
-        vars.put("hasError", true);
-        vars.put("errorMsg", "Username or password is incorrect.");
-        variables = vars.build();
-        return gson.toJson(variables);
+          user.getLoginData(vars);
+          // TODO: account for sql error
+          vars.put("reviews", database.findReviewsByUserId(user.getId()));
+          vars.put("hasError", false);
+          variables = vars.build();
+          return gson.toJson(variables);
+        } else {
+          ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+          vars.put("hasError", true);
+          vars.put("errorMsg", "Username or password is incorrect.");
+          variables = vars.build();
+          return gson.toJson(variables);
+        }
+      } catch (Exception e) {
+        System.out.println("ERROR: SQL error");
+        //TODO: handle it
+        return null;
       }
 
     }
@@ -181,8 +197,12 @@ public class GUI {
       String location = qm.value("location");
       String tags = qm.value("tags");
 
+      try {
       database.insertEvent(owner_id, state, name, description, image, member_capacity, cost, location, tags);
-
+      } catch(Exception e) {
+        System.out.println("ERROR: SQL error");
+        //handle this
+      }
       return true;
     }
   }
@@ -194,12 +214,23 @@ public class GUI {
       QueryParamsMap qm = req.queryMap();
 
       int id = Integer.parseInt(qm.value("id"));
-
-      Profile user = database.findUserProfileById(id);
+      Profile user = null;
+      try {
+        user = database.findUserProfileById(id);
+      } catch(Exception e) {
+        System.out.println("ERROR: SQL error");
+        e.printStackTrace();
+      }
 
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       user.getProfileData(vars);
-      List<Review> reviews = database.findReviewsByUserId(id);
+      List<Review> reviews = null;
+      try {
+        reviews = database.findReviewsByUserId(id);
+      } catch(Exception e) {
+        System.out.println("ERROR: SQL error");
+        e.printStackTrace();
+      }
       double sum = 0;
       for (Review a : reviews) {
         sum += a.getRating();
@@ -221,7 +252,14 @@ public class GUI {
 
       int id = Integer.parseInt(qm.value("id"));
 
-      Event event = database.findEventById(id);
+      Event event = null;
+
+      try {
+        event = database.findEventById(id);
+      } catch(Exception e) {
+        System.out.println("ERROR: SQL error");
+        e.printStackTrace();
+      }
 
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       event.getEventData(vars);
@@ -237,10 +275,16 @@ public class GUI {
       QueryParamsMap qm = req.queryMap();
 
       int id = Integer.parseInt(qm.value("id"));
+      List<Event> events = null;
+      try {
       List<Integer> handled = database.findEventIdsbyOwnerId(id);
       handled.addAll(database.findEventsByRequestedId(id));
       handled.addAll(database.findEventsByUserId(id));
-      List<Event> events = database.findNewNearbyEvents(handled);
+      events = database.findNewNearbyEvents(handled);
+      } catch(Exception e) {
+        System.out.println("ERROR: SQL error");
+        e.printStackTrace();
+      }
 
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       vars.put("events", events);
@@ -256,8 +300,13 @@ public class GUI {
       QueryParamsMap qm = req.queryMap();
 
       int id = Integer.parseInt(qm.value("id"));
-
-      List<Event> events = database.findEventsByOwnerId(id);
+      List<Event> events = null;
+      try {
+        events = database.findEventsByOwnerId(id);
+      } catch(Exception e) {
+        System.out.println("ERROR: SQL error");
+        e.printStackTrace();
+      }
 
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       vars.put("events", events);
@@ -272,9 +321,13 @@ public class GUI {
       QueryParamsMap qm = req.queryMap();
 
       int id = Integer.parseInt(qm.value("id"));
-
-
-      List<Event> events = database.findJoinedEventsByUserId(id);
+      List<Event> events = null;
+      try {
+        events = database.findJoinedEventsByUserId(id);
+      } catch(Exception e) {
+        System.out.println("ERROR: SQL error");
+        e.printStackTrace();
+      }
 
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       vars.put("events", events);
@@ -290,9 +343,13 @@ public class GUI {
       QueryParamsMap qm = req.queryMap();
 
       int id = Integer.parseInt(qm.value("id"));
-
-      List<Event> events = database.findPendingEventsByUserId(id);
-
+      List<Event> events = null;
+      try {
+        events = database.findPendingEventsByUserId(id);
+      } catch(Exception e) {
+        System.out.println("ERROR: SQL error");
+        e.printStackTrace();
+      }
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       vars.put("events", events);
 
@@ -309,13 +366,23 @@ public class GUI {
 
       int id = Integer.parseInt(qm.value("id"));
       int eventId = Integer.parseInt(qm.value("eventId"));
-
-      Event event = database.findEventById(eventId);
+      Event event = null;
+      try {
+      event = database.findEventById(eventId);
+      } catch(Exception e) {
+        System.out.println("ERROR: SQL error");
+        e.printStackTrace();
+      }
       if (event.getState() != EventState.OPEN) {
         // TODO: event isn't open
       }
-      database.requestUserIntoEvent(eventId, id, event.getHost().getId());
-      database.incrementHostRequestNotif(event.getHost().getId());
+      try {
+        database.requestUserIntoEvent(eventId, id, event.getHost().getId());
+        database.incrementHostRequestNotif(event.getHost().getId());
+      } catch(Exception e) {
+        System.out.println("ERROR: SQL error");
+        e.printStackTrace();
+      }
 
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       //event.getEventData(vars);
@@ -332,9 +399,14 @@ public class GUI {
       int id = Integer.parseInt(qm.value("id"));
       int eventId = Integer.parseInt(qm.value("eventId"));
 
+      try {
       Event event = database.findEventById(eventId);
       database.insertUserIntoEvent(eventId, id, event.getHost().getId());
       database.incrementJoinedNotif(id);
+      } catch(Exception e) {
+        System.out.println("ERROR: SQL error");
+        e.printStackTrace();
+      }
 
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       //event.getEventData(vars);
@@ -350,7 +422,12 @@ public class GUI {
 
       int id = Integer.parseInt(qm.value("id"));
 
+      try {
       List<Event> events = database.findEventsByOwnerId(id);
+      } catch(Exception e) {
+        System.out.println("ERROR: SQL error");
+        e.printStackTrace();
+      }
 
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       //event.getEventData(vars);
