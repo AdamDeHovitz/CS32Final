@@ -470,7 +470,7 @@ public class SqliteDatabase {
                 return findUserAccountById(rs.getInt(1));
             }
         } catch (Exception e) {
-            System.out.println("ERROR: SQL error");
+            System.out.println("ERROR: SQL error find user");
             e.printStackTrace();
         } finally {
             closeResultSet(rs);
@@ -530,7 +530,7 @@ public class SqliteDatabase {
                 return new Account(profile, id, email, password, requestNotif, joinedNotif);
             }
         } catch(Exception e){
-            System.out.println("ERROR: SQL error");
+            System.out.println("ERROR: SQL error find account");
         } finally {
             closeResultSet(rs);
         }
@@ -540,22 +540,23 @@ public class SqliteDatabase {
     public Profile findUserProfileById(int id) {
         ResultSet rs = null;
         try {
-            String sql = "SELECT name, image, date FROM user WHERE id = ?;";
+            String sql = "SELECT first_name, last_name, image, date FROM user WHERE id = ?;";
             PreparedStatement prep = connection.prepareStatement(sql);
             prep.setInt(1, id);
 
             rs = prep.executeQuery();
 
             while (rs.next()) {
-                String name = rs.getString(1);
-                String image = rs.getString(2);
-                String date = rs.getString(3);
+                String firstName = rs.getString(1);
+                String lastName = rs.getString(2);
+                String image = rs.getString(3);
+                String date = rs.getString(4);
                 List<Integer> reviews = findReviewsById(id);
 
-                return new Profile(name, image, date, reviews);
+                return new Profile(firstName, lastName, image, date, reviews);
             }
         } catch(Exception e){
-            System.out.println("ERROR: SQL error");
+            System.out.println("ERROR: SQL error find profile");
         } finally {
             closeResultSet(rs);
         }
