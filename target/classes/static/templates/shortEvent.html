@@ -1,8 +1,8 @@
-    <a class="item item-thumbnail-left item-icon-right" href="#/tab/event/{{event.eventId}}">
-      <img src="{{event.img}}">
-      <h2>{{event.title}}</h2>
+    <a class="item item-thumbnail-left item-icon-right" href="#/tab/event/{{event.id}}">
+      <img src="{{event.image}}">
+      <h2>{{event.name}}</h2>
       <p>{{event.location}}<br>
-      	<b>${{event.price}}</b>/person
+      	<b>${{(event.cost / event.maxMembers) | number: 2}}</b>/person
       </p>
        <i class="icon ion-ios-arrow-right"></i>
     </a>

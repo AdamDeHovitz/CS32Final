@@ -20,6 +20,12 @@ bulkAppControllers.controller("eventCtrl",
 	   });
 	 };
 	 
+	$.post("/event-view", {id: eventId}, function(responseJSON) {
+			responseObject = JSON.parse(responseJSON);
+			//$scope.event = responseObject.events;
+			console.log(responseObject);
+	});
+
 	// get event info from server
 	$scope.event = {
 			title: "Watermelon",

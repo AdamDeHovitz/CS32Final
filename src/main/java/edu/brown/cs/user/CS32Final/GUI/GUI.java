@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -116,7 +115,7 @@ public class GUI {
     @Override
     public ModelAndView handle(Request req, Response res) {
       Map<String, Object> variables =
-              ImmutableMap.of("title", "Type Away!", "content", "");
+              ImmutableMap.of("title", "Bulki", "content", "");
       return new ModelAndView(variables, "main.ftl");
     }
   }
@@ -289,6 +288,7 @@ public class GUI {
       }
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       vars.put("events", events);
+      System.out.println(events);
 
       Map<String, Object> variables = vars.build();
       return gson.toJson(variables);
