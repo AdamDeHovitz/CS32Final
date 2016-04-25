@@ -1,9 +1,9 @@
 package edu.brown.cs.user.CS32Final.Entities.Account;
 
-import com.google.common.collect.ImmutableMap;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import com.google.common.collect.ImmutableMap;
 
 /**
  * Created by adamdeho on 4/10/16.
@@ -72,7 +72,7 @@ public class Profile {
 
   public void getProfileData(ImmutableMap.Builder<String, Object> variables) {
     variables.put("picture", getImage())
-            .put("data", getDate())
+            .put("date", getDate())
             .put("name", getName());
   }
 
