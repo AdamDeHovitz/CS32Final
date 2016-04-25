@@ -1,5 +1,11 @@
 bulkAppControllers.controller("pendingEventsCtrl", function($scope, $http) {
 	$scope.curTitle = "Pending Events";
+	$scope.curEvents = [];
+
+	$.post("/event-pending", {id: $rootScope.account.id}, function(responseJSON) {
+			responseObject = JSON.parse(responseJSON);
+			console.log(responseObject);
+	});
 
 		/*
 		if (!$rootScope.userId) {

@@ -37,7 +37,11 @@ bulkAppControllers.controller("eventsCtrl",
 	$scope.createEvent = function() {
 		$scope.creationData["owner_id"] = $rootScope.account.id;
 		$scope.creationData["tags"] = [];
+<<<<<<< HEAD
 		console.log($scope.creationData);
+=======
+		console.log()
+>>>>>>> 079153847f07588a4e903ace1bc217709c879daa
 		$.post("/event-create", $scope.creationData, function(responseJSON) {
 			responseObject = JSON.parse(responseJSON);
 			console.log(responseObject);

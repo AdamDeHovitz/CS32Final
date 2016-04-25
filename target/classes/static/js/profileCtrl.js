@@ -1,4 +1,15 @@
+<<<<<<< HEAD
 bulkAppControllers.controller("profileCtrl", function($scope, $http) {
+=======
+bulkAppControllers.controller("profileCtrl", function($scope, $http, $stateParams) {
+	var profileId = $stateParams.userId;
+
+	$.post("/profile", {id: profileId}, function(responseJSON) {
+			responseObject = JSON.parse(responseJSON);
+			console.log(responseObject);
+	});
+
+>>>>>>> 079153847f07588a4e903ace1bc217709c879daa
 	$scope.profile = {name: "Barack Obama",
     		id: 'abc123',
     		joined: 2009,
