@@ -180,7 +180,7 @@ public class SqliteDatabase {
 
     public void removeUserFromEvent(int event_id, int user_id, int owner_id) throws SQLException {
         String sql = "DELETE FROM user_event WHERE event_id = ?" +
-                "user_id = ?, owner_id = ?;";
+                "AND user_id = ? AND owner_id = ?;";
         PreparedStatement prep = connection.prepareStatement(sql);
         prep.setInt(1, event_id);
         prep.setInt(2, user_id);
