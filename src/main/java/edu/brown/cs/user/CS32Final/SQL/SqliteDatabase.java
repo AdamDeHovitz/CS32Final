@@ -226,7 +226,7 @@ public class SqliteDatabase {
     public void incrementHostRequestNotif(int user_id) throws SQLException {
 
 
-        String sql = "UPDATE users " +
+        String sql = "UPDATE user " +
                 "SET requestNotif = requestNotif + 1 " +
                 "WHERE id = ?;";
         PreparedStatement prep = connection.prepareStatement(sql);
@@ -237,7 +237,7 @@ public class SqliteDatabase {
 
     }
     public void incrementJoinedNotif(int user_id) throws SQLException {
-        String sql = "UPDATE users " +
+        String sql = "UPDATE user " +
                 "SET joinedNotif = joinedNotif + 1 " +
                 "WHERE id = ?;";
         PreparedStatement prep = connection.prepareStatement(sql);
@@ -249,7 +249,7 @@ public class SqliteDatabase {
     }
 
     public void setHostRequestNotif(int user_id, int notif) throws SQLException {
-        String sql = "UPDATE users " +
+        String sql = "UPDATE user " +
                 "SET requestNotif = ? " +
                 "WHERE id = ?;";
         PreparedStatement prep = connection.prepareStatement(sql);
@@ -261,7 +261,7 @@ public class SqliteDatabase {
     public void setJoinedNotif(int user_id, int notif) throws SQLException {
 
 
-        String sql = "UPDATE users " +
+        String sql = "UPDATE user " +
                 "SET joinedNotif = ? " +
                 "WHERE id = ?;";
         PreparedStatement prep = connection.prepareStatement(sql);
@@ -445,7 +445,7 @@ public class SqliteDatabase {
         List<Event> toReturn = new ArrayList();
         ResultSet rs = null;
         try {
-            String sql = "SELECT id, owner_id, state, name, description, image, member_capacity, cost, location FROM event;";
+            String sql = "SELECT id, owner_id, state, name, description, image, member_capacity, cost, location FROM event ORDER BY id DESC;";
             PreparedStatement prep = connection.prepareStatement(sql);
 
             rs = prep.executeQuery();
