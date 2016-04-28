@@ -20,6 +20,8 @@
      <script src="js/jquery-2.1.1.js"></script>
 	 <script src="js/ionic.bundle.min.js"></script> 
 	 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular-messages.js"></script>
+	 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
+     <script src="//cdnjs.cloudflare.com/ajax/libs/angular-moment/0.10.3/angular-moment.min.js"></script>
 	 <script src="js/app.js"></script>
 	 <script src="js/loginCtrl.js"></script>
 	 <script src="js/feedCtrl.js"></script>
@@ -31,6 +33,8 @@
 	 <script src="js/eventCtrl.js"></script>
 	 <script src="js/profileCtrl.js"></script>
 	 <script src="js/reviewsCtrl.js"></script>
+	 <script src="js/chatCtrl.js"></script>
+	 
      <script src="js/main.js"></script>
   </body>
   <!-- See http://html5boilerplate.com/ for a good place to start

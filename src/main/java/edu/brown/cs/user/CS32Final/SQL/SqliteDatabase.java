@@ -186,7 +186,7 @@ public class SqliteDatabase {
         prep.setInt(2, user_id);
         prep.setInt(3, owner_id);
 
-        prep.executeQuery();
+        prep.executeUpdate();
 
     }
 
@@ -196,19 +196,19 @@ public class SqliteDatabase {
         PreparedStatement prep = connection.prepareStatement(sql);
         prep.setString(1, state);
         prep.setInt(2, event_id);
-        prep.executeQuery();
+        prep.executeUpdate();
     }
 
     public void removeEvent(int event_id) throws SQLException {
         String sql = "DELETE FROM user_event WHERE event_id = ?;";
         PreparedStatement prep = connection.prepareStatement(sql);
         prep.setInt(1, event_id);
-        prep.executeQuery();
+        prep.executeUpdate();
 
         sql = "DELETE FROM events WHERE event_id = ?;";
         prep = connection.prepareStatement(sql);
         prep.setInt(1, event_id);
-        prep.executeQuery();
+        prep.executeUpdate();
     }
 
 
@@ -219,55 +219,58 @@ public class SqliteDatabase {
         prep.setInt(2, user_id);
         prep.setInt(3, owner_id);
 
-        prep.executeQuery();
+        prep.executeUpdate();
 
     }
 
     public void incrementHostRequestNotif(int user_id) throws SQLException {
 
 
-        String sql = "UPDATE users " +
+        String sql = "UPDATE user " +
                 "SET requestNotif = requestNotif + 1 " +
                 "WHERE id = ?;";
         PreparedStatement prep = connection.prepareStatement(sql);
         //prep.setInt(1, notif);
         prep.setInt(1, user_id);
-        prep.executeQuery();
+        prep.executeUpdate();
 
 
     }
     public void incrementJoinedNotif(int user_id) throws SQLException {
-        String sql = "UPDATE users " +
+        System.out.println("id" + user_id);
+        String sql = "UPDATE user " +
                 "SET joinedNotif = joinedNotif + 1 " +
                 "WHERE id = ?;";
         PreparedStatement prep = connection.prepareStatement(sql);
         //prep.setInt(1, notif);
         prep.setInt(1, user_id);
-        prep.executeQuery();
+        prep.executeUpdate();
 
 
     }
 
+    //"UPDATE user SET joinedNotif = joinedNotif + 1 WHERE id = ?;";
+
     public void setHostRequestNotif(int user_id, int notif) throws SQLException {
-        String sql = "UPDATE users " +
+        String sql = "UPDATE user " +
                 "SET requestNotif = ? " +
                 "WHERE id = ?;";
         PreparedStatement prep = connection.prepareStatement(sql);
         prep.setInt(1, notif);
         prep.setInt(2, user_id);
-        prep.executeQuery();
+        prep.executeUpdate();
 
     }
     public void setJoinedNotif(int user_id, int notif) throws SQLException {
 
 
-        String sql = "UPDATE users " +
+        String sql = "UPDATE user " +
                 "SET joinedNotif = ? " +
                 "WHERE id = ?;";
         PreparedStatement prep = connection.prepareStatement(sql);
         prep.setInt(1, notif);
         prep.setInt(2, user_id);
-        prep.executeQuery();
+        prep.executeUpdate();
 
     }
 
@@ -445,7 +448,7 @@ public class SqliteDatabase {
         List<Event> toReturn = new ArrayList();
         ResultSet rs = null;
         try {
-            String sql = "SELECT id, owner_id, state, name, description, image, member_capacity, cost, location FROM event;";
+            String sql = "SELECT id, owner_id, state, name, description, image, member_capacity, cost, location FROM event ORDER BY id DESC;";
             PreparedStatement prep = connection.prepareStatement(sql);
 
             rs = prep.executeQuery();
