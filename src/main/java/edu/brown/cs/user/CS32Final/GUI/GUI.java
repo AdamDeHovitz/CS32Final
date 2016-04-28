@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 import edu.brown.cs.user.CS32Final.Entities.Account.Account;
 import edu.brown.cs.user.CS32Final.Entities.Account.Profile;
 import edu.brown.cs.user.CS32Final.Entities.Account.Review;
+import edu.brown.cs.user.CS32Final.Entities.Chat.ChatHandler;
 import edu.brown.cs.user.CS32Final.Entities.Event.Event;
 import edu.brown.cs.user.CS32Final.Entities.Event.EventState;
 import edu.brown.cs.user.CS32Final.SQL.SqliteDatabase;
@@ -26,6 +27,8 @@ import spark.Route;
 import spark.Spark;
 import spark.TemplateViewRoute;
 import spark.template.freemarker.FreeMarkerEngine;
+
+import static spark.Spark.webSocket;
 
 /**
  * Created by adamdeho on 4/21/16.
@@ -90,6 +93,8 @@ public class GUI {
     Spark.post("/event-remove", new RemoveEventHandler());
     Spark.post("/event-start", new StartEventHandler());
     Spark.post("/delete-event", new DeleteEventHandler());
+
+    webSocket("/chat", ChatHandler.class);
   }
 
   /**
