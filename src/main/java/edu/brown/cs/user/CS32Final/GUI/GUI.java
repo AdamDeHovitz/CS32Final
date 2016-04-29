@@ -73,6 +73,8 @@ public class GUI {
       e.printStackTrace();
     }
 
+    webSocket("/chat", ChatHandler.class);
+
     // Setup Spark Routes
     Spark.get("/", new FrontHandler(), freeMarker);
     Spark.get("/home", new FrontHandler(), freeMarker);
@@ -93,8 +95,6 @@ public class GUI {
     Spark.post("/event-remove", new RemoveEventHandler());
     Spark.post("/event-start", new StartEventHandler());
     Spark.post("/delete-event", new DeleteEventHandler());
-
-    webSocket("/chat", ChatHandler.class);
   }
 
   /**
