@@ -1,222 +1,235 @@
-bulkAppControllers.controller("chatCtrl", 
-		function($scope, $rootScope, $state, $stateParams, MockService,
-				$ionicActionSheet, $ionicPopup, $ionicScrollDelegate, $timeout, $interval) {
+bulkAppControllers.controller("chatCtrl", function($scope, $rootScope, $state,
+		$stateParams, MockService, $ionicActionSheet, $ionicPopup,
+		$ionicScrollDelegate, $timeout, $interval) {
 
-				$scope.eventId = $stateParams.eventId;
+	$scope.eventId = $stateParams.eventId;
 
-			    // mock user
-					/*
-			    $scope.toUser = {
-			      _id: '534b8e5aaa5e7afc1b23e69b',
-			      pic: 'http://ionicframework.com/img/docs/venkman.jpg',
-			      username: 'Venkman'
-			    }*/
+	// Sockets
+	$scope.webSocket = new WebSocket("ws://" + location.hostname + ":"
+			+ location.port + "/chat/");
+	$scope.webSocket.onopen = function() {
+		console.log($scope.user.username + " joined chat yep");
+	};
+	$scope.webSocket.onmessage = function(msg) {
+		$scope.updateChat(msg);
+	};
+	$scope.webSocket.onclose = function() {
+		alert("WebSocket connection closed")
+	};
 
-			    // this could be on $rootScope rather than in $stateParams
-			    $scope.user = {
-			      _id: $rootScope.account.id,
-			      pic: $rootScope.account.img,
-			      username: $rootScope.account.name
-			    };
+	// mock user
+	/*
+	 * $scope.toUser = { _id: '534b8e5aaa5e7afc1b23e69b', pic:
+	 * 'http://ionicframework.com/img/docs/venkman.jpg', username: 'Venkman' }
+	 */
 
-			    $scope.input = {
-			      message:  ''
-			    };
+	// this could be on $rootScope rather than in $stateParams
+	$scope.user = {
+		_id : $rootScope.account.id,
+		pic : $rootScope.account.img,
+		username : $rootScope.account.name
+	};
 
-			    var messageCheckTimer;
+	$scope.input = {
+		message : ''
+	};
 
-			    var viewScroll = $ionicScrollDelegate.$getByHandle('userMessageScroll');
-			    var footerBar; // gets set in $ionicView.enter
-			    var scroller;
-			    var txtInput; // ^^^
+	var messageCheckTimer;
 
-			    $scope.$on('$ionicView.enter', function() {
-			      //console.log('UserMessages ionicView.enter');
+	var viewScroll = $ionicScrollDelegate.$getByHandle('userMessageScroll');
+	var footerBar; // gets set in $ionicView.enter
+	var scroller;
+	var txtInput; // ^^^
 
-			      getMessages();
+	$scope.$on('$ionicView.enter', function() {
+		// console.log('UserMessages ionicView.enter');
 
-			      $timeout(function() {
-			        footerBar = document.body.querySelector('#userMessagesView .bar-footer');
-			        scroller = document.body.querySelector('#userMessagesView .scroll-content');
-			        txtInput = angular.element(footerBar.querySelector('textarea'));
-			      }, 0);
+		getMessages();
 
-			      messageCheckTimer = $interval(function() {
-			        // here you could check for new messages if your app doesn't
-					// use push notifications or user disabled them
-			      }, 20000);
-			    });
+		$timeout(function() {
+			footerBar = document.body.querySelector('#userMessagesView .bar-footer');
+			scroller = document.body
+					.querySelector('#userMessagesView .scroll-content');
+			txtInput = angular.element(footerBar.querySelector('textarea'));
+		}, 0);
 
-			    $scope.$on('$ionicView.leave', function() {
-			      console.log('leaving UserMessages view, destroying interval');
-			      // Make sure that the interval is destroyed
-			      if (angular.isDefined(messageCheckTimer)) {
-			        $interval.cancel(messageCheckTimer);
-			        messageCheckTimer = undefined;
-			      }
-			    });
+	});
 
-			    /*
-			    $scope.$on('$ionicView.beforeLeave', function() {
-			      if (!$scope.input.message || $scope.input.message === '') {
-			        localStorage.removeItem('userMessage-' + $scope.toUser._id);
-			      }
-			    });*/
+	$scope.$on('$ionicView.leave', function() {
+		console.log('leaving UserMessages view, destroying interval');
+		// Make sure that the interval is destroyed
+		if (angular.isDefined(messageCheckTimer)) {
+			$interval.cancel(messageCheckTimer);
+			messageCheckTimer = undefined;
+		}
+		// add something to close socket on exit?
+	});
 
-			    
-			    function getMessages() {
-			    	
-			    	$scope.doneLoading = true;
-			    	$scope.messages = [];
-			    	$timeout(function() {
-		          viewScroll.scrollBottom();
-		        }, 1000);
-			    	// get messages from database
-			    	
-			      // the service is mock but you would probably pass the
-			    	// toUser's GUID here
-			      /*MockService.getUserMessages({
-			        toUserId: $scope.toUser._id
-			      }).then(function(data) {
-			        $scope.doneLoading = true;
-			        $scope.messages = data.messages;
+	/*
+	 * $scope.$on('$ionicView.beforeLeave', function() { if (!$scope.input.message ||
+	 * $scope.input.message === '') { localStorage.removeItem('userMessage-' +
+	 * $scope.toUser._id); } });
+	 */
 
-			        $timeout(function() {
-			          viewScroll.scrollBottom();
-			        }, 0);
-			      });*/
-			    }
+	function getMessages() {
 
-			    /*
-			    $scope.$watch('input.message', function(newValue, oldValue) {
-			      //console.log('input.message $watch, newValue ' + newValue);
-			      if (!newValue) newValue = '';
-			      localStorage['userMessage-' + $scope.toUser._id] = newValue;
-			    });*/
+		$scope.doneLoading = true;
+		$scope.messages = [];
+		$timeout(function() {
+			viewScroll.scrollBottom();
+		}, 1000);
+		// get messages from database
 
-			    $scope.sendMessage = function(sendMessageForm) {
-			      var message = {
-			        eventId: $scope.eventId,
-			        text: $scope.input.message
-			      };
+		// the service is mock but you would probably pass the
+		// toUser's GUID here
+		/*
+		 * MockService.getUserMessages({ toUserId: $scope.toUser._id
+		 * }).then(function(data) { $scope.doneLoading = true; $scope.messages =
+		 * data.messages;
+		 * 
+		 * $timeout(function() { viewScroll.scrollBottom(); }, 0); });
+		 */
+	}
 
-			      // if you do a web service call this will be needed as well
-					// as before the viewScroll calls
-			      // you can't see the effect of this in the browser it needs
-					// to be used on a real device
-			      // for some reason the one time blur event is not firing in
-					// the browser but does on devices
-			      keepKeyboardOpen();
+	/*
+	 * $scope.$watch('input.message', function(newValue, oldValue) {
+	 * //console.log('input.message $watch, newValue ' + newValue); if (!newValue)
+	 * newValue = ''; localStorage['userMessage-' + $scope.toUser._id] = newValue;
+	 * });
+	 */
 
-			      // MockService.sendMessage(message).then(function(data) {
-			      $scope.input.message = '';
+	$scope.sendMessage = function(sendMessageForm) {
+		var message = {
+			eventId : $scope.eventId,
+			text : $scope.input.message
+		};
 
-			      //message._id = new Date().getTime(); // :~)
-			      message.date = new Date();
-			      message.username = $scope.user.username;
-			      message.userId = $scope.user._id;
-			      message.pic = $scope.user.picture;
+		// if you do a web service call this will be needed as well
+		// as before the viewScroll calls
+		// you can't see the effect of this in the browser it needs
+		// to be used on a real device
+		// for some reason the one time blur event is not firing in
+		// the browser but does on devices
+		keepKeyboardOpen();
 
-			      console.log(message);
-			      
-			      $scope.messages.push(message);
-			      $timeout(function() {
-			        keepKeyboardOpen();
-			        viewScroll.scrollBottom(true);
-			      }, 0);
+		// MockService.sendMessage(message).then(function(data) {
+		$scope.input.message = '';
 
-			      // mock message
-			      /*
-			      $timeout(function() {
-			        $scope.messages.push(MockService.getMockMessage());
-			        keepKeyboardOpen();
-			        viewScroll.scrollBottom(true);
-			      }, 2000);*/
+		// message._id = new Date().getTime(); // :~)
+		message.date = new Date();
+		message.username = $scope.user.username;
+		message.userId = $scope.user._id;
+		message.pic = $scope.user.pic;
 
-			      console.log("sending chat message");
-			      webSocket.send(JSON.stringify(message));
+		console.log(message);
 
-			      // });
-			    };
+		$scope.messages.push(message);
+		$timeout(function() {
+			keepKeyboardOpen();
+			viewScroll.scrollBottom(true);
+		}, 0);
 
-			    //ng - class = "{'has-error': forms.loginForm.password.$touched && forms.loginForm.password.$invalid }" 
-			    function keepKeyboardOpen() {
-			      txtInput.one('blur', function() {
-			        txtInput[0].focus();
-			      });
-			    }
+		// mock message
+		/*
+		$timeout(function() {
+			$scope.messages.push(MockService.getMockMessage());
+			keepKeyboardOpen();
+			viewScroll.scrollBottom(true);
+		}, 2000);*/
 
-			    $scope.onMessageHold = function(e, itemIndex, message) {
-			      //console.log('message: ' + JSON.stringify(message, null, 2));
-			      $ionicActionSheet.show({
-			        buttons: [{
-			          text: 'Copy Text'
-			        }, {
-			          text: 'Delete Message'
-			        }],
-			        buttonClicked: function(index) {
-			          switch (index) {
-			            case 0: // Copy Text
-			              // cordova.plugins.clipboard.copy(message.text);
+		console.log("sending chat message");
+		$scope.webSocket.send(JSON.stringify(message));
 
-			              break;
-			            case 1: // Delete
-			              // no server side secrets here :~)
-			              $scope.messages.splice(itemIndex, 1);
-			              $timeout(function() {
-			                viewScroll.resize();
-			              }, 0);
+		// });
+	};
 
-			              break;
-			          }
+	// ng - class = "{'has-error': forms.loginForm.password.$touched &&
+	// forms.loginForm.password.$invalid }"
+	function keepKeyboardOpen() {
+		txtInput.one('blur', function() {
+			txtInput[0].focus();
+		});
+	}
 
-			          return true;
-			        }
-			      });
-			    };
+	$scope.onMessageHold = function(e, itemIndex, message) {
+		// console.log('message: ' + JSON.stringify(message, null, 2));
+		$ionicActionSheet.show({
+			buttons : [ {
+				text : 'Copy Text'
+			}, {
+				text : 'Delete Message'
+			} ],
+			buttonClicked : function(index) {
+				switch (index) {
+				case 0: // Copy Text
+					// cordova.plugins.clipboard.copy(message.text);
 
-			    // this prob seems weird here but I have reasons for this in my
-				// app, secret!
-			    $scope.viewProfile = function(msg) {
-			      if (msg.userId === $scope.user._id) {
-			        // go to your profile
-			      } else {
-			        // go to other users profile
-			      }
-			    };
+					break;
+				case 1: // Delete
+					// no server side secrets here :~)
+					$scope.messages.splice(itemIndex, 1);
+					$timeout(function() {
+						viewScroll.resize();
+					}, 0);
 
-			    // I emit this event from the monospaced.elastic directive, read
-				// line 480
-			    $scope.$on('taResize', function(e, ta) {
-			      //console.log('taResize');
-			      //console.log(ta);
-			      if (!ta) return;
-
-			      var taHeight = ta[0].offsetHeight;
-			      //console.log('taHeight: ' + taHeight);
-			      
-			      if (!footerBar) return;
-			      
-			      var newFooterHeight = taHeight + 10;
-			      newFooterHeight = (newFooterHeight > 44) ? newFooterHeight : 44;
-			      footerBar.style.height = newFooterHeight + 'px';
-			      scroller.style.bottom = newFooterHeight + 49 + 'px';
-			    });
-
-			    // Sockets
-			    var webSocket = new WebSocket("ws://" + location.hostname + ":" + location.port + "/chat/");
-			    webSocket.onopen = function() { console.log($scope.user.username + " joined chat yep"); };
-			    webSocket.onmessage = function (msg) { updateChat(msg); };
-				webSocket.onclose = function () { alert("WebSocket connection closed") };
-
-				function updateChat(msg) {
-						console.log(msg.data);
-				    var data = JSON.parse(msg.data);
-				    if (data.userId != $scope.user._id) {
-					    $scope.messages.push(data);
-			        keepKeyboardOpen();
-			        viewScroll.scrollBottom(true);
-				    }
-				    console.log(data);
+					break;
 				}
+
+				return true;
+			}
+		});
+	};
+
+	// this prob seems weird here but I have reasons for this in my
+	// app, secret!
+	$scope.viewProfile = function(msg) {
+		if (msg.userId === $scope.user._id) {
+			// go to your profile
+		} else {
+			// go to other users profile
+		}
+	};
+
+	// I emit this event from the monospaced.elastic directive, read
+	// line 480
+	$scope.$on('taResize', function(e, ta) {
+		// console.log('taResize');
+		// console.log(ta);
+		if (!ta)
+			return;
+
+		var taHeight = ta[0].offsetHeight;
+		// console.log('taHeight: ' + taHeight);
+
+		if (!footerBar)
+			return;
+
+		var newFooterHeight = taHeight + 10;
+		newFooterHeight = (newFooterHeight > 44) ? newFooterHeight : 44;
+		footerBar.style.height = newFooterHeight + 'px';
+		scroller.style.bottom = newFooterHeight + 49 + 'px';
+	});
+
+	$scope.updateChat = function(msg) {
+		keepKeyboardOpen();
+
+		console.log(msg.data);
+		var data = JSON.parse(msg.data);
+
+		
+		if (data.userId != $scope.user._id) {
+			console.log("new thang");
+
+			$timeout(function() {
+				$scope.messages.push(data);
+				keepKeyboardOpen();
+				viewScroll.scrollBottom(true);
+			}, 0);
+			//$scope.messages.push(data);
+			//keepKeyboardOpen();
+			//viewScroll.scrollBottom(true);
+		}
+		console.log(data);
+	}
+
 });
