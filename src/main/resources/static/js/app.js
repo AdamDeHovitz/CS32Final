@@ -536,7 +536,7 @@ angular.module('monospaced.elastic', [])
             taHeight = ta.style.height === '' ? 'auto' : parseInt(ta.style.height, 10);
 
             taComputedStyleWidth = getComputedStyle(ta).getPropertyValue('width');
-            console.log("computed width:" + taComputedStyleWidth);
+            //console.log("computed width:" + taComputedStyleWidth);
 
             // ensure getComputedStyle has returned a readable 'used value' pixel width
             if (taComputedStyleWidth.substr(taComputedStyleWidth.length - 2, 2) === 'px') {

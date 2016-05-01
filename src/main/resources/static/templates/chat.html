@@ -1,5 +1,5 @@
 <ion-view id="userMessagesView" cache-view="false"
-	view-title="<i class='icon ion-chatbubble user-messages-top-icon'></i> <div class='msg-header-username'>{{toUser.username}}</div>">
+	view-title="Chat">
 <div id="chatBox">
 <ion-spinner></ion-spinner>
 <ion-spinner class="loader-center" ng-if="!doneLoading">
@@ -13,13 +13,12 @@
 
 
 
-<div ng-repeat="message in messages" class="message-wrapper"
-	on-hold="onMessageHold($event, $index, message)">
+<div ng-repeat="message in messages" class="message-wrapper">
 
 	<div ng-if="user._id !== message.userId">
 
 		<img ng-click="viewProfile(message)" class="profile-pic left"
-			ng-src="{{toUser.pic}}" onerror="onProfilePicError(this)" />
+			ng-src="{{message.pic}}" onerror="onProfilePicError(this)" />
 
 		<div class="chat-bubble left">
 
@@ -27,7 +26,7 @@
 			</div>
 
 			<div class="message-detail">
-				<span ng-click="viewProfile(message)" class="bold">{{toUser.username}}</span>,
+				<span ng-click="viewProfile(message)" class="bold">{{message.username}}</span>,
 				<span am-time-ago="message.date"></span>
 			</div>
 
@@ -63,7 +62,7 @@
 	<ion-footer-bar class="bar-stable item-input-inset message-footer"
 		keyboard-attach> <label class="item-input-wrapper">
 		<textarea ng-model="input.message" value=""
-			placeholder="Send {{toUser.username}} a message..." required
+			placeholder="Send a message..." required
 			minlength="1" maxlength="1500" msd-elastic></textarea>
 	</label>
 	<div class="footer-btn-wrap">
