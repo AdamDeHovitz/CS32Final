@@ -116,6 +116,9 @@ bulkAppControllers.controller("chatCtrl",
 			        viewScroll.scrollBottom(true);
 			      }, 2000);
 
+			      console.log("sending chat message");
+			      webSocket.send(message);
+
 			      // });
 			    };
 
@@ -187,4 +190,18 @@ bulkAppControllers.controller("chatCtrl",
 			      footerBar.style.height = newFooterHeight + 'px';
 			      scroller.style.bottom = newFooterHeight + 49 + 'px';
 			    });
+
+			    // Sockets
+			    var webSocket = new WebSocket("ws://" + location.hostname + ":" + location.port + "/chat/");
+			    webSocket.onopen = function() { console.log($scope.user.username + " joined chat yep"); };
+			    webSocket.onmessage = function (msg) { updateChat(msg); };
+				webSocket.onclose = function () { alert("WebSocket connection closed") };
+
+				function updateChat(msg) {
+				    var data = JSON.parse(msg.data);
+				    console.log(data);
+				}
+
+
+
 });

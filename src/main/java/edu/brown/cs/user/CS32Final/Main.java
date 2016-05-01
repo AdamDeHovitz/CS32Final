@@ -35,8 +35,6 @@ import spark.template.freemarker.FreeMarkerEngine;
 public final class Main {
     private String[] args;
     private OptionSet options;
-    private OptionSpec<Integer> led;
-    private final Gson gson = new Gson();
 
     private Main(String[] args) {
         this.args = args;

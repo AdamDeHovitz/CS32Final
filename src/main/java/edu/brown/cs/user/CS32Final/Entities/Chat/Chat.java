@@ -1,5 +1,8 @@
 package edu.brown.cs.user.CS32Final.Entities.Chat;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
+import edu.brown.cs.user.CS32Final.JsonUtil;
 import org.json.JSONObject;
 //import spark.Session;
 
@@ -34,10 +37,18 @@ public class Chat {
 
     //Builds a HTML element with a sender-name, a message, and a timestamp,
     private static String createHtmlMessageFromSender(String sender, String message) {
-        return article().with(
-                b(sender + " says:"),
-                p(message),
-                span().withClass("timestamp").withText(new SimpleDateFormat("HH:mm:ss").format(new Date()))
-        ).render();
+        Map<String, Object> variables = null;
+
+        ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+        vars.put("sender", sender);
+        vars.put("message", message);
+        variables = vars.build();
+        return JsonUtil.toJson(variables);
+
+//        return article().with(
+//                b(sender + " says:"),
+//                p(message),
+//                span().withClass("timestamp").withText(new SimpleDateFormat("HH:mm:ss").format(new Date()))
+//        ).render();
     }
 }
