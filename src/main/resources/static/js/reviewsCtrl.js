@@ -9,7 +9,7 @@ bulkAppControllers.controller("reviewsCtrl", function($scope, $rootScope, $http,
 	});
 
 	$scope.reviews = [{rating: 4, text: "HE COOL YO"},
-	                  {rating: 1, text: "dis bitch fucked me over"}];
+	                  {rating: 1, text: "Didn't show up"}];
 
 	
 
