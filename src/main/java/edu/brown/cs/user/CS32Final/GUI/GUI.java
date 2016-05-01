@@ -137,15 +137,49 @@ public class GUI {
       String last_name = qm.value("lastName");
       String image = qm.value("image");
       String date = "19 May, 2016";
+      Account user = null;
+      boolean hasError = false;
+      String errorMsg = "";
+      Map<String, Object> variables = null;
+      ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+
+
+      
+      // check if email already in database
 
       try {
-      database.insertUser(email, password, first_name, last_name, image, date);
+    	  database.insertUser(email, password, first_name, last_name, image, date);
       } catch(Exception e) {
-        System.out.println("ERROR: SQL error");
-        e.printStackTrace();
+    	hasError = true;
+    	errorMsg = "There is a problem with adding to the database. Try again later.";
+      }
+      
+      if (!hasError) {
+    	  try {
+    		  user = database.findUserByUsername(email);
+          } catch (Exception e) {
+        	  hasError = true;
+        	  errorMsg = "There is a problem with adding to the database. Try again later.";
+          }
+    	  if (user == null) {
+        	  hasError = true;
+        	  errorMsg = "There is a problem with adding to the database. Try again later.";
+    	  } else {
+    		  user.getLoginData(vars);
+    		  try {
+    			  vars.put("reviews", database.findReviewsByUserId(user.getId()));
+    	      } catch (Exception e) {
+    	    	  hasError = true;
+            	  errorMsg = "There is a problem with adding to the database. Try again later.";
+    	      }
+    	  }
+    	  
       }
 
-      return true;
+      vars.put("hasError", hasError);
+      vars.put("errorMsg", errorMsg);
+      variables = vars.build();
+      return gson.toJson(variables);
     }
   }
 
@@ -216,7 +250,10 @@ public class GUI {
       String description = qm.value("description");
       String image = qm.value("image");
       int member_capacity = Integer.parseInt(qm.value("members"));
-      double cost = Double.parseDouble(qm.value("cost"));
+      String rawCost = qm.value("cost");
+      rawCost = rawCost.replace(",", "");
+      rawCost = rawCost.replace("$", "");
+      double cost = Double.parseDouble(rawCost);
       String location = qm.value("location");
       String[][] tags = gson.fromJson(qm.value("tags"), String[][].class);
 

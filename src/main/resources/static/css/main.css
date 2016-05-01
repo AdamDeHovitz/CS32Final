@@ -48,26 +48,7 @@ label.item.has-error {
 
 @import "lesshat";
 
-<
-style scoped>h1 {
-	color: FireBrick;
-}
-
-p {
-	color: SaddleBrown;
-}
-
-</
-style> <style scoped>h1 {
-	color: FireBrick;
-}
-
-p {
-	color: SaddleBrown;
-}
-
-</
-style>.star-ratings-sprite {
+.star-ratings-sprite {
 	background:
 		url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/2605/star-rating-sprite.png")
 		repeat-x;

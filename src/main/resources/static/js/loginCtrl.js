@@ -65,48 +65,30 @@ bulkAppControllers.controller("loginCtrl",
                 "password": curData.password,
                 "image": curData.img
         }, function(responseJSON) {
-	 		responseObject = JSON.parse(responseJSON);
+        	responseObject = JSON.parse(responseJSON);
+        	console.log(responseObject);
+          $scope.closeModal();
+          if (responseObject.hasError) {
+          	$scope.showAlert('Registration Failed', responseObject.errorMsg);
+          }
+          else {
+          	$rootScope.account = {name: responseObject.name,
+      	    		id: responseObject.id,
+      	    		joined: responseObject.date,
+      	    		rating: 5,
+      	    		img: responseObject.picture,
+      	    		reviews: responseObject.reviews};
+      	    $rootScope.authenticated = true;
+      	    $ionicViewSwitcher.nextDirection('forward');
+      	 		$state.go("tab.feed");
+          }
 	 	});
-
-        $scope.closeModal();
-
-	 	/*
-		//$http.post("/register", regisData).
-		$http({
-  			method: 'POST',
-  			url: '/register',
-  			contentType: 'application/json',
-  			data: regisData
-		}).
-		
-		$http.post("/register", {
-                'firstName': curData.firstName,
-                'lastName': curData.lastName,
-                'email': curData.email,
-                'password': curData.password,
-                'image': curData.img
-            }).*/
-		/*$http({
-  			method: 'POST',
-  			url: '/register',
-  			headers : {'Content-Type': 'application/x-www-form-urlencoded'},
-  			data: regisData
-		}).
-		then(function successCallback(response) {
-			console.log("success");
-		    // this callback will be called asynchronously
-		    // when the response is available
-		  }, function errorCallback(response) {
-		  	console.log("failure");
-		    // called asynchronously if an error occurs
-		    // or server returns response with an error status.
-		  });*/
 	};
 
-	$scope.showAlert = function() {
+	$scope.showAlert = function(curTitle, curMsg) {
 	   var alertPopup = $ionicPopup.alert({
-	     title: 'Authentication Failed',
-	     template: 'Username or password is incorrect.'
+	     title: curTitle,
+	     template: curMsg
 	   });
 
 	   alertPopup.then(function(res) {
@@ -123,7 +105,7 @@ bulkAppControllers.controller("loginCtrl",
         	console.log(responseJSON);
         	responseObject = JSON.parse(responseJSON);
         	if (responseObject.hasError) {
-        		$scope.showAlert();
+        		$scope.showAlert('Authentication Failed', 'Username or password is incorrect.');
         	} else {
 	        	$rootScope.account = {name: responseObject.name,
 	    		id: responseObject.id,

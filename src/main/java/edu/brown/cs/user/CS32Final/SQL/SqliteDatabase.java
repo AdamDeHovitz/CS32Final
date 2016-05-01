@@ -192,7 +192,7 @@ public class SqliteDatabase {
 
     public void setEventState(int event_id, String state) throws SQLException {
 
-        String sql = "UPDATE events SET status = ? WHERE id = ?;";
+        String sql = "UPDATE event SET status = ? WHERE id = ?;";
         PreparedStatement prep = connection.prepareStatement(sql);
         prep.setString(1, state);
         prep.setInt(2, event_id);
@@ -205,7 +205,7 @@ public class SqliteDatabase {
         prep.setInt(1, event_id);
         prep.executeUpdate();
 
-        sql = "DELETE FROM events WHERE event_id = ?;";
+        sql = "DELETE FROM event WHERE id = ?;";
         prep = connection.prepareStatement(sql);
         prep.setInt(1, event_id);
         prep.executeUpdate();
