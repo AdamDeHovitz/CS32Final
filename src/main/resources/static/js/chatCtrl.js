@@ -104,7 +104,6 @@ bulkAppControllers.controller("chatCtrl",
 			      message.pic = $scope.user.picture;
 
 			      $scope.messages.push(message);
-
 			      $timeout(function() {
 			        keepKeyboardOpen();
 			        viewScroll.scrollBottom(true);
@@ -117,7 +116,7 @@ bulkAppControllers.controller("chatCtrl",
 			      }, 2000);
 
 			      console.log("sending chat message");
-			      webSocket.send(message);
+			      webSocket.send(JSON.stringify(message));
 
 			      // });
 			    };
@@ -199,6 +198,7 @@ bulkAppControllers.controller("chatCtrl",
 
 				function updateChat(msg) {
 				    var data = JSON.parse(msg.data);
+				    $scope.messages.push(data);
 				    console.log(data);
 				}
 

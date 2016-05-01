@@ -26,8 +26,7 @@ public class Chat {
     public static void broadcastMessage(String sender, String message) {
         usernameMap.keySet().stream().filter(Session::isOpen).forEach(session -> {
             try {
-                session.getRemote().sendString(String.valueOf(new JSONObject()
-                                .put("userMessage", createHtmlMessageFromSender(sender, message)))
+                session.getRemote().sendString(message
                 );
             } catch (Exception e) {
                 e.printStackTrace();
@@ -41,7 +40,9 @@ public class Chat {
 
         ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
         vars.put("sender", sender);
+        System.out.println(message);
         vars.put("message", message);
+        vars.put("timestamp", new Date());
         variables = vars.build();
         return JsonUtil.toJson(variables);
 
