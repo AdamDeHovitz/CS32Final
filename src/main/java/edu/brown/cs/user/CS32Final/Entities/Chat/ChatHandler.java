@@ -16,23 +16,22 @@ public class ChatHandler {
 
     @OnWebSocketConnect
     public void onConnect(Session user) throws Exception {
-        System.out.println("connected user");
         String username = "User" + Chat.nextUserNumber++;
         Chat.usernameMap.put(user, username);
-        Chat.broadcastMessage(sender = "Server", msg = (username + " joined the chat"));
+        //Chat.broadcastMessage(sender = "Server", msg = (username + " joined the chat"));
     }
 
     @OnWebSocketClose
     public void onClose(Session user, int statusCode, String reason) {
-        System.out.println("closed user");
+        System.out.println("closing user");
         String username = Chat.usernameMap.get(user);
         Chat.usernameMap.remove(user);
-        Chat.broadcastMessage(sender = "Server", msg = (username + " left the chat"));
+        //Chat.broadcastMessage(sender = "Server", msg = (username + " left the chat"));
     }
 
     @OnWebSocketMessage
     public void onMessage(Session user, String message) {
-        System.out.println("message user");
+
         Chat.broadcastMessage(sender = Chat.usernameMap.get(user), msg = message);
     }
 }
