@@ -11,9 +11,9 @@ bulkAppControllers.controller("chatCtrl",
 
 			    // this could be on $rootScope rather than in $stateParams
 			    $scope.user = {
-			      _id: '534b8fb2aa5e7afc1b23e69c',
-			      pic: 'http://ionicframework.com/img/docs/mcfly.jpg',
-			      username: 'Marty'
+			      _id: $rootScope.account.id,
+			      pic: $rootScope.account.img,
+			      username: $rootScope.account.name
 			    };
 
 			    $scope.input = {
@@ -61,7 +61,7 @@ bulkAppControllers.controller("chatCtrl",
 
 			    function getMessages() {
 			      // the service is mock but you would probably pass the
-					// toUser's GUID here
+			    	// toUser's GUID here
 			      MockService.getUserMessages({
 			        toUserId: $scope.toUser._id
 			      }).then(function(data) {
@@ -75,7 +75,7 @@ bulkAppControllers.controller("chatCtrl",
 			    }
 
 			    $scope.$watch('input.message', function(newValue, oldValue) {
-			      console.log('input.message $watch, newValue ' + newValue);
+			      //console.log('input.message $watch, newValue ' + newValue);
 			      if (!newValue) newValue = '';
 			      localStorage['userMessage-' + $scope.toUser._id] = newValue;
 			    });
@@ -97,12 +97,13 @@ bulkAppControllers.controller("chatCtrl",
 			      // MockService.sendMessage(message).then(function(data) {
 			      $scope.input.message = '';
 
-			      message._id = new Date().getTime(); // :~)
+			      //message._id = new Date().getTime(); // :~)
 			      message.date = new Date();
 			      message.username = $scope.user.username;
 			      message.userId = $scope.user._id;
 			      message.pic = $scope.user.picture;
 
+			      console.log(message);
 			      $scope.messages.push(message);
 
 			      $timeout(function() {
@@ -110,30 +111,30 @@ bulkAppControllers.controller("chatCtrl",
 			        viewScroll.scrollBottom(true);
 			      }, 0);
 
+			      // mock message
+			      /*
 			      $timeout(function() {
 			        $scope.messages.push(MockService.getMockMessage());
 			        keepKeyboardOpen();
 			        viewScroll.scrollBottom(true);
-			      }, 2000);
+			      }, 2000);*/
 
 			      console.log("sending chat message");
-			      webSocket.send(message);
+			      console.log(JSON.stringify(message));
+			      webSocket.send(JSON.stringify(message));
 
 			      // });
 			    };
 
 			    //ng - class = "{'has-error': forms.loginForm.password.$touched && forms.loginForm.password.$invalid }" 
 			    function keepKeyboardOpen() {
-			      console.log('keepKeyboardOpen');
 			      txtInput.one('blur', function() {
-			        console.log('textarea blur, focus back on it');
 			        txtInput[0].focus();
 			      });
 			    }
 
 			    $scope.onMessageHold = function(e, itemIndex, message) {
-			      console.log('onMessageHold');
-			      console.log('message: ' + JSON.stringify(message, null, 2));
+			      //console.log('message: ' + JSON.stringify(message, null, 2));
 			      $ionicActionSheet.show({
 			        buttons: [{
 			          text: 'Copy Text'
@@ -174,19 +175,17 @@ bulkAppControllers.controller("chatCtrl",
 			    // I emit this event from the monospaced.elastic directive, read
 				// line 480
 			    $scope.$on('taResize', function(e, ta) {
-			      console.log('taResize');
-			      console.log(ta);
+			      //console.log('taResize');
+			      //console.log(ta);
 			      if (!ta) return;
 
 			      var taHeight = ta[0].offsetHeight;
-			      console.log('taHeight: ' + taHeight);
+			      //console.log('taHeight: ' + taHeight);
 			      
-			      console.log(footerBar);
 			      if (!footerBar) return;
 			      
 			      var newFooterHeight = taHeight + 10;
 			      newFooterHeight = (newFooterHeight > 44) ? newFooterHeight : 44;
-			      console.log(newFooterHeight);
 			      footerBar.style.height = newFooterHeight + 'px';
 			      scroller.style.bottom = newFooterHeight + 49 + 'px';
 			    });
@@ -198,7 +197,7 @@ bulkAppControllers.controller("chatCtrl",
 				webSocket.onclose = function () { alert("WebSocket connection closed") };
 
 				function updateChat(msg) {
-				    var data = JSON.parse(msg.data);
+				    var data = JSON.parse(JSON.parse(msg.data).userMessage);
 				    console.log(data);
 				}
 
