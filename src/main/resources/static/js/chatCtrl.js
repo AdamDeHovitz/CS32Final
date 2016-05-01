@@ -2,12 +2,15 @@ bulkAppControllers.controller("chatCtrl",
 		function($scope, $rootScope, $state, $stateParams, MockService,
 				$ionicActionSheet, $ionicPopup, $ionicScrollDelegate, $timeout, $interval) {
 
-			    // mock acquiring data via $stateParams
+				$scope.eventId = $stateParams.eventId;
+
+			    // mock user
+					/*
 			    $scope.toUser = {
 			      _id: '534b8e5aaa5e7afc1b23e69b',
 			      pic: 'http://ionicframework.com/img/docs/venkman.jpg',
 			      username: 'Venkman'
-			    }
+			    }*/
 
 			    // this could be on $rootScope rather than in $stateParams
 			    $scope.user = {
@@ -17,7 +20,7 @@ bulkAppControllers.controller("chatCtrl",
 			    };
 
 			    $scope.input = {
-			      message: localStorage['userMessage-' + $scope.toUser._id] || ''
+			      message:  ''
 			    };
 
 			    var messageCheckTimer;
@@ -28,7 +31,7 @@ bulkAppControllers.controller("chatCtrl",
 			    var txtInput; // ^^^
 
 			    $scope.$on('$ionicView.enter', function() {
-			      console.log('UserMessages $ionicView.enter');
+			      //console.log('UserMessages ionicView.enter');
 
 			      getMessages();
 
@@ -53,16 +56,26 @@ bulkAppControllers.controller("chatCtrl",
 			      }
 			    });
 
+			    /*
 			    $scope.$on('$ionicView.beforeLeave', function() {
 			      if (!$scope.input.message || $scope.input.message === '') {
 			        localStorage.removeItem('userMessage-' + $scope.toUser._id);
 			      }
-			    });
+			    });*/
 
+			    
 			    function getMessages() {
+			    	
+			    	$scope.doneLoading = true;
+			    	$scope.messages = [];
+			    	$timeout(function() {
+		          viewScroll.scrollBottom();
+		        }, 1000);
+			    	// get messages from database
+			    	
 			      // the service is mock but you would probably pass the
 			    	// toUser's GUID here
-			      MockService.getUserMessages({
+			      /*MockService.getUserMessages({
 			        toUserId: $scope.toUser._id
 			      }).then(function(data) {
 			        $scope.doneLoading = true;
@@ -71,18 +84,19 @@ bulkAppControllers.controller("chatCtrl",
 			        $timeout(function() {
 			          viewScroll.scrollBottom();
 			        }, 0);
-			      });
+			      });*/
 			    }
 
+			    /*
 			    $scope.$watch('input.message', function(newValue, oldValue) {
 			      //console.log('input.message $watch, newValue ' + newValue);
 			      if (!newValue) newValue = '';
 			      localStorage['userMessage-' + $scope.toUser._id] = newValue;
-			    });
+			    });*/
 
 			    $scope.sendMessage = function(sendMessageForm) {
 			      var message = {
-			        toId: $scope.toUser._id,
+			        eventId: $scope.eventId,
 			        text: $scope.input.message
 			      };
 
@@ -104,8 +118,8 @@ bulkAppControllers.controller("chatCtrl",
 			      message.pic = $scope.user.picture;
 
 			      console.log(message);
+			      
 			      $scope.messages.push(message);
-
 			      $timeout(function() {
 			        keepKeyboardOpen();
 			        viewScroll.scrollBottom(true);
@@ -120,7 +134,6 @@ bulkAppControllers.controller("chatCtrl",
 			      }, 2000);*/
 
 			      console.log("sending chat message");
-			      console.log(JSON.stringify(message));
 			      webSocket.send(JSON.stringify(message));
 
 			      // });
@@ -197,10 +210,13 @@ bulkAppControllers.controller("chatCtrl",
 				webSocket.onclose = function () { alert("WebSocket connection closed") };
 
 				function updateChat(msg) {
-				    var data = JSON.parse(JSON.parse(msg.data).userMessage);
+						console.log(msg.data);
+				    var data = JSON.parse(msg.data);
+				    if (data.userId != $scope.user._id) {
+					    $scope.messages.push(data);
+			        keepKeyboardOpen();
+			        viewScroll.scrollBottom(true);
+				    }
 				    console.log(data);
 				}
-
-
-
 });
