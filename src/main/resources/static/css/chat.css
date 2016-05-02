@@ -1,0 +1,202 @@
+#chatBox .bar-footer {
+	overflow: visible !important;
+}
+
+#chatBox .bar-footer textarea {
+	resize: none;
+	height: 25px;
+}
+
+/* fixes an ios bug bear */
+#chatBox button.ion-android-send {
+	padding-top: 2px;
+}
+
+/* add this to keep your footer buttons down 
+	at the bottom as the textarea resizes */
+#chatBox .footer-btn-wrap {
+	position: relative;
+	height: 100%;
+	width: 50px;
+	top: 7px;
+}
+
+#chatBox .footer-btn {
+	position: absolute !important;
+	bottom: 0;
+}
+
+#chatBox textarea {
+	width: 100%;
+}
+
+#chatBox img.profile-pic {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	position: absolute;
+	bottom: 10px;
+}
+
+#chatBox img.profile-pic.left {
+	left: 10px;
+}
+
+#chatBox img.profile-pic.right {
+	right: 10px;
+}
+
+#chatBox .ion-email {
+	float: right;
+	font-size: 32px;
+	vertical-align: middle;
+}
+
+#chatBox .message {
+	font-size: 14px;
+}
+
+#chatBox .message-detail {
+	white-space: nowrap;
+	font-size: 14px;
+}
+
+#chatBox .bar.item-input-inset .item-input-wrapper input {
+	width: 100% !important;
+}
+
+#chatBox .message-wrapper {
+	position: relative;
+}
+
+#chatBox .message-wrapper:last-child {
+	margin-bottom: 10px;
+}
+
+#chatBox .chat-bubble {
+	border-radius: 5px;
+	display: inline-block;
+	padding: 10px 18px;
+	position: relative;
+	margin: 10px;
+	max-width: 80%;
+}
+
+#chatBox .chat-bubble:before {
+	content: "\00a0";
+	display: block;
+	height: 16px;
+	width: 9px;
+	position: absolute;
+	bottom: -7.5px;
+}
+
+#chatBox .chat-bubble.left {
+	background-color: #e6e5eb;
+	float: left;
+	margin-left: 55px;
+}
+
+#chatBox .chat-bubble.left:before {
+	background-color: #e6e5eb;
+	left: 10px;
+	-webkit-transform: rotate(70deg) skew(5deg);
+}
+
+#chatBox .chat-bubble.right {
+	background-color: #158ffe;
+	color: #fff;
+	float: right;
+	margin-right: 55px;
+}
+
+#chatBox .chat-bubble.right:before {
+	background-color: #158ffe;
+	right: 10px;
+	-webkit-transform: rotate(118deg) skew(-5deg);
+}
+
+#chatBox .chat-bubble.right a.autolinker {
+	color: #fff;
+	font-weight: bold;
+}
+
+#chatBox .user-messages-top-icon {
+	font-size: 28px;
+	display: inline-block;
+	vertical-align: middle;
+	position: relative;
+	top: -3px;
+	right: 5px;
+}
+
+#chatBox .msg-header-username {
+	display: inline-block;
+	vertical-align: middle;
+	position: relative;
+	top: -3px;
+}
+
+#chatBox input, #chatBox textarea, #chatBox .item-input, #chatBox .item-input-wrapper {
+	background-color: #f4f4f4 !important;
+}
+
+#chatBox .bold {
+	font-weight: bold;
+}
+
+#chatBox .cf {
+	clear: both !important;
+}
+
+#chatBox a.autolinker {
+	color: #3b88c3;
+	text-decoration: none;
+}
+
+.loader .ion-loading-c {
+font-size: 64px;
+}
+
+/* loading */
+#chatBox .loader-center {
+	height: 100%;
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: flex;
+	-webkit-box-direction: normal;
+	-moz-box-direction: normal;
+	-webkit-box-orient: horizontal;
+	-moz-box-orient: horizontal;
+	-webkit-flex-direction: row;
+	-ms-flex-direction: row;
+	flex-direction: row;
+	-webkit-flex-wrap: nowrap;
+	-ms-flex-wrap: nowrap;
+	flex-wrap: nowrap;
+	-webkit-box-pack: center;
+	-moz-box-pack: center;
+	-webkit-justify-content: center;
+	-ms-flex-pack: center;
+	justify-content: center;
+	-webkit-align-content: stretch;
+	-ms-flex-line-pack: stretch;
+	align-content: stretch;
+	-webkit-box-align: center;
+	-moz-box-align: center;
+	-webkit-align-items: center;
+	-ms-flex-align: center;
+	align-items: center;
+	padding: 15px;
+}
+
+#chatBox .loader-center svg {
+	width: 40px;
+	height: 40px;
+}
+
+#chatBox .loader .ion-loading-c {
+	font-size: 64px;
+}

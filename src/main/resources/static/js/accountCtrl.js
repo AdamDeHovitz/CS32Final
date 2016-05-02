@@ -1,11 +1,15 @@
 bulkAppControllers.controller("accountCtrl", 
-	function($scope, $http, $rootScope, $state, $ionicViewSwitcher) {
+	function($scope, $http, $rootScope, $state, $ionicViewSwitcher, $interval) {
 
 		console.log($rootScope.account);
 
 		$scope.logOut = function() {
 			$rootScope.account = {};
 			$rootScope.authenticated = false;
+			if ($rootScope.stopNotifications) {
+				$interval.cancel($rootScope.stopNotifications);
+				$rootScope.stopNotifications
+			};
 			$ionicViewSwitcher.nextDirection('forward');
 			$state.go('login');
 		}

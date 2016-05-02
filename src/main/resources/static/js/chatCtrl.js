@@ -1,5 +1,5 @@
 bulkAppControllers.controller("chatCtrl", function($scope, $rootScope, $state,
-		$stateParams, MockService, $ionicActionSheet, $ionicPopup,
+		$stateParams, $ionicActionSheet, $ionicPopup,
 		$ionicScrollDelegate, $timeout, $interval) {
 
 	$scope.eventId = $stateParams.eventId;
@@ -72,9 +72,10 @@ bulkAppControllers.controller("chatCtrl", function($scope, $rootScope, $state,
 	 */
 
 	function getMessages() {
-
-		$scope.doneLoading = true;
-		$scope.messages = [];
+		$timeout(function() {
+			$scope.doneLoading = true;
+			$scope.messages = [];
+		}, 3000);
 		$timeout(function() {
 			viewScroll.scrollBottom();
 		}, 1000);

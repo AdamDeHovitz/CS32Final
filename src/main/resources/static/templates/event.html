@@ -1,5 +1,5 @@
 <ion-view view-title="Event: {{event.title}}" cache-view="false">
-<ion-content class="padding">
+<ion-content class="padding" ng-show="event">
   
 <div class="list card">
 
@@ -16,7 +16,7 @@
   </div>
   <div class="item item-divider">
   Location: {{event.location}} <br>
-    <b>${{(event.price / event.desiredMembers)}}</b>/person
+    <b>${{(event.price / event.desiredMembers) | number: 2}}</b>/person
   </div>
   
   <a class="item item-icon-left item-icon-right" href="#/tab/events-chat/{{event.eventId}}" 

@@ -5,7 +5,9 @@ bulkAppControllers.controller("feedCtrl", function($scope, $rootScope, $http) {
 	console.log("feed");
 	$.post("/event-feed", {id: $rootScope.account.id}, function(responseJSON) {
 			responseObject = JSON.parse(responseJSON);
-			$scope.curEvents = responseObject.events;
+			$scope.$apply(function() {
+				$scope.curEvents = responseObject.events;
+			});
 			console.log(responseObject);
 	});
 

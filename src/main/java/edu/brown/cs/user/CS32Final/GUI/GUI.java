@@ -269,7 +269,7 @@ public class GUI {
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       vars.put("success", true);
       vars.put("id", event_id);
-      return vars.build();
+      return gson.toJson(vars.build());
     }
   }
 
