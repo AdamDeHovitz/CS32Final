@@ -37,7 +37,55 @@ bulkAppControllers.controller("eventsCtrl",
 	$scope.createEvent = function() {
 		$scope.creationData["owner_id"] = $rootScope.account.id;
 		$scope.creationData["tags"] = [];
-		
+		$scope.lat = null;
+		$scope.lng = null;
+		function getLoc(callback) {
+        if (navigator.geolocation) {
+          var startPos;
+          var geoOptions = {
+             maximumAge:  60 * 1000,
+             timeout: 10 * 1000
+          }
+
+          var geoSuccess = function(position) {
+            startPos = position;
+            $scope.lat = startPos.coords.latitude;
+            $scope.lng = startPos.coords.longitude;
+
+            console.log("retrieved location");
+            console.log($scope.lat);
+            console.log($scope.lng);
+            callback();
+          };
+          var geoError = function(error) {
+            console.log('Error occurred. Error code: ' + error.code);
+            // error.code can be:
+            //   0: unknown error
+            //   1: permission denied
+            //   2: position unavailable (error response from location provider)
+            //   3: timed out
+            callback();
+          };
+
+          navigator.geolocation.getCurrentPosition(geoSuccess, geoError, geoOptions);
+
+        }
+        else {
+            console.log('Geolocation is not supported for this Browser/OS version yet.');
+            callback();
+        }
+        }
+
+
+        function createEvent() {
+            console.log("STUFF");
+            console.log($scope.lat);
+            console.log($scope.lng);
+            $scope.creationData["lat"] = $scope.lat;
+            $scope.creationData["lng"] = $scope.lng;
+            console.log($scope.creationData);
+
+
 		$.post("/event-create", $scope.creationData, function(responseJSON) {
 			console.log(responseJSON);
 			responseObject = JSON.parse(responseJSON);
@@ -46,6 +94,8 @@ bulkAppControllers.controller("eventsCtrl",
 		var curData = $scope.creationData;
 		$scope.closeModal();
 		$state.go('tab.my-events');
+		}
+		getLoc(createEvent);
 
 		//TODO: need to reset data?
 

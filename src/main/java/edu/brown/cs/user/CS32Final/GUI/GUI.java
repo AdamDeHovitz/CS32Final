@@ -39,8 +39,14 @@ public class GUI {
 
   private final Gson gson = new Gson();
 
-  public GUI() {
-    runSparkServer();
+  public GUI(String db) {
+    try {
+      database = new SqliteDatabase("data/database.sqlite3");
+      database.createTables();
+    } catch(Exception e) {
+      System.out.println("ERROR: SQL error");
+      e.printStackTrace();
+    }
   }
 
   private static FreeMarkerEngine createEngine() {
@@ -59,19 +65,11 @@ public class GUI {
   /**
    * Runs the spark server.
    */
-  private void runSparkServer() {
+  public void runSparkServer() {
     Spark.externalStaticFileLocation("src/main/resources/static");
     Spark.exception(Exception.class, new ExceptionPrinter());
 
     FreeMarkerEngine freeMarker = createEngine();
-
-    try {
-      database = new SqliteDatabase("data/database.sqlite3");
-      database.createTables();
-    } catch(Exception e) {
-      System.out.println("ERROR: SQL error");
-      e.printStackTrace();
-    }
 
     webSocket("/chat", ChatHandler.class);
 
@@ -218,12 +216,14 @@ public class GUI {
       int member_capacity = Integer.parseInt(qm.value("members"));
       double cost = Double.parseDouble(qm.value("cost"));
       String location = qm.value("location");
+      double lat = Double.parseDouble(qm.value("lat"));
+      double lng = Double.parseDouble(qm.value("lng"));
       String[][] tags = gson.fromJson(qm.value("tags"), String[][].class);
 
       System.out.println("about to go to db methods");
       int event_id = -1;
       try {
-        database.insertEvent(owner_id, state, name, description, image, member_capacity, cost, location, tags);
+        database.insertEvent(owner_id, state, name, description, image, member_capacity, cost, location, tags, lat, lng);
       } catch(Exception e) {
         System.out.println("ERROR: SQL error");
         e.printStackTrace();
@@ -306,12 +306,14 @@ public class GUI {
       QueryParamsMap qm = req.queryMap();
 
       int id = Integer.parseInt(qm.value("id"));
+      double lat = Double.parseDouble(qm.value("lat"));
+      double lng = Double.parseDouble(qm.value("lng"));
       List<Event> events = null;
       try {
         List<Integer> handled = database.findEventIdsbyOwnerId(id);
         handled.addAll(database.findEventsByRequestedId(id));
         handled.addAll(database.findEventsByUserId(id));
-        events = database.findNewNearbyEvents(handled);
+        events = database.findNewNearbyEvents(handled, lat, lng);
       } catch(Exception e) {
         System.out.println("ERROR: SQL error");
         e.printStackTrace();

@@ -21,12 +21,14 @@ public class Event {
   private int maxMembers;
   private double cost;
   private String location;
+  private double lat;
+  private double lng;
   private List<String> tags;
 
   public Event(int id, EventState state, String name,
                String description, String image, Account host,
                List<Integer> members, int maxMembers, double cost,
-               String location, List<String> tags) {
+               String location, List<String> tags, double lat, double lng) {
     this.id = id;
     this.state = state;
     this.name = name;
@@ -38,10 +40,45 @@ public class Event {
     this.cost = cost;
     this.location = location;
     this.tags = tags;
+    this.lat = lat;
+    this.lng = lng;
+
   }
 
 
   //read from db
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public double getCost() {
+    return cost;
+  }
+
+  public void setCost(double cost) {
+    this.cost = cost;
+  }
+
+  public double getLat() {
+    return lat;
+  }
+
+  public void setLat(double lat) {
+    this.lat = lat;
+  }
+
+  public double getLng() {
+    return lng;
+  }
+
+  public void setLng(double lng) {
+    this.lng = lng;
+  }
 
   public EventState getState() {
     return state;
@@ -144,7 +181,10 @@ public class Event {
             .put("members", getMembers())
             .put("CurMemberNum", 1 + getMembers().size())
             .put("desiredMembers", getMaxMembers())
+            .put("lat", getLat())
+            .put("lng", getLng())
             .put("tags", getTags());
+
   }
 
 }
