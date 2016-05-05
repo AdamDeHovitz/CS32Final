@@ -1,5 +1,5 @@
 bulkAppControllers.controller("chatCtrl", function($scope, $rootScope, $state,
-		$stateParams, $ionicActionSheet, $ionicPopup,
+		$stateParams, MockService, $ionicActionSheet, $ionicPopup,
 		$ionicScrollDelegate, $timeout, $interval) {
 
 	$scope.eventId = $stateParams.eventId;
@@ -72,10 +72,9 @@ bulkAppControllers.controller("chatCtrl", function($scope, $rootScope, $state,
 	 */
 
 	function getMessages() {
-		$timeout(function() {
-			$scope.doneLoading = true;
-			$scope.messages = [];
-		}, 3000);
+
+		$scope.doneLoading = true;
+		$scope.messages = [];
 		$timeout(function() {
 			viewScroll.scrollBottom();
 		}, 1000);
@@ -138,7 +137,6 @@ bulkAppControllers.controller("chatCtrl", function($scope, $rootScope, $state,
 			viewScroll.scrollBottom(true);
 		}, 2000);*/
 
-		console.log("sending chat message");
 		$scope.webSocket.send(JSON.stringify(message));
 
 		// });

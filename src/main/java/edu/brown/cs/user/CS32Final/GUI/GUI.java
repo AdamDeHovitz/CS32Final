@@ -4,20 +4,30 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
-import edu.brown.cs.user.CS32Final.Entities.Account.Account;
-import edu.brown.cs.user.CS32Final.Entities.Account.Profile;
-import edu.brown.cs.user.CS32Final.Entities.Account.Review;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import edu.brown.cs.user.CS32Final.Entities.Account.*;
 import edu.brown.cs.user.CS32Final.Entities.Chat.ChatHandler;
+import edu.brown.cs.user.CS32Final.Entities.Chat.Message;
 import edu.brown.cs.user.CS32Final.Entities.Event.Event;
+import edu.brown.cs.user.CS32Final.Entities.Event.EventRequest;
 import edu.brown.cs.user.CS32Final.Entities.Event.EventState;
 import edu.brown.cs.user.CS32Final.SQL.SqliteDatabase;
 import freemarker.template.Configuration;
+import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import spark.ExceptionHandler;
 import spark.ModelAndView;
 import spark.QueryParamsMap;
@@ -35,7 +45,7 @@ import static spark.Spark.webSocket;
  */
 public class GUI {
 
-  SqliteDatabase database;
+  private SqliteDatabase database;
 
   private final Gson gson = new Gson();
 
@@ -95,6 +105,9 @@ public class GUI {
     Spark.post("/event-remove", new RemoveEventHandler());
     Spark.post("/event-start", new StartEventHandler());
     Spark.post("/delete-event", new DeleteEventHandler());
+
+    Spark.post("/notification", new NotificationHandler());
+    Spark.post("/notification-remove", new NotificationRemoveHandler());
   }
 
   /**
@@ -545,6 +558,11 @@ public class GUI {
         Event event = database.findEventById(eventId);
         if (event.getHost().getId() == id) {
           database.setEventState(eventId, "CLOSED");
+          List<Integer> users = database.findUsersByEventId(eventId);
+
+          for (int userId : users) {
+            database.insertNotification(userId, eventId, "STATE");
+          }
         }
         else {
           //TODO: tell them they don't have permission
@@ -621,5 +639,122 @@ public class GUI {
       return gson.toJson(variables);
     }
   }
+
+  private class NotificationHandler implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+
+      int userId = Integer.parseInt(qm.value("id"));
+
+      List<Notification> notifications = new ArrayList<>();
+
+      try {
+        notifications = database.findNotificationsById(userId);
+
+      } catch(Exception e) {
+        System.out.println("ERROR: SQL error");
+        e.printStackTrace();
+      }
+
+      ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+
+      List<Message> messages = new ArrayList<>();
+      List<EventRequest> requests = new ArrayList<>();
+      List<Event> joined = new ArrayList<>();
+      List<Event> state = new ArrayList<>();
+
+      try {
+        for (Notification notif : notifications) {
+          if (notif.getType() == NotificationType.MESSAGE) {
+            messages.add(database.findMessageById(notif.getNotifId()));
+          } else if (notif.getType() == NotificationType.REQUEST) {
+            requests.add(database.findEventRequestById(notif.getNotifId()));
+          } else if (notif.getType() == NotificationType.JOINED) {
+            joined.add(database.findJoinedEventById(notif.getNotifId()));
+          } else if (notif.getType() == NotificationType.STATE) {
+            state.add(database.findEventById(notif.getNotifId()));
+          }
+        }
+      } catch (SQLException e) {
+        System.out.println("ERROR: SQL error");
+        e.printStackTrace();
+      }
+
+      vars.put("messages", messages);
+      vars.put("requests", requests);
+      vars.put("joinedEvents", joined);
+      vars.put("eventState", state);
+
+      Map<String, Object> variables = vars.build();
+      return gson.toJson(variables);
+    }
+  }
+
+  private class NotificationRemoveHandler implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+
+      int userId = Integer.parseInt(qm.value("id"));
+
+      try {
+        database.removeNotificationsById(userId);
+
+      } catch(Exception e) {
+        System.out.println("ERROR: SQL error");
+        e.printStackTrace();
+      }
+
+      ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+      Map<String, Object> variables = vars.build();
+      return gson.toJson(variables);
+    }
+  }
+
+//  @WebSocket
+//  private class ChatHandler {
+//    private String sender, msg;
+//    private Gson gson = new Gson();
+//
+//    private Map<Session, String> usernameMap = new HashMap<>();
+//    private int nextUserNumber = 1;
+//
+//    @OnWebSocketConnect
+//    public void onConnect(Session user) throws Exception {
+//      String username = "User" + nextUserNumber++;
+//      usernameMap.put(user, username);
+//      //Chat.broadcastMessage(sender = "Server", msg = (username + " joined the chat"));
+//    }
+//
+//    @OnWebSocketClose
+//    public void onClose(Session user, int statusCode, String reason) {
+//      System.out.println("closing user");
+//      String username = usernameMap.get(user);
+//      usernameMap.remove(user);
+//      //Chat.broadcastMessage(sender = "Server", msg = (username + " left the chat"));
+//    }
+//
+//    @OnWebSocketMessage
+//    public void onMessage(Session user, String message) {
+//      JsonObject obj = (JsonObject) new JsonParser().parse(message);
+//      obj.get("eventId").getAsInt();
+//      System.out.println(obj.get("eventId"));
+//
+//      broadcastMessage(sender = usernameMap.get(user), msg = message);
+//    }
+//
+//    //Sends a message from one user to all users
+//    public void broadcastMessage(String sender, String message) {
+//        usernameMap.keySet().stream().filter(Session::isOpen).forEach(session -> {
+//            try {
+//                session.getRemote().sendString(message
+//                );
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        });
+//    }
+//  }
 
 }

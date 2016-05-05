@@ -1,6 +1,7 @@
 package edu.brown.cs.user.CS32Final;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import spark.ResponseTransformer;
 
 /**
@@ -24,6 +25,7 @@ public final class JsonUtil {
     public static String toJson(Object object) {
         return new Gson().toJson(object);
     }
+
 
     /**
      * For Spark.
