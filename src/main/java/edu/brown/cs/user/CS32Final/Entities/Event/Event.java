@@ -43,6 +43,10 @@ public class Event {
 
   //read from db
 
+  public int getId() {
+    return id;
+  }
+
   public EventState getState() {
     return state;
   }

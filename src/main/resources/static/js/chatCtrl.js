@@ -137,7 +137,6 @@ bulkAppControllers.controller("chatCtrl", function($scope, $rootScope, $state,
 			viewScroll.scrollBottom(true);
 		}, 2000);*/
 
-		console.log("sending chat message");
 		$scope.webSocket.send(JSON.stringify(message));
 
 		// });

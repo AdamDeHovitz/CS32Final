@@ -73,11 +73,7 @@ public final class Main {
         OptionParser parser = new OptionParser();
         parser.accepts("gui");
 
-        //OptionSpec<String> lineSpec = parser.nonOptions()
-                //.ofType(String.class);
-
         options = parser.parse(args);
-        //List<String> input = options.valuesOf(lineSpec);
 
         if (options.has("gui")) {
             GUI gui = new GUI();
