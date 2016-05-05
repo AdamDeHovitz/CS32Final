@@ -34,7 +34,6 @@ import spark.template.freemarker.FreeMarkerEngine;
  */
 public final class Main {
     private String[] args;
-    private OptionSet options;
 
     private Main(String[] args) {
         this.args = args;
@@ -69,72 +68,6 @@ public final class Main {
      * Prepares for autocorrect by reading options and establishing a trie.
      */
     private void run() {
-
-        OptionParser parser = new OptionParser();
-        parser.accepts("gui");
-
-        options = parser.parse(args);
-
-        if (options.has("gui")) {
-            GUI gui = new GUI();
-        } else {
-            try {
-                InputStreamReader isr = new InputStreamReader(System.in, "UTF-8");
-                BufferedReader br = new BufferedReader(isr);
-                String line = "";
-                System.out.println("Ready");
-                while ((line = br.readLine()) != null && line.length() > 0) {
-
-                }
-                isr.close();
-            } catch (IOException ioe) {
-                System.out.println("ERROR: input unreadable");
-                System.exit(1);
-            }
-        }
-    }
-
-
-    /**
-     * Runs the spark server.
-     */
-//    private void runSparkServer() {
-//        Spark.externalStaticFileLocation("src/main/resources/static");
-//        Spark.exception(Exception.class, new ExceptionPrinter());
-//
-//        FreeMarkerEngine freeMarker = createEngine();
-//
-//        // Setup Spark Routes
-//        Spark.get("/", new FrontHandler(), freeMarker);
-//
-//    }
-
-    /**
-     * Exception Printer for errors I think. I didn't write it.
-     */
-    private static class ExceptionPrinter implements ExceptionHandler {
-        @Override
-        public void handle(Exception e, Request req, Response res) {
-            res.status(500);
-            StringWriter stacktrace = new StringWriter();
-            try (PrintWriter pw = new PrintWriter(stacktrace)) {
-                pw.println("<pre>");
-                e.printStackTrace(pw);
-                pw.println("</pre>");
-            }
-            res.body(stacktrace.toString());
-        }
-    }
-
-    /**
-     * Handles the main page.
-     */
-    private class FrontHandler implements TemplateViewRoute {
-        @Override
-        public ModelAndView handle(Request req, Response res) {
-            Map<String, Object> variables =
-                    ImmutableMap.of("title", "Type Away!", "content", "");
-            return new ModelAndView(variables, "main.ftl");
-        }
+        GUI gui = new GUI();
     }
 }

@@ -58,10 +58,20 @@ public class GUI {
     return new FreeMarkerEngine(config);
   }
 
+  private static int getHerokuAssignedPort() {
+    ProcessBuilder processBuilder = new ProcessBuilder();
+    if (processBuilder.environment().get("PORT") != null) {
+      return Integer.parseInt(processBuilder.environment().get("PORT"));
+    }
+    return 4567; //return default port if heroku-port isn't set (i.e. on localhost)
+  }
+
   /**
    * Runs the spark server.
    */
   private void runSparkServer() {
+    Spark.port(getHerokuAssignedPort());
+
     Spark.externalStaticFileLocation("src/main/resources/static");
     Spark.exception(Exception.class, new ExceptionPrinter());
 
@@ -464,7 +474,7 @@ public class GUI {
 
       try {
         userIds = database.findRequestsByEventId(eventId);
-        
+
         for (int userId : userIds) {
           users.add(database.findUserProfileById(userId));
         }
