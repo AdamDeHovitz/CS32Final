@@ -118,7 +118,7 @@ button.toast-close-button {
 #toast-container > div {
   margin: 0 0 6px;
   padding: 15px 15px 15px 50px;
-  width: 300px;
+  width: 90%;
   -moz-border-radius: 3px 3px 3px 3px;
   -webkit-border-radius: 3px 3px 3px 3px;
   border-radius: 3px 3px 3px 3px;
@@ -162,6 +162,7 @@ button.toast-close-button {
   margin: auto;
 }
 .toast {
+	width: 100%;
   background-color: #030303;
 }
 .toast-success {
@@ -183,7 +184,7 @@ button.toast-close-button {
 @media all and (max-width: 240px) {
   #toast-container > div {
     padding: 8px 8px 8px 50px;
-    width: 11em;
+    /*width: 11em;*/
   }
   #toast-container .toast-close-button {
     right: -0.2em;
@@ -193,7 +194,7 @@ button.toast-close-button {
 @media all and (min-width: 241px) and (max-width: 480px) {
   #toast-container  > div {
     padding: 8px 8px 8px 50px;
-    width: 18em;
+    /*width: 18em;*/
   }
   #toast-container .toast-close-button {
     right: -0.2em;
@@ -203,7 +204,7 @@ button.toast-close-button {
 @media all and (min-width: 481px) and (max-width: 768px) {
   #toast-container > div {
     padding: 15px 15px 15px 50px;
-    width: 25em;
+    /*width: 25em;*/
   }
 }
 

@@ -241,11 +241,18 @@ function ($parse, $rootScope, $interval, $sce, toasterConfig, toaster, toasterRe
             };
 
             $scope.click = function (toaster, isCloseButton) {
+            		console.log(toaster.route);
+            		console.log(toaster);
                 if ($scope.config.tap === true || isCloseButton == true) {
                     var removeToast = true;
                     if (toaster.clickHandler) {
                         if (angular.isFunction(toaster.clickHandler)) {
                             removeToast = toaster.clickHandler(toaster, isCloseButton);
+                            
+                            
+                            //if (!isCloseButton) {
+                            	//$scope.click(toaster, true);
+                            //}
                         }
                         else if (angular.isFunction($scope.$parent.$eval(toaster.clickHandler))) {
                             removeToast = $scope.$parent.$eval(toaster.clickHandler)(toaster, isCloseButton);
