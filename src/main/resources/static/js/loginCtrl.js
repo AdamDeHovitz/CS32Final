@@ -49,10 +49,11 @@ bulkAppControllers.controller("loginCtrl",
 		console.log($rootScope.$state);
 		
 		var rand = Math.floor((Math.random() * 100) + 1);
-		if (rand > 80) {
+		if (rand > 60) {
 			console.log("new msg");
-      toaster.pop('note', "title", "text");
-			// new msg
+			var f = function() {console.log("route!!");toaster.clear()};
+			toaster.pop({type: 'note', title: "title", body:"text", 
+				timeout: 100000, clickHandler: f, showCloseButton: false});			// new msg
 		}
 		
 	}

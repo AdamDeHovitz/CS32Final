@@ -15,7 +15,7 @@
 	  <ion-nav-back-button>
       </ion-nav-back-button>
     </ion-nav-bar>
-	<toaster-container toaster-options="{'time-out': 3000, 'close-button':true, 'animation-class': 'toast-top-center'}"></toaster-container>
+	<toaster-container toaster-options="{'time-out': 5000, 'close-button':false, 'animation-class': 'toast-top-center'}"></toaster-container>
 	
 	<ion-nav-view></ion-nav-view>
 
