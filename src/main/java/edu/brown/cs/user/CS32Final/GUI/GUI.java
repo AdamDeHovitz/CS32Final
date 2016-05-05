@@ -6,15 +6,12 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import edu.brown.cs.user.CS32Final.Entities.Account.*;
 import edu.brown.cs.user.CS32Final.Entities.Chat.ChatHandler;
 import edu.brown.cs.user.CS32Final.Entities.Chat.Message;
@@ -23,11 +20,6 @@ import edu.brown.cs.user.CS32Final.Entities.Event.EventRequest;
 import edu.brown.cs.user.CS32Final.Entities.Event.EventState;
 import edu.brown.cs.user.CS32Final.SQL.SqliteDatabase;
 import freemarker.template.Configuration;
-import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
-import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import spark.ExceptionHandler;
 import spark.ModelAndView;
 import spark.QueryParamsMap;
@@ -344,6 +336,13 @@ public class GUI {
 
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       event.getEventData(vars);
+
+      try {
+        List<Integer> requests = database.findRequestsByEventId(event.getId());
+        vars.put("requests", requests);
+      } catch (SQLException e) {
+        e.printStackTrace();
+      }
       Map<String, Object> variables = vars.build();
       return gson.toJson(variables);
     }
@@ -507,6 +506,12 @@ public class GUI {
         if (event.getMembers().size() + 1 == event.getMaxMembers()) {
           database.setEventState(eventId, "CLOSED");
           vars.put("state", "CLOSED");
+
+          List<Integer> users = database.findUsersByEventId(eventId);
+
+          for (int userId : users) {
+            database.insertNotification(userId, eventId, "STATE");
+          }
         }
         else {
           vars.put("state", "OPEN");
@@ -596,6 +601,12 @@ public class GUI {
           database.setEventState(eventId, "STARTED");
           for (int member: event.getMembers()) {
             database.incrementJoinedNotif(member);
+          }
+
+          List<Integer> users = database.findUsersByEventId(eventId);
+
+          for (int userId : users) {
+            database.insertNotification(userId, eventId, "STATE");
           }
         }
         else {

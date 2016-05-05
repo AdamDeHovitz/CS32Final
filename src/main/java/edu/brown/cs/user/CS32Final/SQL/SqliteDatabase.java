@@ -166,19 +166,22 @@ public class SqliteDatabase {
     }
 
     public int insertMessage(int event_id, int user_id, String message) throws SQLException {
-        String sql = "INSERT INTO message (event_id, user_id, message) VALUES (?, ?, ?); SELECT last_insert_rowid();";
+        String sql = "INSERT INTO message (event_id, user_id, message) VALUES (?, ?, ?)";
         PreparedStatement prep = connection.prepareStatement(sql);
         prep.setInt(1, event_id);
         prep.setInt(2, user_id);
         prep.setString(3, message);
 
-        int id = prep.executeUpdate();
+        prep.executeUpdate();
+        int id = findIdOfLastMessage();
+
+        System.out.println("message id: " + id);
 
         return id;
 
     }
 
-    public int findIdOfLastInsert() {
+    public int findIdOfLastMessage() {
 
         ResultSet rs = null;
         try {
@@ -804,6 +807,27 @@ public class SqliteDatabase {
         }
         return null;
     }
+
+    public List<Integer> findRequestsByEventId(int eventId) throws SQLException {
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT user_id FROM user_request WHERE event_id = ?;";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setInt(1, eventId);
+
+            rs = prep.executeQuery();
+            List<Integer> toReturn = new ArrayList<>();
+
+            while (rs.next()) {
+                int userId = rs.getInt(1);
+                toReturn.add(userId);
+            }
+            return toReturn;
+        } finally {
+            closeResultSet(rs);
+        }
+    }
+
 
     private void makeConnection(String db) throws SQLException, ClassNotFoundException {
         Class.forName("org.sqlite.JDBC");
