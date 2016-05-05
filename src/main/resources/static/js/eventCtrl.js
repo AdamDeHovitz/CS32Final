@@ -7,8 +7,12 @@ bulkAppControllers.controller("eventCtrl",
 	if ($state.current.name == "tab.events-event") {
 		console.log("events")
 		$scope.curProfileUrl = "events-profile";
+		$scope.curChatUrl = "events-chat";
+		$scope.curRequestsUrl = "events-requests"
 	} else {
 		$scope.curProfileUrl = "profile";
+		$scope.curChatUrl = "chat";
+		$scope.curRequestsUrl = "requests"
 	}
 	
 	 // A confirm dialog
@@ -28,6 +32,19 @@ bulkAppControllers.controller("eventCtrl",
 	 };
 
 
+	$scope.requestJoin = function() {
+		console.log("requesting");
+		var postParams = {id: $rootScope.account.id, eventId: eventId};
+		$scope.requestedJoin = true;
+		console.log(postParams);
+		$.post("/event-request", postParams, 
+			function(responseJSON) {
+				responseObject = JSON.parse(responseJSON);
+				console.log(responseObject);
+		});
+	};
+
+	 /*
 	$scope.confirmJoin = function() {
 		console.log("joining");
 		$scope.isMember = true;
@@ -39,7 +56,7 @@ bulkAppControllers.controller("eventCtrl",
 				responseObject = JSON.parse(responseJSON);
 				console.log(responseObject);
 		});
-	};
+	};*/
 
 	$scope.confirmClose = function() {
 		console.log("closing");
@@ -63,13 +80,21 @@ bulkAppControllers.controller("eventCtrl",
 			$scope.event = responseObject;
 			var isOwner = responseObject.authorId == $rootScope.account.id;
 			var isMember = false;
+			var requestedJoin = false;
 			for (var i = 0; i < responseObject.members.length; i++) {
 				if (responseObject.members[i] == $rootScope.account.id) {
 					isMember = true;
 				}
 			}
+			/*
+			for (var i = 0; i < responseObject.requestedMembers.length; i++) {
+				if (responseObject.members[i] == $rootScope.account.id) {
+					requestedJoin = true;
+				}
+			}*/
 			$scope.isOwner = isOwner;
 			$scope.isMember = isMember;
+			$scope.requestedJoin = requestedJoin;
 			console.log(responseObject);
 	});
 

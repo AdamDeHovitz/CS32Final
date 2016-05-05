@@ -1,5 +1,5 @@
 bulkAppControllers.controller("chatCtrl", function($scope, $rootScope, $state,
-		$stateParams, MockService, $ionicActionSheet, $ionicPopup,
+		$stateParams, $ionicActionSheet, $ionicPopup,
 		$ionicScrollDelegate, $timeout, $interval) {
 
 	$scope.eventId = $stateParams.eventId;

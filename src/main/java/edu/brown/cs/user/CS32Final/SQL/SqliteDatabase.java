@@ -17,7 +17,6 @@ import edu.brown.cs.user.CS32Final.Entities.Chat.Message;
 import edu.brown.cs.user.CS32Final.Entities.Event.Event;
 import edu.brown.cs.user.CS32Final.Entities.Event.EventRequest;
 import edu.brown.cs.user.CS32Final.Entities.Event.EventState;
-import org.apache.tools.ant.taskdefs.condition.Not;
 
 public class SqliteDatabase {
     private Connection connection;
@@ -263,7 +262,7 @@ public class SqliteDatabase {
 
 
     public void requestUserIntoEvent(int event_id, int user_id, int owner_id) throws SQLException {
-        String sql = "INSERT INTO user_request VALUES (?, ?, ?)";
+        String sql = "INSERT INTO user_request (event_id, user_id, owner_id) VALUES (?, ?, ?)";
         PreparedStatement prep = connection.prepareStatement(sql);
         prep.setInt(1, event_id);
         prep.setInt(2, user_id);
