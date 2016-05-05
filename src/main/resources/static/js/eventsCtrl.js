@@ -8,6 +8,10 @@ bulkAppControllers.controller("eventsCtrl",
 	$scope.newPendingEvents = false;
 	$scope.newPendingEventsNum = 0; 
 	$scope.creationData = {};
+	$scope.forms = {};
+	$scope.positiveIntRegex = "^[1-9][0-9]*$";
+	$scope.moneyRegex = "^\\$?[0-9][0-9\\,]*(\\.\\d{1,2})?$|^\\$?[\\.]([\\d][\\d]?)$";
+
 	
 	$scope.goPending = function() {
 		$timeout(function(){
@@ -112,6 +116,9 @@ bulkAppControllers.controller("eventsCtrl",
 	  };
 	  $scope.closeModal = function() {
 	    $scope.modal.hide();
+	    $scope.creationData = {};
+	  	$scope.forms.eventCreate.$setPristine();
+	  	$scope.forms.eventCreate.$setUntouched();
 	  };
 	  //Cleanup the modal when we're done with it!
 	  $scope.$on('$destroy', function() {

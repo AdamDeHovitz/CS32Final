@@ -32,8 +32,19 @@ public class Event {
     this.id = id;
     this.state = state;
     this.name = name;
-    this.description = description;
-    this.image = image;
+
+    if (description == null) {
+      this.description = "";
+    } else {
+      this.description = description;
+    }
+
+    if (image == null) {
+      this.image = "";
+    } else {
+      this.image = image;
+    }
+
     this.host = host;
     this.members = members;
     this.maxMembers = maxMembers;
@@ -78,6 +89,9 @@ public class Event {
 
   public void setLng(double lng) {
     this.lng = lng;
+  }
+  public int getId() {
+    return id;
   }
 
   public EventState getState() {

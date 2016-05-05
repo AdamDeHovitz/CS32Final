@@ -10,11 +10,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.brown.cs.user.CS32Final.Entities.Account.Account;
+import edu.brown.cs.user.CS32Final.Entities.Account.Notification;
 import edu.brown.cs.user.CS32Final.Entities.Account.Profile;
 import edu.brown.cs.user.CS32Final.Entities.Account.Review;
+import edu.brown.cs.user.CS32Final.Entities.Chat.Message;
 import edu.brown.cs.user.CS32Final.Entities.Event.Event;
+import edu.brown.cs.user.CS32Final.Entities.Event.EventRequest;
 import edu.brown.cs.user.CS32Final.Entities.Event.EventState;
-import org.sqlite.Function;
+import org.apache.tools.ant.taskdefs.condition.Not;
 
 public class SqliteDatabase {
     private Connection connection;
@@ -66,11 +69,13 @@ public class SqliteDatabase {
                 "tag TEXT)";
 
         String userEvent = "CREATE TABLE IF NOT EXISTS user_event(" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "event_id INTEGER, " +
                 "user_id INTEGER, " +
                 "owner_id INTEGER)";
 
         String userRequest = "CREATE TABLE IF NOT EXISTS user_request(" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "event_id INTEGER, " +
                 "user_id INTEGER, " +
                 "owner_id INTEGER)";
@@ -81,18 +86,24 @@ public class SqliteDatabase {
                 "user_id INTEGER, " +
                 "message TEXT)";
 
+        String notification = "CREATE TABLE IF NOT EXISTS notification(" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "user_id INTEGER, " +
+                "notif_id INTEGER, " +
+                "type TEXT, " +
+                "is_new BOOLEAN)";
+
         Statement prep = connection.createStatement();
         prep.addBatch(user);
         prep.addBatch(review);
         prep.addBatch(event);
-        prep.addBatch(userEvent);
-        prep.addBatch(message);
-        prep.addBatch(userRequest);
         prep.addBatch(eventTags);
+        prep.addBatch(userEvent);
+        prep.addBatch(userRequest);
+        prep.addBatch(message);
+        prep.addBatch(notification);
 
         prep.executeBatch();
-
-
     }
 
 
@@ -159,8 +170,7 @@ public class SqliteDatabase {
         prep.executeUpdate();
     }
 
-    public void insertMessage(int event_id, int user_id, String message) throws SQLException {
-
+    public int insertMessage(int event_id, int user_id, String message) throws SQLException {
         String sql = "INSERT INTO message (event_id, user_id, message) VALUES (?, ?, ?)";
         PreparedStatement prep = connection.prepareStatement(sql);
         prep.setInt(1, event_id);
@@ -168,17 +178,55 @@ public class SqliteDatabase {
         prep.setString(3, message);
 
         prep.executeUpdate();
+        int id = findIdOfLastMessage(event_id, user_id, message);
+
+        return id;
 
     }
 
-    public void insertUserIntoEvent(int event_id, int user_id, int owner_id) throws SQLException {
+    public int findIdOfLastMessage(int event_id, int user_id, String message) {
 
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT id FROM message WHERE event_id = ? AND user_id = ? AND message = ?";
+            PreparedStatement prep = connection.prepareStatement(sql);
+
+            prep.setInt(1, event_id);
+            prep.setInt(2, user_id);
+            prep.setString(3, message);
+
+            rs = prep.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    public void insertUserIntoEvent(int event_id, int user_id, int owner_id) throws SQLException {
 
         String sql = "INSERT INTO user_event (event_id, user_id, owner_id) VALUES (?, ?, ?)";
         PreparedStatement prep = connection.prepareStatement(sql);
         prep.setInt(1, event_id);
         prep.setInt(2, user_id);
         prep.setInt(3, owner_id);
+
+        prep.executeUpdate();
+
+    }
+
+    public void insertNotification(int user_id, int notif_id, String type) throws SQLException {
+
+        String sql = "INSERT INTO notification (user_id, notif_id, type, is_new) VALUES (?, ?, ?, ?)";
+        PreparedStatement prep = connection.prepareStatement(sql);
+        prep.setInt(1, user_id);
+        prep.setInt(2, notif_id);
+        prep.setString(3, type);
+        prep.setBoolean(4, true);
 
         prep.executeUpdate();
 
@@ -191,6 +239,16 @@ public class SqliteDatabase {
         prep.setInt(1, event_id);
         prep.setInt(2, user_id);
         prep.setInt(3, owner_id);
+
+        prep.executeUpdate();
+
+    }
+
+    public void removeNotificationsById(int userId) throws SQLException {
+        String sql = "DELETE FROM notification WHERE user_id = ?";
+
+        PreparedStatement prep = connection.prepareStatement(sql);
+        prep.setInt(1, userId);
 
         prep.executeUpdate();
 
@@ -539,7 +597,7 @@ public class SqliteDatabase {
                 String date = rs.getString(4);
                 List<Integer> reviews = findReviewsById(id);
 
-                return new Profile(firstName, lastName, image, date, reviews);
+                return new Profile(id, firstName, lastName, image, date, reviews);
             }
         } catch (SQLException e) {
             System.out.println("error in find user profile :(");
@@ -649,7 +707,7 @@ public class SqliteDatabase {
         }
     }
 
-    public List<Event> findPendingEventsByUserId(int userId) throws SQLException{
+    public List<Event> findPendingEventsByUserId(int userId) throws SQLException {
         ResultSet rs = null;
         try {
             String sql = "SELECT event_id FROM user_request WHERE user_id = ?;";
@@ -668,6 +726,156 @@ public class SqliteDatabase {
             closeResultSet(rs);
         }
     }
+
+    public List<Notification> findNotificationsById(int userId) throws SQLException {
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT notif_id, type FROM notification WHERE user_id = ? AND is_new = true;";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setInt(1, userId);
+
+            List<Notification> toReturn = new ArrayList<>();
+            rs = prep.executeQuery();
+
+            while (rs.next()) {
+                int notif_id = rs.getInt(1);
+                String type = rs.getString(2);
+                toReturn.add(new Notification(userId, notif_id, type));
+            }
+            return toReturn;
+        } finally {
+            closeResultSet(rs);
+        }
+    }
+
+    public Message findMessageById(int notifId) throws SQLException {
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT event_id, user_id, message FROM message WHERE id = ?;";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setInt(1, notifId);
+
+            rs = prep.executeQuery();
+
+            if (rs.next()) {
+                int eventId = rs.getInt(1);
+                int userId = rs.getInt(2);
+                String message = rs.getString(3);
+
+                return (new Message(notifId, eventId, userId, message));
+            }
+        } finally {
+            closeResultSet(rs);
+        }
+        return null;
+    }
+
+    public EventRequest findEventRequestById(int notifId) throws SQLException {
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT event_id, user_id FROM user_request WHERE id = ?;";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setInt(1, notifId);
+
+            rs = prep.executeQuery();
+
+            if (rs.next()) {
+                int eventId = rs.getInt(1);
+                int userId = rs.getInt(2);
+
+                Event event = findEventById(eventId);
+                Account user = findUserAccountById(userId);
+
+                return(new EventRequest(event, user));
+            }
+        } finally {
+            closeResultSet(rs);
+        }
+        return null;
+    }
+
+    public Event findJoinedEventById(int notifId) throws SQLException {
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT event_id FROM user_event WHERE id = ?;";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setInt(1, notifId);
+
+            rs = prep.executeQuery();
+
+            if (rs.next()) {
+                int eventId = rs.getInt(1);
+
+                Event event = findEventById(eventId);
+
+                return event;
+            }
+        } finally {
+            closeResultSet(rs);
+        }
+        return null;
+    }
+
+    public Event findEventStateById(int notifId) throws SQLException {
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT event_id FROM user_event WHERE id = ?;";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setInt(1, notifId);
+
+            rs = prep.executeQuery();
+
+            if (rs.next()) {
+                int eventId = rs.getInt(1);
+
+                Event event = findEventById(eventId);
+
+                return event;
+            }
+        } finally {
+            closeResultSet(rs);
+        }
+        return null;
+    }
+
+    public List<Integer> findRequestsByEventId(int eventId) throws SQLException {
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT user_id FROM user_request WHERE event_id = ?;";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setInt(1, eventId);
+
+            rs = prep.executeQuery();
+            List<Integer> toReturn = new ArrayList<>();
+
+            while (rs.next()) {
+                int userId = rs.getInt(1);
+                toReturn.add(userId);
+            }
+            return toReturn;
+        } finally {
+            closeResultSet(rs);
+        }
+    }
+
+    public int findOwnerIdByEventId(int eventId) throws SQLException {
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT owner_id FROM event WHERE id = ?;";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setInt(1, eventId);
+
+            rs = prep.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } finally {
+            closeResultSet(rs);
+        }
+        return -1;
+    }
+
 
     private void makeConnection(String db) throws SQLException, ClassNotFoundException {
         Class.forName("org.sqlite.JDBC");

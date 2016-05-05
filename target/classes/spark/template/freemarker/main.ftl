@@ -5,15 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="css/normalize.css">
     <link rel="stylesheet" href="css/html5bp.css">
-    <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/ionic.min.css">    
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/chat.css">
+    <link rel="stylesheet" href="css/toaster.css">
   </head>
   <body ng-app="bulkApp">
 	<ion-nav-bar class="bar-stable">
 	  <ion-nav-back-button>
       </ion-nav-back-button>
     </ion-nav-bar>
-
+	<toaster-container toaster-options="{'time-out': 5000, 'close-button':false, 'animation-class': 'toast-top-center'}"></toaster-container>
+	
 	<ion-nav-view></ion-nav-view>
 
      <!-- Again, we're serving up the unminified source for clarity. -->
@@ -23,6 +26,9 @@
 	 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
      <script src="//cdnjs.cloudflare.com/ajax/libs/angular-moment/0.10.3/angular-moment.min.js"></script>
 	 <script src="js/app.js"></script>
+	 <script src="js/toaster.js"></script>
+	 <script src="js/msdElastic.js"></script>
+	 <script src="js/autolinker.js"></script>
 	 <script src="js/loginCtrl.js"></script>
 	 <script src="js/feedCtrl.js"></script>
 	 <script src="js/accountCtrl.js"></script>

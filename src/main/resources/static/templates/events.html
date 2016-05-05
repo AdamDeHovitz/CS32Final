@@ -28,38 +28,75 @@
       <h1 class="title">Create a New Event</h1>
 	 <button class="button button-icon icon ion-ios-close-outline" ng-click="closeModal();"></button>
     </ion-header-bar>
-   	<form name="eventCreate" ng-submit="createEvent()">
+   	<form name="forms.eventCreate" ng-submit="createEvent()">
     
     <ion-content class="padding">
       <div class="list">
-  		<label class="item item-input">
-    		<span class="input-label">Title</span>
-   		 <input type="text" ng-model="creationData.name">
+  		<label class="item item-input"
+			ng-class="{'has-error': forms.eventCreate.name.$touched && forms.eventCreate.name.$invalid }">
+    		<span class="input-label">Title*</span>
+   		 <input type="text" name="name" ng-model="creationData.name" required>
   			</label>
-  		<label class="item item-input">
-    		<span class="input-label">Location</span>
-   		 <input type="text" ng-model="creationData.location">
-  			</label>
+			<div class="form-errors" 
+  		ng-show="forms.eventCreate.name.$touched && forms.eventCreate.name.$invalid " 
+  		ng-messages="forms.eventCreate.name.$error">
+        <div class="form-error" ng-message="required">A title is required.</div>
+    	</div>
+
+  		<label class="item item-input"
+				ng-class="{'has-error': forms.eventCreate.location.$touched && forms.eventCreate.location.$invalid }">
+    		<span class="input-label">Location*</span>
+   		 <input type="text" name="location" ng-model="creationData.location" required>
+  		</label>
+			<div class="form-errors" 
+  		ng-show="forms.eventCreate.location.$touched && forms.eventCreate.location.$invalid " 
+  		ng-messages="forms.eventCreate.location.$error">
+        <div class="form-error" ng-message="required">A location is required.</div>
+    	</div>
+
        <label class="item item-input">
         <span class="input-label">Image</span>
        <input type="text" ng-model="creationData.image">
         </label>
-  		<label class="item item-input">
-    		<span class="input-label">Total Price</span>
-   			<input type="number" ng-model="creationData.cost">
+
+  		<label class="item item-input"
+			ng-class="{'has-error': forms.eventCreate.cost.$touched && forms.eventCreate.cost.$invalid }">
+    		<span class="input-label">Total Price*</span>
+   			<input type="text" name="cost" ng-model="creationData.cost"
+				ng-pattern="moneyRegex" required>
   		</label>
-		<label class="item item-input">
-    		<span class="input-label">Member Number</span>
-   			<input type="number" ng-model="creationData.members">
-  		</label>
+			<div class="form-errors" 
+  		ng-show="forms.eventCreate.cost.$touched && forms.eventCreate.cost.$invalid " 
+  		ng-messages="forms.eventCreate.cost.$error">
+        <div class="form-error" ng-message="required">A cost is required.</div>
+				<div class="form-error" ng-message="number">Must be a valid monetary amount.</div>
+				<div class="form-error" ng-message="pattern">Must be a valid monetary amount.</div>
+    	</div>
+
+		<label class="item item-input"
+			ng-class="{'has-error': forms.eventCreate.members.$touched && forms.eventCreate.members.$invalid }">
+    		<span class="input-label">Participant Number*</span>
+   			<input type="number" name="members" ng-model="creationData.members" ng-pattern="positiveIntRegex"
+					onkeypress='return event.charCode >= 48 && event.charCode <= 57' required>
+  	</label>
+		<div class="form-errors" 
+  		ng-show="forms.eventCreate.members.$touched && forms.eventCreate.members.$invalid " 
+  		ng-messages="forms.eventCreate.members.$error">
+        <div class="form-error" ng-message="required">The number of participants is required.</div>
+				<div class="form-error" ng-message="number">Must be a positive integer.</div>
+				<div class="form-error" ng-message="pattern">Must be a positive integer.</div>
+    	</div>
+
+
 		<label class="item item-input item-stacked-label">
 		<span class="input-label">Description</span>
 		<textarea ng-model="creationData.description"></textarea>
-  		</label>
+  	</label>
+
 	   </div>
     </ion-content>
 	<ion-footer-bar> 
- <button class="button button-block button-positive">Create</button>
+ <button ng-disabled="forms.eventCreate.$invalid" class="button button-block button-positive">Create</button>
 	</ion-footer-bar>
 	</form>
 

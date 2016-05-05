@@ -10,13 +10,15 @@ import com.google.common.collect.ImmutableMap;
  */
 public class Profile {
 
+  private int id;
   private String firstName;
   private String lastName;
   private String image; //maybe an image class?
   private String date;
   private List<Integer> reviews;
 
-  public Profile(String firstName, String lastName, String image, String date) {
+  public Profile(int id, String firstName, String lastName, String image, String date) {
+    this.id = id;
     this.firstName = firstName;
     this.lastName = lastName;
     if (image == null) {
@@ -30,9 +32,9 @@ public class Profile {
 
   }
 
-  public Profile(String firstName, String lastName, String image, String date,
+  public Profile(int id, String firstName, String lastName, String image, String date,
                  List<Integer> reviews) {
-    this(firstName, lastName, image, date);
+    this(id, firstName, lastName, image, date);
 
     reviews = new ArrayList(reviews);
   }

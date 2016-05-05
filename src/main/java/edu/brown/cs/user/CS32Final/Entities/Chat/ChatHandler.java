@@ -1,10 +1,17 @@
 package edu.brown.cs.user.CS32Final.Entities.Chat;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import edu.brown.cs.user.CS32Final.SQL.SqliteDatabase;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by lc50 on 27/04/16.
@@ -12,24 +19,68 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
 @WebSocket
 public class ChatHandler {
-    private String sender, msg;
+    private Gson gson = new Gson();
+    private SqliteDatabase database;
+
+    public ChatHandler() {
+        try {
+            database = new SqliteDatabase("data/database.sqlite3");
+        } catch (Exception e) {
+            System.out.println("ERROR: can't connect to database in chat");
+        }
+    }
 
     @OnWebSocketConnect
     public void onConnect(Session user) throws Exception {
-        String username = "User" + Chat.nextUserNumber++;
-        Chat.usernameMap.put(user, username);
-        Chat.broadcastMessage(sender = "Server", msg = (username + " joined the chat"));
+        //Chat.broadcastMessage(sender = "Server", msg = (username + " joined the chat"));
     }
 
     @OnWebSocketClose
     public void onClose(Session user, int statusCode, String reason) {
-        String username = Chat.usernameMap.get(user);
+        int eventId = Chat.usernameMap.get(user)[0];
+        int userId = Chat.usernameMap.get(user)[1];
+        System.out.println("closing user " + userId);
         Chat.usernameMap.remove(user);
-        Chat.broadcastMessage(sender = "Server", msg = (username + " left the chat"));
+
+        Chat.roomMap.get(eventId).remove(userId);
+
+        //Chat.broadcastMessage(sender = "Server", msg = (username + " left the chat"));
     }
 
     @OnWebSocketMessage
-    public void onMessage(Session user, String message) {
-        Chat.broadcastMessage(sender = Chat.usernameMap.get(user), msg = message);
+     public void onMessage(Session user, String message) {
+        System.out.println(message);
+
+        JsonObject obj = (JsonObject) new JsonParser().parse(message);
+        int eventId = obj.get("eventId").getAsInt();
+        int userId = obj.get("userId").getAsInt();
+
+        if (!Chat.roomMap.containsKey(eventId)) {
+            Chat.roomMap.put(eventId, new ArrayList<>());
+        }
+
+        List<Integer> usersInRoom = Chat.roomMap.get(eventId);
+
+        if (!usersInRoom.contains(userId)) {
+            int[] val = {eventId, userId};
+            Chat.usernameMap.put(user, val);
+            usersInRoom.add(userId);
+        }
+
+        Chat.broadcastMessage(eventId, message);
+
+        try {
+            int messageId = database.insertMessage(eventId, userId, obj.get("text").getAsString());
+
+            List<Integer> participants = database.findUsersByEventId(eventId);
+            for (int participant : participants) {
+                if (!Chat.roomMap.get(eventId).contains(participant)) {
+                    database.insertNotification(participant, messageId, "MESSAGE");
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

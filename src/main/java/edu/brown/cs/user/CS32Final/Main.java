@@ -35,8 +35,6 @@ import spark.template.freemarker.FreeMarkerEngine;
 public final class Main {
     private String[] args;
     private OptionSet options;
-    private OptionSpec<Integer> led;
-    private final Gson gson = new Gson();
 
     private Main(String[] args) {
         this.args = args;
@@ -75,11 +73,7 @@ public final class Main {
         OptionParser parser = new OptionParser();
         parser.accepts("gui");
 
-        //OptionSpec<String> lineSpec = parser.nonOptions()
-        //.ofType(String.class);
-
         options = parser.parse(args);
-        //List<String> input = options.valuesOf(lineSpec);
 
         String database = "";
         List<String> nonoptions = (List<String>) options.nonOptionArguments();

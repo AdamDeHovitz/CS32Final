@@ -4,6 +4,15 @@ bulkAppControllers.controller("feedCtrl", function($scope, $rootScope, $http, $t
 	$scope.curEvents = [];
 	$scope.feedData = {};
 	console.log("feed");
+/*
+	$.post("/event-feed", {id: $rootScope.account.id}, function(responseJSON) {
+			responseObject = JSON.parse(responseJSON);
+			$scope.$apply(function() {
+				$scope.curEvents = responseObject.events;
+			});
+			console.log(responseObject);
+	});
+*/
 
 	function getLoc(callback) {
             if (navigator.geolocation) {
