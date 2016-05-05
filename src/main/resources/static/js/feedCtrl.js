@@ -18,7 +18,7 @@ bulkAppControllers.controller("feedCtrl", function($scope, $rootScope, $http, $t
             if (navigator.geolocation) {
               var startPos;
               var geoOptions = {
-                 maximumAge:  60 * 1000,
+                 maximumAge:  2 * 1000,
                  timeout: 10 * 1000
               }
 
@@ -69,6 +69,23 @@ bulkAppControllers.controller("feedCtrl", function($scope, $rootScope, $http, $t
             	})
             }
     getLoc(getFeed);
+    var rad = function(x) {
+        return x * Math.PI / 180;
+       };
+
+
+    $scope.getDistance = function(event) {
+        var R = 6378137; // Earth’s mean radius in meter
+        var dLat = rad(event.lat - $scope.lat);
+        var dLong = rad(event.lng - $scope.lng);
+        var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                                     Math.cos(rad($scope.lat)) * Math.cos(rad(event.lat)) *
+                                     Math.sin(dLong / 2) * Math.sin(dLong / 2);
+                                     var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                                     var d = R * c;
+                                    return d; // returns the distance in meter
+                                     };
+
 		/*
 		if (!$rootScope.userId) {
 			$location.path("/");

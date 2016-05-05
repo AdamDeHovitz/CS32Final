@@ -47,7 +47,7 @@ bulkAppControllers.controller("eventsCtrl",
         if (navigator.geolocation) {
           var startPos;
           var geoOptions = {
-             maximumAge:  60 * 1000,
+             maximumAge:  2 * 1000,
              timeout: 10 * 1000
           }
 

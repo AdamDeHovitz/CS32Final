@@ -896,7 +896,4 @@ public class SqliteDatabase {
     }
 }
 
-/*
-SELECT * FROM event WHERE ABS(lat - 41.827 ) < 0.2 AND ABS(lng - -71.4) < 0.2 ORDER ((41.827 - lat) * (41.827 - lat) + (-71.4 - lng) * (-71.4 - lng) * 1)
 
- */
