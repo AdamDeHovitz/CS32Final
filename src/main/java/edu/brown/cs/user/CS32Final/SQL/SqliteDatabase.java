@@ -173,22 +173,28 @@ public class SqliteDatabase {
         prep.setString(3, message);
 
         prep.executeUpdate();
-        int id = findIdOfLastMessage();
-
-        System.out.println("message id: " + id);
+        int id = findIdOfLastMessage(event_id, user_id, message);
 
         return id;
 
     }
 
-    public int findIdOfLastMessage() {
+    public int findIdOfLastMessage(int event_id, int user_id, String message) {
 
         ResultSet rs = null;
         try {
-            String sql = "SELECT last_insert_rowid()";
+            String sql = "SELECT id FROM message WHERE event_id = ? AND user_id = ? AND message = ?";
             PreparedStatement prep = connection.prepareStatement(sql);
 
-            return prep.executeUpdate();
+            prep.setInt(1, event_id);
+            prep.setInt(2, user_id);
+            prep.setString(3, message);
+
+            rs = prep.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -570,7 +576,7 @@ public class SqliteDatabase {
                 String date = rs.getString(4);
                 List<Integer> reviews = findReviewsById(id);
 
-                return new Profile(firstName, lastName, image, date, reviews);
+                return new Profile(id, firstName, lastName, image, date, reviews);
             }
         } catch (SQLException e) {
             System.out.println("error in find user profile :(");
@@ -826,6 +832,24 @@ public class SqliteDatabase {
         } finally {
             closeResultSet(rs);
         }
+    }
+
+    public int findOwnerIdByEventId(int eventId) throws SQLException {
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT owner_id FROM event WHERE id = ?;";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setInt(1, eventId);
+
+            rs = prep.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } finally {
+            closeResultSet(rs);
+        }
+        return -1;
     }
 
 

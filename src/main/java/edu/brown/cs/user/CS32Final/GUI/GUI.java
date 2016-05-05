@@ -81,23 +81,36 @@ public class GUI {
     Spark.get("/", new FrontHandler(), freeMarker);
     Spark.get("/home", new FrontHandler(), freeMarker);
 
+    // Registration and profiles
     Spark.post("/register", new RegisterHandler());
     Spark.post("/login", new LoginHandler());
     Spark.post("/profile", new ProfileHandler());
     //Spark.post("/profile-reviews", new ReviewsHandler());
+
+    // Event creation
     Spark.post("/event-create", new EventCreateHandler());
+
+    // View events
     Spark.post("/event-view", new EventViewHandler());
     Spark.post("/event-feed", new EventFeedHandler());
     Spark.post("/event-owner", new EventOwnerHandler());
     Spark.post("/event-joined", new EventJoinedHandler());
     Spark.post("/event-pending", new EventPendingHandler());
+
+    // View users
+    Spark.post("/user-requests", new UserRequestsHandler());
+
+    // Event actions
     Spark.post("/event-request", new RequestEventHandler());
     Spark.post("/event-join", new JoinEventHandler());
+
+    // Changing event state
     Spark.post("/event-close", new CloseEventHandler());
     Spark.post("/event-remove", new RemoveEventHandler());
     Spark.post("/event-start", new StartEventHandler());
     Spark.post("/delete-event", new DeleteEventHandler());
 
+    // Notifications
     Spark.post("/notification", new NotificationHandler());
     Spark.post("/notification-remove", new NotificationRemoveHandler());
   }
@@ -432,6 +445,39 @@ public class GUI {
       }
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       vars.put("events", events);
+
+      Map<String, Object> variables = vars.build();
+      return gson.toJson(variables);
+    }
+  }
+
+  private class UserRequestsHandler implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+
+      int eventId = Integer.parseInt(qm.value("id"));
+      List<Integer> userIds = null;
+
+      List<Profile> users = new ArrayList<>();
+      int ownerId = -1;
+
+      try {
+        userIds = database.findRequestsByEventId(eventId);
+        
+        for (int userId : userIds) {
+          users.add(database.findUserProfileById(userId));
+        }
+        ownerId = database.findOwnerIdByEventId(eventId);
+
+
+      } catch(Exception e) {
+        System.out.println("ERROR: SQL error");
+        e.printStackTrace();
+      }
+      ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+      vars.put("ownerId", ownerId);
+      vars.put("requests", users);
 
       Map<String, Object> variables = vars.build();
       return gson.toJson(variables);
