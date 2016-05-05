@@ -1,16 +1,21 @@
 <ion-view id="userMessagesView" cache-view="false"
 	view-title="Chat">
 <div id="chatBox">
-<ion-spinner></ion-spinner>
-<ion-spinner class="loader-center" ng-if="!doneLoading">
 
-</ion-spinner>
 
 
 <ion-content has-bouncing="true" class="has-header has-footer"
 	delegate-handle="userMessageScroll">
-	
 
+<ion-spinner class="loader-center" ng-if="!doneLoading">
+</ion-spinner>
+
+
+<div class="card" ng-show="doneLoading && messages.length < 1">
+  <div class="item item-text-wrap">
+    No messages yet. Get chatting!
+  </div>
+</div>
 
 
 <div ng-repeat="message in messages" class="message-wrapper">

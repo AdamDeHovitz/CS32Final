@@ -166,15 +166,15 @@ public class SqliteDatabase {
     }
 
     public int insertMessage(int event_id, int user_id, String message) throws SQLException {
-        String sql = "INSERT INTO message (event_id, user_id, message) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO message (event_id, user_id, message) VALUES (?, ?, ?); SELECT last_insert_rowid();";
         PreparedStatement prep = connection.prepareStatement(sql);
         prep.setInt(1, event_id);
         prep.setInt(2, user_id);
         prep.setString(3, message);
 
-        prep.executeUpdate();
+        int id = prep.executeUpdate();
 
-        return findIdOfLastInsert();
+        return id;
 
     }
 

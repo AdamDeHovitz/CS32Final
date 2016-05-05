@@ -1,6 +1,6 @@
 bulkAppControllers.controller("loginCtrl", 
 	function($scope, $rootScope, $state, $rootScope, $ionicViewSwitcher, 
-		$ionicModal, $http, $ionicPopup) {
+		$ionicModal, $http, $ionicPopup, $interval, toaster) {
 
 	$scope.loginData = {};
 	$scope.registerData = {};
@@ -41,6 +41,21 @@ bulkAppControllers.controller("loginCtrl",
 	  $scope.$on('modal.removed', function() {
 	    // Execute action
 	});
+	  
+	$rootScope.stopNotifications = undefined;
+	
+	var getNotifications = function() {
+		// post request for notifications
+		console.log($rootScope.$state);
+		
+		var rand = Math.floor((Math.random() * 100) + 1);
+		if (rand > 80) {
+			console.log("new msg");
+      toaster.pop('note', "title", "text");
+			// new msg
+		}
+		
+	}
 
 	//TODO: resize when something touched to make sure can scroll (scrolldel.resize)
 
@@ -79,6 +94,7 @@ bulkAppControllers.controller("loginCtrl",
       	    		img: responseObject.picture,
       	    		reviews: responseObject.reviews};
       	    $rootScope.authenticated = true;
+      	    $rootScope.stopNotifications = $interval(getNotifications, 5000);
       	    $ionicViewSwitcher.nextDirection('forward');
       	 		$state.go("tab.feed");
           }
@@ -114,6 +130,7 @@ bulkAppControllers.controller("loginCtrl",
 	    		img: responseObject.picture,
 	    		reviews: responseObject.reviews};
 	    		$rootScope.authenticated = true;
+	    		$rootScope.stopNotifications = $interval(getNotifications, 5000);
 	    		$ionicViewSwitcher.nextDirection('forward');
 	    		$state.go("tab.feed");
 	 		};
