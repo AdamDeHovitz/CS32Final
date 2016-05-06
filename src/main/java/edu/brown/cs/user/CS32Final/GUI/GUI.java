@@ -73,7 +73,7 @@ public class GUI {
     Spark.port(getHerokuAssignedPort());
 
     Spark.externalStaticFileLocation("src/main/resources/static");
-    Spark.exception(Exception.class, new ExceptionPrinter());
+    //Spark.exception(Exception.class, new ExceptionPrinter());
 
     FreeMarkerEngine freeMarker = createEngine();
 

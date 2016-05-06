@@ -1,20 +1,9 @@
 package edu.brown.cs.user.CS32Final.Entities.Chat;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
-import edu.brown.cs.user.CS32Final.JsonUtil;
-import org.json.JSONObject;
-//import spark.Session;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static j2html.TagCreator.*;
 import org.eclipse.jetty.websocket.api.Session;
-import static spark.Spark.webSocket;
 
 /**
  * Created by lc50 on 4/27/16.

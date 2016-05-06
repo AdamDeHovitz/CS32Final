@@ -97,6 +97,21 @@
                 </configuration>
             </plugin>
             <plugin>
+                <!-- Build an executable JAR -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <mainClass>edu.brown.cs.user.CS32Final.Main</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>com.heroku.sdk</groupId>
                 <artifactId>heroku-maven-plugin</artifactId>
                 <version>0.4.4</version>
@@ -107,7 +122,7 @@
                     <processTypes>
                         <!-- Tell Heroku how to launch your application -->
                         <!-- You might have to remove the ./ in front   -->
-                        <web>./run</web>
+                        <web>java -jar target/CS32Final-1.0.jar</web>
                     </processTypes>
                 </configuration>
             </plugin>
