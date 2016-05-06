@@ -729,7 +729,7 @@ public class SqliteDatabase {
     public List<Notification> findNotificationsById(int userId) throws SQLException {
         ResultSet rs = null;
         try {
-            String sql = "SELECT notif_id, type FROM notification WHERE user_id = ? AND is_new = true;";
+            String sql = "SELECT id, notif_id, type FROM notification WHERE user_id = ? AND is_new = 1;";
             PreparedStatement prep = connection.prepareStatement(sql);
             prep.setInt(1, userId);
 
@@ -737,13 +737,30 @@ public class SqliteDatabase {
             rs = prep.executeQuery();
 
             while (rs.next()) {
-                int notif_id = rs.getInt(1);
-                String type = rs.getString(2);
+                int id = rs.getInt(1);
+                int notif_id = rs.getInt(2);
+                String type = rs.getString(3);
                 toReturn.add(new Notification(userId, notif_id, type));
+
+                updateNotification(id);
             }
             return toReturn;
         } finally {
             closeResultSet(rs);
+        }
+    }
+
+    public void updateNotification(int id) {
+        try {
+            String sql = "UPDATE notification SET is_new = ? WHERE id = ?";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setBoolean(1, false);
+            prep.setInt(2, id);
+
+            prep.executeUpdate(sql);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
