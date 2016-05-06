@@ -13,12 +13,12 @@ bulkAppControllers.controller("requestsCtrl",
 	var getRequests = function() {
 		$.post("/user-requests", {"id": eventId}, function(responseJSON) {
 			responseObject = JSON.parse(responseJSON);
-			console.log(responseObject);
+			$scope.requests = responseObject.requests;
         });
 	}
 
 	$timeout(getRequests, 0);
-	$scope.gettingReqs = $interval(getRequests, 5000);
+	//$scope.gettingReqs = $interval(getRequests, 5000);
 	/*
 	if ($state.current.name == "tab.events-requests") {
 		$scope.curProfileUrl = "events-profile";
@@ -68,10 +68,10 @@ bulkAppControllers.controller("requestsCtrl",
 			$scope.isOwner = isOwner;
 
 			console.log(responseObject);
-	});*/
+	});
 
 	$scope.requests = [{name: "Bob", img: "https://s-media-cache-ak0.pinimg.com/736x/30/6d/aa/306daa2d2a312f8ea44e9e49afc4b9d4.jpg", id: "1", rating: "4"},
 	{name: "Susy", img: "https://s-media-cache-ak0.pinimg.com/236x/78/fc/e9/78fce942b36fe0deb62564115aab1170.jpg", id: "2", rating: "3.5"},
 	{name: "Lisa", img: "https://s-media-cache-ak0.pinimg.com/736x/54/e8/2a/54e82a4d476d4fba045cbf13fee197ae.jpg", id: "3", rating: "5"}];
-
+*/
 });

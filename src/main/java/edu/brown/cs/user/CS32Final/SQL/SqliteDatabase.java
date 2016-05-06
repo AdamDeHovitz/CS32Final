@@ -729,7 +729,7 @@ public class SqliteDatabase {
     public List<Notification> findNotificationsById(int userId) throws SQLException {
         ResultSet rs = null;
         try {
-            String sql = "SELECT notif_id, type FROM notification WHERE user_id = ? AND is_new = true;";
+            String sql = "SELECT notif_id, type FROM notification WHERE user_id = ? AND is_new;";
             PreparedStatement prep = connection.prepareStatement(sql);
             prep.setInt(1, userId);
 
