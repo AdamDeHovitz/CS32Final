@@ -1,5 +1,7 @@
 package edu.brown.cs.user.CS32Final.GUI;
 
+import static spark.Spark.webSocket;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -12,7 +14,11 @@ import java.util.Map;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
-import edu.brown.cs.user.CS32Final.Entities.Account.*;
+import edu.brown.cs.user.CS32Final.Entities.Account.Account;
+import edu.brown.cs.user.CS32Final.Entities.Account.Notification;
+import edu.brown.cs.user.CS32Final.Entities.Account.NotificationType;
+import edu.brown.cs.user.CS32Final.Entities.Account.Profile;
+import edu.brown.cs.user.CS32Final.Entities.Account.Review;
 import edu.brown.cs.user.CS32Final.Entities.Chat.ChatHandler;
 import edu.brown.cs.user.CS32Final.Entities.Chat.Message;
 import edu.brown.cs.user.CS32Final.Entities.Event.Event;
@@ -29,8 +35,6 @@ import spark.Route;
 import spark.Spark;
 import spark.TemplateViewRoute;
 import spark.template.freemarker.FreeMarkerEngine;
-
-import static spark.Spark.webSocket;
 
 /**
  * Created by adamdeho on 4/21/16.
@@ -160,7 +164,7 @@ public class GUI {
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
 
 
-      
+
       // check if email already in database
 
       try {
@@ -169,7 +173,7 @@ public class GUI {
     	hasError = true;
     	errorMsg = "There is a problem with adding to the database. Try again later.";
       }
-      
+
       if (!hasError) {
     	  try {
     		  user = database.findUserByUsername(email);
@@ -189,7 +193,7 @@ public class GUI {
             	  errorMsg = "There is a problem with adding to the database. Try again later.";
     	      }
     	  }
-    	  
+
       }
 
       vars.put("hasError", hasError);
@@ -466,7 +470,7 @@ public class GUI {
 
       try {
         userIds = database.findRequestsByEventId(eventId);
-        
+
         for (int userId : userIds) {
           users.add(database.findUserProfileById(userId));
         }
@@ -517,8 +521,8 @@ public class GUI {
 
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       //event.getEventData(vars);
-      Map<String, Object> variables = vars.build();
       vars.put("hasError", false);
+      Map<String, Object> variables = vars.build();
       return gson.toJson(variables);
     }
   }
