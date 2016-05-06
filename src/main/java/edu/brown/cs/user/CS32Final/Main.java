@@ -34,7 +34,6 @@ import spark.template.freemarker.FreeMarkerEngine;
  */
 public final class Main {
     private String[] args;
-    private OptionSet options;
 
     private Main(String[] args) {
         this.args = args;
@@ -69,33 +68,7 @@ public final class Main {
      * Prepares for autocorrect by reading options and establishing a trie.
      */
     private void run() {
-
-        OptionParser parser = new OptionParser();
-        parser.accepts("gui");
-
-        options = parser.parse(args);
-
-        String database = "";
-        List<String> nonoptions = (List<String>) options.nonOptionArguments();
-        // Please check that there are correct number of arguments here::::::::
-        if (nonoptions.size() == 1) {
-            database = nonoptions.get(0);
-        } else {
-            System.out.println(
-                    "ERROR: Please query with this format: ./run <sql_db>");
-            System.exit(1);
-        }
-
-        if (database.equals("")) {
-            System.out.println("ERROR: Please specify a file");
-            System.exit(1);
-        }
-
-        GUI gui = new GUI(database);
-        //checking if the database has a valid/usable connection
-
-
-        gui.runSparkServer();
+        GUI gui = new GUI();
     }
 
 }

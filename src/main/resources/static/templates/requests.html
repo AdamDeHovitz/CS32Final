@@ -8,15 +8,15 @@
   
   <div class="list">
   <div ng-repeat="request in requests" class="item item-thumbnail-left">
-  		<img src="{{request.img}}" ng-click="goProfile(request.id);">
-		<b><h2 ng-click="goProfile(request.id);">{{request.name}}</h2></b>
+  		<img src="{{request.image}}" ng-click="goProfile(request.id);">
+		<b><h2 ng-click="goProfile(request.id);">{{request.firstName}} {{request.lastName}}</h2></b>
 		<div class="star-ratings-sprite" style="margin: 3px 0px;">
  	 <span style="width:{{(request.rating / 5) * 100}}%" class="star-ratings-sprite-rating">
   	</span></div>
-		<div class="button button-small button-positive" style="min-width:80px;" ng-click="acceptRequest(request.id, request.name)">
+		<div class="button button-small button-positive" style="min-width:80px;" ng-click="acceptRequest(request.id, request.firstName)">
  			Accept
 		</div>
-		<div class="button button-small button-stable" ng-click="deleteRequest(request.id, request.name)" style="border: #b2b2b2 1px solid;min-width:60px">
+		<div class="button button-small button-stable" ng-click="deleteRequest(request.id, request.firstName)" style="border: #b2b2b2 1px solid;min-width:60px">
   			Delete
 		</div>
 	</div>

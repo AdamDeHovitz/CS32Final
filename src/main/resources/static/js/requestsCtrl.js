@@ -55,6 +55,11 @@ bulkAppControllers.controller("requestsCtrl",
 				newList.push($scope.requests[i]);
 			}
 		}
+		$.post("/event-join", postParams, 
+			function(responseJSON) {
+				responseObject = JSON.parse(responseJSON);
+				console.log(responseObject);
+		});
 		$scope.requests = newList;
 		$scope.currentMsg = name + " has been accepted.";
 	}
