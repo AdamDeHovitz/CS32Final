@@ -20,6 +20,7 @@
 	<ion-nav-view></ion-nav-view>
 
      <!-- Again, we're serving up the unminified source for clarity. -->
+     <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyAV2Ed7TgQofJ_W0NpskOYg6XplP_0aN_s&sensor=true"></script>
      <script src="js/jquery-2.1.1.js"></script>
 	 <script src="js/ionic.bundle.min.js"></script> 
 	 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular-messages.js"></script>

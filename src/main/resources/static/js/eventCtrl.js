@@ -28,6 +28,12 @@ bulkAppControllers.controller("eventCtrl",
 	 };
 
 
+
+
+
+
+
+
 	$scope.confirmJoin = function() {
 		console.log("joining");
 		$scope.isMember = true;
