@@ -46,7 +46,6 @@ bulkAppControllers.controller("loginCtrl",
 	
 	var getNotifications = function() {
 		// post request for notifications
-		console.log($rootScope.$state);
 
 		$.post("/notification", {"id": $rootScope.account.id}, function(responseJSON) {
 			responseObject = JSON.parse(responseJSON);

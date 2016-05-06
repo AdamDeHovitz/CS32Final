@@ -55,6 +55,7 @@ bulkAppControllers.controller("requestsCtrl",
 				newList.push($scope.requests[i]);
 			}
 		}
+		var postParams = {id: id, eventId: eventId};
 		$.post("/event-join", postParams, 
 			function(responseJSON) {
 				responseObject = JSON.parse(responseJSON);

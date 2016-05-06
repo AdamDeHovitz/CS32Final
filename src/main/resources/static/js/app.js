@@ -148,7 +148,24 @@ bulkApp.config(function($stateProvider, $urlRouterProvider) {
                 }
             }
          })
-
+        .state('tab.members', {
+            url: '/members/:eventId',
+            views: {
+                'tab-feed': {
+                    templateUrl: 'templates/members.html',
+                    controller: 'membersCtrl'
+                }
+            }
+         })
+         .state('tab.events-members', {
+            url: '/events-members/:eventId',
+            views: {
+                'tab-events': {
+                    templateUrl: 'templates/members.html',
+                    controller: 'membersCtrl'
+                }
+            }
+         })
  		 .state('tab.profile', {
  		 	url: '/profile/:userId',
     		views: {
