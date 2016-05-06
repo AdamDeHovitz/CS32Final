@@ -94,6 +94,15 @@ bulkApp.config(function($stateProvider, $urlRouterProvider) {
                 }
             }
          })
+        .state('tab.chat', {
+            url: '/chat/:eventId',
+            views: {
+                'tab-feed': {
+                    templateUrl: 'templates/chat.html',
+                    controller: 'chatCtrl'
+                }
+            }
+         })
          .state('tab.events-chat', {
             url: '/events-chat/:eventId',
             views: {
@@ -103,6 +112,43 @@ bulkApp.config(function($stateProvider, $urlRouterProvider) {
                 }
             }
          })
+        .state('tab.map', {
+            url: '/map/:eventId',
+            views: {
+                'tab-feed': {
+                    templateUrl: 'templates/map.html',
+                    controller: 'mapCtrl'
+                }
+            }
+         })
+         .state('tab.events-map', {
+            url: '/events-map/:eventId',
+            views: {
+                'tab-events': {
+                    templateUrl: 'templates/map.html',
+                    controller: 'mapCtrl'
+                }
+            }
+         })
+        .state('tab.requests', {
+            url: '/requests/:eventId',
+            views: {
+                'tab-feed': {
+                    templateUrl: 'templates/requests.html',
+                    controller: 'requestsCtrl'
+                }
+            }
+         })
+         .state('tab.events-requests', {
+            url: '/events-requests/:eventId',
+            views: {
+                'tab-events': {
+                    templateUrl: 'templates/requests.html',
+                    controller: 'requestsCtrl'
+                }
+            }
+         })
+
  		 .state('tab.profile', {
  		 	url: '/profile/:userId',
     		views: {

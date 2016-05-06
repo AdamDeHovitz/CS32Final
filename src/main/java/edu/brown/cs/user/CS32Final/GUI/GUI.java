@@ -1,5 +1,7 @@
 package edu.brown.cs.user.CS32Final.GUI;
 
+import static spark.Spark.webSocket;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -12,7 +14,11 @@ import java.util.Map;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
-import edu.brown.cs.user.CS32Final.Entities.Account.*;
+import edu.brown.cs.user.CS32Final.Entities.Account.Account;
+import edu.brown.cs.user.CS32Final.Entities.Account.Notification;
+import edu.brown.cs.user.CS32Final.Entities.Account.NotificationType;
+import edu.brown.cs.user.CS32Final.Entities.Account.Profile;
+import edu.brown.cs.user.CS32Final.Entities.Account.Review;
 import edu.brown.cs.user.CS32Final.Entities.Chat.ChatHandler;
 import edu.brown.cs.user.CS32Final.Entities.Chat.Message;
 import edu.brown.cs.user.CS32Final.Entities.Event.Event;
@@ -30,8 +36,6 @@ import spark.Spark;
 import spark.TemplateViewRoute;
 import spark.template.freemarker.FreeMarkerEngine;
 
-import static spark.Spark.webSocket;
-
 /**
  * Created by adamdeho on 4/21/16.
  */
@@ -42,6 +46,13 @@ public class GUI {
   private final Gson gson = new Gson();
 
   public GUI() {
+    try {
+      database = new SqliteDatabase("data/database.sqlite3");
+      database.createTables();
+    } catch(Exception e) {
+      System.out.println("ERROR: SQL error");
+      e.printStackTrace();
+    }
     runSparkServer();
   }
 
@@ -76,14 +87,6 @@ public class GUI {
     //Spark.exception(Exception.class, new ExceptionPrinter());
 
     FreeMarkerEngine freeMarker = createEngine();
-
-    try {
-      database = new SqliteDatabase("data/database.sqlite3");
-      database.createTables();
-    } catch(Exception e) {
-      System.out.println("ERROR: SQL error");
-      e.printStackTrace();
-    }
 
     webSocket("/chat", ChatHandler.class);
 
@@ -172,7 +175,7 @@ public class GUI {
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
 
 
-      
+
       // check if email already in database
 
       try {
@@ -181,7 +184,7 @@ public class GUI {
     	hasError = true;
     	errorMsg = "There is a problem with adding to the database. Try again later.";
       }
-      
+
       if (!hasError) {
     	  try {
     		  user = database.findUserByUsername(email);
@@ -201,7 +204,7 @@ public class GUI {
             	  errorMsg = "There is a problem with adding to the database. Try again later.";
     	      }
     	  }
-    	  
+
       }
 
       vars.put("hasError", hasError);
@@ -283,12 +286,14 @@ public class GUI {
       rawCost = rawCost.replace("$", "");
       double cost = Double.parseDouble(rawCost);
       String location = qm.value("location");
+      double lat = Double.parseDouble(qm.value("lat"));
+      double lng = Double.parseDouble(qm.value("lng"));
       String[][] tags = gson.fromJson(qm.value("tags"), String[][].class);
 
       System.out.println("about to go to db methods");
       int event_id = -1;
       try {
-        database.insertEvent(owner_id, state, name, description, image, member_capacity, cost, location, tags);
+        database.insertEvent(owner_id, state, name, description, image, member_capacity, cost, location, tags, lat, lng);
       } catch(Exception e) {
         System.out.println("ERROR: SQL error");
         e.printStackTrace();
@@ -378,12 +383,14 @@ public class GUI {
       QueryParamsMap qm = req.queryMap();
 
       int id = Integer.parseInt(qm.value("id"));
+      double lat = Double.parseDouble(qm.value("lat"));
+      double lng = Double.parseDouble(qm.value("lng"));
       List<Event> events = null;
       try {
         List<Integer> handled = database.findEventIdsbyOwnerId(id);
         handled.addAll(database.findEventsByRequestedId(id));
         handled.addAll(database.findEventsByUserId(id));
-        events = database.findNewNearbyEvents(handled);
+        events = database.findNewNearbyEvents(handled, lat, lng);
       } catch(Exception e) {
         System.out.println("ERROR: SQL error");
         e.printStackTrace();
@@ -518,6 +525,7 @@ public class GUI {
       try {
         database.requestUserIntoEvent(eventId, id, event.getHost().getId());
         database.incrementHostRequestNotif(event.getHost().getId());
+        database.insertNotification(event.getHost().getId(), eventId, "REQUEST");
       } catch(Exception e) {
         System.out.println("ERROR: SQL error");
         e.printStackTrace();
@@ -525,8 +533,8 @@ public class GUI {
 
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       //event.getEventData(vars);
-      Map<String, Object> variables = vars.build();
       vars.put("hasError", false);
+      Map<String, Object> variables = vars.build();
       return gson.toJson(variables);
     }
   }

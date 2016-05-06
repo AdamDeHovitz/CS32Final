@@ -49,11 +49,11 @@ bulkAppControllers.controller("loginCtrl",
 		console.log($rootScope.$state);
 		
 		var rand = Math.floor((Math.random() * 100) + 1);
-		if (rand > 60) {
+		if (rand > 95) {
 			console.log("new msg");
 			var f = function() {console.log("route!!");toaster.clear()};
 			toaster.pop({type: 'note', title: "title", body:"text", 
-				timeout: 100000, clickHandler: f, showCloseButton: false});			// new msg
+				timeout: 50000, clickHandler: f, showCloseButton: false});			// new msg
 		}
 		
 	}
