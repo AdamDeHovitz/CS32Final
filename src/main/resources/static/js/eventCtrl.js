@@ -123,3 +123,5 @@ bulkAppControllers.controller("eventCtrl",
 			$scope.events = data.entries;
 		});*/
 });
+
+
