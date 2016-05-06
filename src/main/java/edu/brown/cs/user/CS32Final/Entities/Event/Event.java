@@ -21,28 +21,75 @@ public class Event {
   private int maxMembers;
   private double cost;
   private String location;
+  private double lat;
+  private double lng;
   private List<String> tags;
 
   public Event(int id, EventState state, String name,
                String description, String image, Account host,
                List<Integer> members, int maxMembers, double cost,
-               String location, List<String> tags) {
+               String location, List<String> tags, double lat, double lng) {
     this.id = id;
     this.state = state;
     this.name = name;
-    this.description = description;
-    this.image = image;
+
+    if (description == null) {
+      this.description = "";
+    } else {
+      this.description = description;
+    }
+
+    if (image == null) {
+      this.image = "";
+    } else {
+      this.image = image;
+    }
+
     this.host = host;
     this.members = members;
     this.maxMembers = maxMembers;
     this.cost = cost;
     this.location = location;
     this.tags = tags;
+    this.lat = lat;
+    this.lng = lng;
+
   }
 
 
   //read from db
 
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public double getCost() {
+    return cost;
+  }
+
+  public void setCost(double cost) {
+    this.cost = cost;
+  }
+
+  public double getLat() {
+    return lat;
+  }
+
+  public void setLat(double lat) {
+    this.lat = lat;
+  }
+
+  public double getLng() {
+    return lng;
+  }
+
+  public void setLng(double lng) {
+    this.lng = lng;
+  }
   public int getId() {
     return id;
   }
@@ -148,7 +195,10 @@ public class Event {
             .put("members", getMembers())
             .put("CurMemberNum", 1 + getMembers().size())
             .put("desiredMembers", getMaxMembers())
+            .put("lat", getLat())
+            .put("lng", getLng())
             .put("tags", getTags());
+
   }
 
 }

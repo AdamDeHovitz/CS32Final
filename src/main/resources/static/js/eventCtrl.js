@@ -9,10 +9,12 @@ bulkAppControllers.controller("eventCtrl",
 		$scope.curProfileUrl = "events-profile";
 		$scope.curChatUrl = "events-chat";
 		$scope.curRequestsUrl = "events-requests"
+		$scope.curMapUrl = "events-map"
 	} else {
 		$scope.curProfileUrl = "profile";
 		$scope.curChatUrl = "chat";
 		$scope.curRequestsUrl = "requests"
+		$scope.curMapUrl = "map"
 	}
 	
 	 // A confirm dialog

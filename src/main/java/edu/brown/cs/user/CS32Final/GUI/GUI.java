@@ -45,8 +45,14 @@ public class GUI {
 
   private final Gson gson = new Gson();
 
-  public GUI() {
-    runSparkServer();
+  public GUI(String db) {
+    try {
+      database = new SqliteDatabase("data/database.sqlite3");
+      database.createTables();
+    } catch(Exception e) {
+      System.out.println("ERROR: SQL error");
+      e.printStackTrace();
+    }
   }
 
   private static FreeMarkerEngine createEngine() {
@@ -65,19 +71,11 @@ public class GUI {
   /**
    * Runs the spark server.
    */
-  private void runSparkServer() {
+  public void runSparkServer() {
     Spark.externalStaticFileLocation("src/main/resources/static");
     Spark.exception(Exception.class, new ExceptionPrinter());
 
     FreeMarkerEngine freeMarker = createEngine();
-
-    try {
-      database = new SqliteDatabase("data/database.sqlite3");
-      database.createTables();
-    } catch(Exception e) {
-      System.out.println("ERROR: SQL error");
-      e.printStackTrace();
-    }
 
     webSocket("/chat", ChatHandler.class);
 
@@ -85,23 +83,36 @@ public class GUI {
     Spark.get("/", new FrontHandler(), freeMarker);
     Spark.get("/home", new FrontHandler(), freeMarker);
 
+    // Registration and profiles
     Spark.post("/register", new RegisterHandler());
     Spark.post("/login", new LoginHandler());
     Spark.post("/profile", new ProfileHandler());
     //Spark.post("/profile-reviews", new ReviewsHandler());
+
+    // Event creation
     Spark.post("/event-create", new EventCreateHandler());
+
+    // View events
     Spark.post("/event-view", new EventViewHandler());
     Spark.post("/event-feed", new EventFeedHandler());
     Spark.post("/event-owner", new EventOwnerHandler());
     Spark.post("/event-joined", new EventJoinedHandler());
     Spark.post("/event-pending", new EventPendingHandler());
+
+    // View users
+    Spark.post("/user-requests", new UserRequestsHandler());
+
+    // Event actions
     Spark.post("/event-request", new RequestEventHandler());
     Spark.post("/event-join", new JoinEventHandler());
+
+    // Changing event state
     Spark.post("/event-close", new CloseEventHandler());
     Spark.post("/event-remove", new RemoveEventHandler());
     Spark.post("/event-start", new StartEventHandler());
     Spark.post("/delete-event", new DeleteEventHandler());
 
+    // Notifications
     Spark.post("/notification", new NotificationHandler());
     Spark.post("/notification-remove", new NotificationRemoveHandler());
   }
@@ -264,12 +275,14 @@ public class GUI {
       rawCost = rawCost.replace("$", "");
       double cost = Double.parseDouble(rawCost);
       String location = qm.value("location");
+      double lat = Double.parseDouble(qm.value("lat"));
+      double lng = Double.parseDouble(qm.value("lng"));
       String[][] tags = gson.fromJson(qm.value("tags"), String[][].class);
 
       System.out.println("about to go to db methods");
       int event_id = -1;
       try {
-        database.insertEvent(owner_id, state, name, description, image, member_capacity, cost, location, tags);
+        database.insertEvent(owner_id, state, name, description, image, member_capacity, cost, location, tags, lat, lng);
       } catch(Exception e) {
         System.out.println("ERROR: SQL error");
         e.printStackTrace();
@@ -340,6 +353,13 @@ public class GUI {
 
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       event.getEventData(vars);
+
+      try {
+        List<Integer> requests = database.findRequestsByEventId(event.getId());
+        vars.put("requests", requests);
+      } catch (SQLException e) {
+        e.printStackTrace();
+      }
       Map<String, Object> variables = vars.build();
       return gson.toJson(variables);
     }
@@ -352,12 +372,14 @@ public class GUI {
       QueryParamsMap qm = req.queryMap();
 
       int id = Integer.parseInt(qm.value("id"));
+      double lat = Double.parseDouble(qm.value("lat"));
+      double lng = Double.parseDouble(qm.value("lng"));
       List<Event> events = null;
       try {
         List<Integer> handled = database.findEventIdsbyOwnerId(id);
         handled.addAll(database.findEventsByRequestedId(id));
         handled.addAll(database.findEventsByUserId(id));
-        events = database.findNewNearbyEvents(handled);
+        events = database.findNewNearbyEvents(handled, lat, lng);
       } catch(Exception e) {
         System.out.println("ERROR: SQL error");
         e.printStackTrace();
@@ -435,6 +457,39 @@ public class GUI {
     }
   }
 
+  private class UserRequestsHandler implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+
+      int eventId = Integer.parseInt(qm.value("id"));
+      List<Integer> userIds = null;
+
+      List<Profile> users = new ArrayList<>();
+      int ownerId = -1;
+
+      try {
+        userIds = database.findRequestsByEventId(eventId);
+
+        for (int userId : userIds) {
+          users.add(database.findUserProfileById(userId));
+        }
+        ownerId = database.findOwnerIdByEventId(eventId);
+
+
+      } catch(Exception e) {
+        System.out.println("ERROR: SQL error");
+        e.printStackTrace();
+      }
+      ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+      vars.put("ownerId", ownerId);
+      vars.put("requests", users);
+
+      Map<String, Object> variables = vars.build();
+      return gson.toJson(variables);
+    }
+  }
+
 
   private class RequestEventHandler implements Route {
     @Override
@@ -503,6 +558,12 @@ public class GUI {
         if (event.getMembers().size() + 1 == event.getMaxMembers()) {
           database.setEventState(eventId, "CLOSED");
           vars.put("state", "CLOSED");
+
+          List<Integer> users = database.findUsersByEventId(eventId);
+
+          for (int userId : users) {
+            database.insertNotification(userId, eventId, "STATE");
+          }
         }
         else {
           vars.put("state", "OPEN");
@@ -592,6 +653,12 @@ public class GUI {
           database.setEventState(eventId, "STARTED");
           for (int member: event.getMembers()) {
             database.incrementJoinedNotif(member);
+          }
+
+          List<Integer> users = database.findUsersByEventId(eventId);
+
+          for (int userId : users) {
+            database.insertNotification(userId, eventId, "STATE");
           }
         }
         else {

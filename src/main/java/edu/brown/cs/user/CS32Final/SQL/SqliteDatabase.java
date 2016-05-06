@@ -58,7 +58,9 @@ public class SqliteDatabase {
                 "image TEXT, " +
                 "member_capacity INT, " +
                 "cost REAL, " +
-                "location TEXT)";
+                "location TEXT, " +
+                "lat REAL, " +
+                "lng REAL)";
 
         String eventTags = "CREATE TABLE IF NOT EXISTS event_tags(" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -103,6 +105,7 @@ public class SqliteDatabase {
         prep.executeBatch();
     }
 
+
   /**
    * Method for inserting a user, with all the following information, into the
    * db.
@@ -119,12 +122,12 @@ public class SqliteDatabase {
    */
     public void insertEvent(int owner_id, String state, String name,
                             String description,
-                            String image, int member_capacity, double cost, String location, String[][] tags)
+                            String image, int member_capacity, double cost, String location, String[][] tags, double lat, double lng)
             throws SQLException {
 
 
         String sql = "INSERT INTO event (owner_id, state, name, description, " +
-                "image, member_capacity, cost, location) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                "image, member_capacity, cost, location, lat, lng) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement prep = connection.prepareStatement(sql);
         prep.setInt(1, owner_id);
         prep.setString(2, state);
@@ -134,6 +137,8 @@ public class SqliteDatabase {
         prep.setInt(6, member_capacity);
         prep.setDouble(7, cost);
         prep.setString(8, location);
+        prep.setDouble(9, lat);
+        prep.setDouble(10, lng);
         prep.executeUpdate();
     }
 
@@ -165,26 +170,35 @@ public class SqliteDatabase {
     }
 
     public int insertMessage(int event_id, int user_id, String message) throws SQLException {
-        String sql = "INSERT INTO message (event_id, user_id, message) VALUES (?, ?, ?); SELECT last_insert_rowid();";
+        String sql = "INSERT INTO message (event_id, user_id, message) VALUES (?, ?, ?)";
         PreparedStatement prep = connection.prepareStatement(sql);
         prep.setInt(1, event_id);
         prep.setInt(2, user_id);
         prep.setString(3, message);
 
-        int id = prep.executeUpdate();
+        prep.executeUpdate();
+        int id = findIdOfLastMessage(event_id, user_id, message);
 
         return id;
 
     }
 
-    public int findIdOfLastInsert() {
+    public int findIdOfLastMessage(int event_id, int user_id, String message) {
 
         ResultSet rs = null;
         try {
-            String sql = "SELECT last_insert_rowid()";
+            String sql = "SELECT id FROM message WHERE event_id = ? AND user_id = ? AND message = ?";
             PreparedStatement prep = connection.prepareStatement(sql);
 
-            return prep.executeUpdate();
+            prep.setInt(1, event_id);
+            prep.setInt(2, user_id);
+            prep.setString(3, message);
+
+            rs = prep.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -493,12 +507,26 @@ public class SqliteDatabase {
         return null;
     }
 
-    public List<Event> findNewNearbyEvents(List<Integer> taken) throws SQLException {
+    public List<Event> findNewNearbyEvents(List<Integer> taken, double lat, double lng) throws SQLException {
         List<Event> toReturn = new ArrayList();
         ResultSet rs = null;
+
+        double fudge = Math.pow(Math.cos(Math.toRadians(lat)),2);
         try {
-            String sql = "SELECT id, owner_id, state, name, description, image, member_capacity, cost, location FROM event ORDER BY id DESC;";
+            String sql = "SELECT id, owner_id, state, name, description, image," +
+                    " member_capacity, cost, location, lat, lng FROM event " +
+                    "WHERE ABS(lat - ?) < 0.2 AND " +
+                    "ABS(lng - ?) < 0.2 ORDER BY" +
+                    "((? - lat) * (? - lat) + " +
+                    "(? - lng) * (? - lng) * ?);";
             PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setDouble(1, lat);
+            prep.setDouble(2, lng);
+            prep.setDouble(3, lat);
+            prep.setDouble(4, lat);
+            prep.setDouble(5, lng);
+            prep.setDouble(6, lng);
+            prep.setDouble(7, fudge);
 
             rs = prep.executeQuery();
 
@@ -516,8 +544,10 @@ public class SqliteDatabase {
                     String location = rs.getString(9);
                     List<String> tags = findTagsByEventId(eventId);
                     List<Integer> members = findUsersByEventId(eventId);
+                    double nlat = rs.getDouble(10);
+                    double nlng = rs.getDouble(11);
 
-                    toReturn.add(new Event(eventId, state, name, description, image, host, members, member_capacity, cost, location, tags));
+                    toReturn.add(new Event(eventId, state, name, description, image, host, members, member_capacity, cost, location, tags, nlat, nlng));
                 }
             }
         } finally {
@@ -566,7 +596,7 @@ public class SqliteDatabase {
                 String date = rs.getString(4);
                 List<Integer> reviews = findReviewsById(id);
 
-                return new Profile(firstName, lastName, image, date, reviews);
+                return new Profile(id, firstName, lastName, image, date, reviews);
             }
         } catch (SQLException e) {
             System.out.println("error in find user profile :(");
@@ -603,7 +633,7 @@ public class SqliteDatabase {
 
         ResultSet rs = null;
         try {
-            String sql = "SELECT owner_id, state, name, description, image, member_capacity, cost, location FROM event WHERE id = ?;";
+            String sql = "SELECT owner_id, state, name, description, image, member_capacity, cost, location, lat, lng FROM event WHERE id = ?;";
             PreparedStatement prep = connection.prepareStatement(sql);
             prep.setInt(1, id);
 
@@ -619,10 +649,13 @@ public class SqliteDatabase {
                 int member_capacity = rs.getInt(6);
                 double cost = rs.getDouble(7);
                 String location = rs.getString(8);
+                double lat = rs.getDouble(9);
+                double lng = rs.getDouble(10);
+
                 List<String> tags = findTagsByEventId(id);
                 List<Integer> members = findUsersByEventId(id);
 
-                return new Event(id, state, name, description, image, host, members, member_capacity, cost, location, tags);
+                return new Event(id, state, name, description, image, host, members, member_capacity, cost, location, tags, lat, lng);
             }
         } finally {
             closeResultSet(rs);
@@ -804,6 +837,45 @@ public class SqliteDatabase {
         return null;
     }
 
+    public List<Integer> findRequestsByEventId(int eventId) throws SQLException {
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT user_id FROM user_request WHERE event_id = ?;";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setInt(1, eventId);
+
+            rs = prep.executeQuery();
+            List<Integer> toReturn = new ArrayList<>();
+
+            while (rs.next()) {
+                int userId = rs.getInt(1);
+                toReturn.add(userId);
+            }
+            return toReturn;
+        } finally {
+            closeResultSet(rs);
+        }
+    }
+
+    public int findOwnerIdByEventId(int eventId) throws SQLException {
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT owner_id FROM event WHERE id = ?;";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setInt(1, eventId);
+
+            rs = prep.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } finally {
+            closeResultSet(rs);
+        }
+        return -1;
+    }
+
+
     private void makeConnection(String db) throws SQLException, ClassNotFoundException {
         Class.forName("org.sqlite.JDBC");
         String urlToDB = "jdbc:sqlite:" + db;
@@ -822,3 +894,5 @@ public class SqliteDatabase {
         }
     }
 }
+
+

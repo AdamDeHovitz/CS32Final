@@ -10,7 +10,7 @@ public class EventRequest extends Event {
 
     public EventRequest(Event event, Account user) {
         super(event.getId(), event.getState(), event.getName(), event.getDesc(), event.getImage(), event.getHost(),
-                event.getMembers(), event.getMaxMembers(), event.getCostPP(), event.getLocation(), event.getTags());
+                event.getMembers(), event.getMaxMembers(), event.getCostPP(), event.getLocation(), event.getTags(), event.getLat(), event.getLng());
         this.userRequester = user;
     }
 

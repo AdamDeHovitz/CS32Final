@@ -1,5 +1,5 @@
 bulkAppControllers.controller("requestsCtrl", 
-	function($scope, $rootScope, $http, $stateParams, $state) {
+	function($scope, $rootScope, $http, $stateParams, $state, $timeout, $interval) {
 
 	var eventId = $stateParams.eventId;
 	$scope.$on('$ionicView.enter', function() {
@@ -11,7 +11,10 @@ bulkAppControllers.controller("requestsCtrl",
 	});
 
 	var getRequests = function() {
-
+		$.post("/user-requests", {"id": eventId}, function(responseJSON) {
+			responseObject = JSON.parse(responseJSON);
+			console.log(responseObject);
+        });
 	}
 
 	$timeout(getRequests, 0);

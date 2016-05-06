@@ -2,7 +2,10 @@
       <img src="{{event.image}}">
       <h2>{{event.name}}</h2>
       <p>{{event.location}}<br>
+          <p> {{getDistance(event) | number: 0}} meters away <br>
       	<b>${{(event.cost / event.maxMembers) | number: 2}}</b>/person
       </p>
        <i class="icon ion-ios-arrow-right"></i>
     </a>
+
+

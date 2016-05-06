@@ -75,66 +75,27 @@ public final class Main {
 
         options = parser.parse(args);
 
-        if (options.has("gui")) {
-            GUI gui = new GUI();
+        String database = "";
+        List<String> nonoptions = (List<String>) options.nonOptionArguments();
+        // Please check that there are correct number of arguments here::::::::
+        if (nonoptions.size() == 1) {
+            database = nonoptions.get(0);
         } else {
-            try {
-                InputStreamReader isr = new InputStreamReader(System.in, "UTF-8");
-                BufferedReader br = new BufferedReader(isr);
-                String line = "";
-                System.out.println("Ready");
-                while ((line = br.readLine()) != null && line.length() > 0) {
-
-                }
-                isr.close();
-            } catch (IOException ioe) {
-                System.out.println("ERROR: input unreadable");
-                System.exit(1);
-            }
+            System.out.println(
+                    "ERROR: Please query with this format: ./run <sql_db>");
+            System.exit(1);
         }
+
+        if (database.equals("")) {
+            System.out.println("ERROR: Please specify a file");
+            System.exit(1);
+        }
+
+        GUI gui = new GUI(database);
+        //checking if the database has a valid/usable connection
+
+
+        gui.runSparkServer();
     }
 
-
-    /**
-     * Runs the spark server.
-     */
-//    private void runSparkServer() {
-//        Spark.externalStaticFileLocation("src/main/resources/static");
-//        Spark.exception(Exception.class, new ExceptionPrinter());
-//
-//        FreeMarkerEngine freeMarker = createEngine();
-//
-//        // Setup Spark Routes
-//        Spark.get("/", new FrontHandler(), freeMarker);
-//
-//    }
-
-    /**
-     * Exception Printer for errors I think. I didn't write it.
-     */
-    private static class ExceptionPrinter implements ExceptionHandler {
-        @Override
-        public void handle(Exception e, Request req, Response res) {
-            res.status(500);
-            StringWriter stacktrace = new StringWriter();
-            try (PrintWriter pw = new PrintWriter(stacktrace)) {
-                pw.println("<pre>");
-                e.printStackTrace(pw);
-                pw.println("</pre>");
-            }
-            res.body(stacktrace.toString());
-        }
-    }
-
-    /**
-     * Handles the main page.
-     */
-    private class FrontHandler implements TemplateViewRoute {
-        @Override
-        public ModelAndView handle(Request req, Response res) {
-            Map<String, Object> variables =
-                    ImmutableMap.of("title", "Type Away!", "content", "");
-            return new ModelAndView(variables, "main.ftl");
-        }
-    }
 }
