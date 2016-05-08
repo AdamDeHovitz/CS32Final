@@ -10,12 +10,14 @@ import java.util.Date;
 public class Message {
   private int id;
   private int userId;
+  private int eventId;
   private String content;
   private String time;
 
   public Message(int notifId, int userId, int eventId, String message) {
     this.id = notifId;
     this.userId = userId;
+    this.eventId = eventId;
     this.content = message;
   }
 }

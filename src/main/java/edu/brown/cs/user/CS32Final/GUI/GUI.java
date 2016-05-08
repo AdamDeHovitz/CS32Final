@@ -14,11 +14,14 @@ import java.util.Map;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import edu.brown.cs.user.CS32Final.Entities.Account.Account;
 import edu.brown.cs.user.CS32Final.Entities.Account.Notification;
 import edu.brown.cs.user.CS32Final.Entities.Account.NotificationType;
 import edu.brown.cs.user.CS32Final.Entities.Account.Profile;
 import edu.brown.cs.user.CS32Final.Entities.Account.Review;
+import edu.brown.cs.user.CS32Final.Entities.Chat.Chat;
 import edu.brown.cs.user.CS32Final.Entities.Chat.ChatHandler;
 import edu.brown.cs.user.CS32Final.Entities.Chat.Message;
 import edu.brown.cs.user.CS32Final.Entities.Event.Event;
@@ -26,6 +29,11 @@ import edu.brown.cs.user.CS32Final.Entities.Event.EventRequest;
 import edu.brown.cs.user.CS32Final.Entities.Event.EventState;
 import edu.brown.cs.user.CS32Final.SQL.SqliteDatabase;
 import freemarker.template.Configuration;
+import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import spark.ExceptionHandler;
 import spark.ModelAndView;
 import spark.QueryParamsMap;
@@ -556,9 +564,12 @@ public class GUI {
           vars.put("hasError", true);
           vars.put("errorMsg", "Event is closed");
           Map<String, Object> variables = vars.build();
+        } else {
+          database.insertUserIntoEvent(eventId, id, event.getHost().getId());
+          database.removeRequest(eventId, id);
+          database.incrementJoinedNotif(id);
+          database.insertNotification(id, eventId, "JOINED");
         }
-        database.insertUserIntoEvent(eventId, id, event.getHost().getId());
-        database.incrementJoinedNotif(id);
       } catch(Exception e) {
         System.out.println("ERROR: SQL error");
         e.printStackTrace();
@@ -786,50 +797,5 @@ public class GUI {
       return gson.toJson(variables);
     }
   }
-
-//  @WebSocket
-//  private class ChatHandler {
-//    private String sender, msg;
-//    private Gson gson = new Gson();
-//
-//    private Map<Session, String> usernameMap = new HashMap<>();
-//    private int nextUserNumber = 1;
-//
-//    @OnWebSocketConnect
-//    public void onConnect(Session user) throws Exception {
-//      String username = "User" + nextUserNumber++;
-//      usernameMap.put(user, username);
-//      //Chat.broadcastMessage(sender = "Server", msg = (username + " joined the chat"));
-//    }
-//
-//    @OnWebSocketClose
-//    public void onClose(Session user, int statusCode, String reason) {
-//      System.out.println("closing user");
-//      String username = usernameMap.get(user);
-//      usernameMap.remove(user);
-//      //Chat.broadcastMessage(sender = "Server", msg = (username + " left the chat"));
-//    }
-//
-//    @OnWebSocketMessage
-//    public void onMessage(Session user, String message) {
-//      JsonObject obj = (JsonObject) new JsonParser().parse(message);
-//      obj.get("eventId").getAsInt();
-//      System.out.println(obj.get("eventId"));
-//
-//      broadcastMessage(sender = usernameMap.get(user), msg = message);
-//    }
-//
-//    //Sends a message from one user to all users
-//    public void broadcastMessage(String sender, String message) {
-//        usernameMap.keySet().stream().filter(Session::isOpen).forEach(session -> {
-//            try {
-//                session.getRemote().sendString(message
-//                );
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        });
-//    }
-//  }
 
 }

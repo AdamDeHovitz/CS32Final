@@ -5,8 +5,9 @@ bulkAppControllers.controller("joinedEventsCtrl", function($scope, $rootScope, $
 
 	$.post("/event-joined", {id: $rootScope.account.id}, function(responseJSON) {
 			responseObject = JSON.parse(responseJSON);
-			$scope.curEvents = responseObject.events;
-			console.log(responseObject);
+			$scope.$apply(function() {
+				$scope.curEvents = responseObject.events;
+			});
 	});
 
 		/*

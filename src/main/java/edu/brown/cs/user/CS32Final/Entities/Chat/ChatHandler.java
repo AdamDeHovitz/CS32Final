@@ -32,7 +32,6 @@ public class ChatHandler {
 
     @OnWebSocketConnect
     public void onConnect(Session user) throws Exception {
-        //Chat.broadcastMessage(sender = "Server", msg = (username + " joined the chat"));
     }
 
     @OnWebSocketClose
@@ -43,8 +42,6 @@ public class ChatHandler {
         Chat.usernameMap.remove(user);
 
         Chat.roomMap.get(eventId).remove(userId);
-
-        //Chat.broadcastMessage(sender = "Server", msg = (username + " left the chat"));
     }
 
     @OnWebSocketMessage

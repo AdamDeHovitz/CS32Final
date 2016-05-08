@@ -255,7 +255,7 @@ public class SqliteDatabase {
 
     public void setEventState(int event_id, String state) throws SQLException {
 
-        String sql = "UPDATE event SET status = ? WHERE id = ?;";
+        String sql = "UPDATE event SET state = ? WHERE id = ?;";
         PreparedStatement prep = connection.prepareStatement(sql);
         prep.setString(1, state);
         prep.setInt(2, event_id);
@@ -284,6 +284,14 @@ public class SqliteDatabase {
 
         prep.executeUpdate();
 
+    }
+
+    public void removeRequest(int event_id, int user_id) throws SQLException {
+      String sql = "DELETE FROM user_request WHERE event_id = ? AND user_id = ?";
+      PreparedStatement prep = connection.prepareStatement(sql);
+      prep.setInt(1, event_id);
+      prep.setInt(2, user_id);
+      prep.executeUpdate();
     }
 
     public void incrementHostRequestNotif(int user_id) throws SQLException {
@@ -742,8 +750,9 @@ public class SqliteDatabase {
                 String type = rs.getString(3);
                 toReturn.add(new Notification(userId, notif_id, type));
 
-                updateNotification(id);
             }
+            updateNotification(userId);
+
             return toReturn;
         } finally {
             closeResultSet(rs);
@@ -752,7 +761,7 @@ public class SqliteDatabase {
 
     public void updateNotification(int id) {
         try {
-            String sql = "UPDATE notification SET is_new = ? WHERE id = ?";
+            String sql = "UPDATE notification SET is_new = ? WHERE user_id = ?;";
             PreparedStatement prep = connection.prepareStatement(sql);
             prep.setBoolean(1, false);
             prep.setInt(2, id);
@@ -898,7 +907,7 @@ public class SqliteDatabase {
         String urlToDB = "jdbc:sqlite:" + db;
         connection = DriverManager.getConnection(urlToDB);
         Statement stat = connection.createStatement();
-        stat.executeUpdate("PRAGMA foreign_keys = ON;");
+        stat.executeUpdate("PRAGMA foreign_keys = ON; PRAGMA journal_mode=WAL;");
     }
 
     private void closeResultSet(ResultSet rs) {
