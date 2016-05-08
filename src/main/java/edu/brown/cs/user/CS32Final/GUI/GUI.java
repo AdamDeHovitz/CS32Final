@@ -105,6 +105,7 @@ public class GUI {
 
     // View events
     Spark.post("/event-view", new EventViewHandler());
+    Spark.post("/events-view", new EventsViewHandler());
     Spark.post("/event-feed", new EventFeedHandler());
     Spark.post("/event-owner", new EventOwnerHandler());
     Spark.post("/event-joined", new EventJoinedHandler());
@@ -352,6 +353,8 @@ public class GUI {
       QueryParamsMap qm = req.queryMap();
 
       int id = Integer.parseInt(qm.value("id"));
+      int userId = Integer.parseInt(qm.value("userId"));
+      boolean hasError = false;
 
       Event event = null;
 
@@ -367,13 +370,45 @@ public class GUI {
 
       try {
         List<Integer> requests = database.findRequestsByEventId(event.getId());
+        int newMessageNum = database.getMessageNum(event.getId(), userId);
+        int newRequestNum = database.getRequestNum(event.getId(), userId);
         vars.put("requests", requests);
+        vars.put("newMessageNum", newMessageNum);
+        vars.put("newRequestNum", newRequestNum);
       } catch (SQLException e) {
-        e.printStackTrace();
+        hasError = true;
       }
+      vars.put("hasError", hasError);
       Map<String, Object> variables = vars.build();
       return gson.toJson(variables);
     }
+  }
+
+  private class EventsViewHandler implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+      int myEventNotifNum = 0;
+      int joinedEventNotifNum = 0;
+
+      int userId = Integer.parseInt(qm.value("userId"));
+      boolean hasError = false;
+      ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+
+      try {
+        myEventNotifNum = database.userEventsNotifNum(userId);
+        joinedEventNotifNum = database.joinedEventsNotifNum(userId);
+      } catch (SQLException e) {
+        hasError = true;
+      }
+
+      vars.put("hasError", hasError);
+      vars.put("myEventNotifNum", myEventNotifNum);
+      vars.put("joinedEventNotifNum", joinedEventNotifNum);
+      Map<String, Object> variables = vars.build();
+      return gson.toJson(variables);
+    }
+
   }
 
   private class EventFeedHandler implements Route {
@@ -525,7 +560,7 @@ public class GUI {
       try {
         database.requestUserIntoEvent(eventId, id, event.getHost().getId());
         database.incrementHostRequestNotif(event.getHost().getId());
-        database.insertNotification(event.getHost().getId(), eventId, "REQUEST");
+        database.insertNotification(event.getHost().getId(), eventId, eventId, "REQUEST");
       } catch(Exception e) {
         System.out.println("ERROR: SQL error");
         e.printStackTrace();
@@ -560,7 +595,7 @@ public class GUI {
           database.insertUserIntoEvent(eventId, id, event.getHost().getId());
           database.removeRequest(eventId, id);
           database.incrementJoinedNotif(id);
-          database.insertNotification(id, eventId, "JOINED");
+          database.insertNotification(id, eventId, eventId, "JOINED");
         }
       } catch(Exception e) {
         System.out.println("ERROR: SQL error");
@@ -577,7 +612,7 @@ public class GUI {
           List<Integer> users = database.findUsersByEventId(eventId);
 
           for (int userId : users) {
-            database.insertNotification(userId, eventId, "STATE");
+            database.insertNotification(userId, eventId, eventId, "STATE");
           }
         }
         else {
@@ -633,7 +668,7 @@ public class GUI {
           List<Integer> users = database.findUsersByEventId(eventId);
 
           for (int userId : users) {
-            database.insertNotification(userId, eventId, "STATE");
+            database.insertNotification(userId, eventId, eventId, "STATE");
           }
         }
         else {
@@ -673,7 +708,7 @@ public class GUI {
           List<Integer> users = database.findUsersByEventId(eventId);
 
           for (int userId : users) {
-            database.insertNotification(userId, eventId, "STATE");
+            database.insertNotification(userId, eventId, eventId, "STATE");
           }
         }
         else {

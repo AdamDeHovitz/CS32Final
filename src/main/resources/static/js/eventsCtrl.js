@@ -15,6 +15,15 @@ bulkAppControllers
 	        $scope.positiveIntRegex = "^[1-9][0-9]*$";
 	        $scope.moneyRegex = "^\\$?[0-9][0-9\\,]*(\\.\\d{1,2})?$|^\\$?[\\.]([\\d][\\d]?)$";
 
+	        $scope.getEventInfo = function() {
+	      		$.post("/events-view", {
+	      			userId: $rootScope.account.id
+	      		}, function(responseJSON) {
+	      			responseObject = JSON.parse(responseJSON);
+	      			console.log(responseObject)
+	      		}
+	        }
+	        
 	        $scope.goPending = function() {
 		        $timeout(function() {
 			        $scope.newPendingEvents = false;

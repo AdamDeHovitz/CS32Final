@@ -1,17 +1,19 @@
 package edu.brown.cs.user.CS32Final.Entities.Chat;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import edu.brown.cs.user.CS32Final.SQL.SqliteDatabase;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import edu.brown.cs.user.CS32Final.SQL.SqliteDatabase;
 
 /**
  * Created by lc50 on 27/04/16.
@@ -75,7 +77,7 @@ public class ChatHandler {
             List<Integer> participants = database.findUsersByEventId(eventId);
             for (int participant : participants) {
                 if (!Chat.roomMap.get(eventId).contains(participant)) {
-                    database.insertNotification(participant, messageId, "MESSAGE");
+                    database.insertNotification(participant, messageId, eventId, "MESSAGE");
                 }
             }
 
