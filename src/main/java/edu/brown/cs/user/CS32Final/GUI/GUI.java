@@ -134,6 +134,9 @@ public class GUI {
     // Notifications
     Spark.post("/notification", new NotificationHandler());
     Spark.post("/notification-remove", new NotificationRemoveHandler());
+
+    // Messages
+    Spark.post("/notification", new NotificationHandler());
   }
 
   /**

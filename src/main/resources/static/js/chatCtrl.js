@@ -14,7 +14,8 @@ bulkAppControllers.controller("chatCtrl", function($scope, $rootScope, $state,
 		$scope.updateChat(msg);
 	};
 	$scope.webSocket.onclose = function() {
-		alert("WebSocket connection closed")
+		alert("WebSocket connection closed");
+		setTimeout(setupWebSocket, 1000);
 	};
 
 	// mock user
