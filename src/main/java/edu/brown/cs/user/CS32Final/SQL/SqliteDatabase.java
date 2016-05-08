@@ -757,7 +757,7 @@ public class SqliteDatabase {
             prep.setBoolean(1, false);
             prep.setInt(2, id);
 
-            prep.executeUpdate(sql);
+            prep.executeUpdate();
 
         } catch (SQLException e) {
             e.printStackTrace();
