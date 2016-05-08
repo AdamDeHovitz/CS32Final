@@ -21,13 +21,20 @@ import edu.brown.cs.user.CS32Final.Entities.Event.EventState;
 public class SqliteDatabase {
     private Connection connection;
 
-    public SqliteDatabase(String db) throws SQLException {
+    private SqliteDatabase(String db) {
         try {
             makeConnection(db);
+        } catch (SQLException e) {
+            System.out.println("ERROR: SQL exception");
         } catch (ClassNotFoundException e) {
             System.out.println("ERROR: Class not found");
-
         }
+    }
+
+    private static SqliteDatabase Instance = new SqliteDatabase("data/database.sqlite3");
+
+    public static SqliteDatabase getInstance() {
+        return Instance;
     }
 
     public void createTables() throws SQLException {

@@ -49,14 +49,14 @@ import spark.template.freemarker.FreeMarkerEngine;
  */
 public class GUI {
 
-  private SqliteDatabase database;
+  //private SqliteDatabase database;
 
   private final Gson gson = new Gson();
 
   public GUI() {
     try {
-      database = new SqliteDatabase("data/database.sqlite3");
-      database.createTables();
+      //database = new SqliteDatabase("data/database.sqlite3");
+      SqliteDatabase.getInstance().createTables();
     } catch(Exception e) {
       System.out.println("ERROR: SQL error");
       e.printStackTrace();
@@ -187,7 +187,7 @@ public class GUI {
       // check if email already in database
 
       try {
-    	  database.insertUser(email, password, first_name, last_name, image, date);
+        SqliteDatabase.getInstance().insertUser(email, password, first_name, last_name, image, date);
       } catch(Exception e) {
     	hasError = true;
     	errorMsg = "There is a problem with adding to the database. Try again later.";
@@ -195,7 +195,7 @@ public class GUI {
 
       if (!hasError) {
     	  try {
-    		  user = database.findUserByUsername(email);
+    		  user = SqliteDatabase.getInstance().findUserByUsername(email);
           } catch (Exception e) {
         	  hasError = true;
         	  errorMsg = "There is a problem with adding to the database. Try again later.";
@@ -206,7 +206,7 @@ public class GUI {
     	  } else {
     		  user.getLoginData(vars);
     		  try {
-    			  vars.put("reviews", database.findReviewsByUserId(user.getId()));
+    			  vars.put("reviews", SqliteDatabase.getInstance().findReviewsByUserId(user.getId()));
     	      } catch (Exception e) {
     	    	  hasError = true;
             	  errorMsg = "There is a problem with adding to the database. Try again later.";
@@ -235,7 +235,7 @@ public class GUI {
       Map<String, Object> variables = null;
       Account user;
       try {
-        user = database.findUserByUsername(username);
+        user = SqliteDatabase.getInstance().findUserByUsername(username);
       } catch (Exception e) {
         System.out.println("ERROR: SQL error in find username");
         e.printStackTrace();
@@ -259,7 +259,7 @@ public class GUI {
           user.getLoginData(vars);
           // TODO: account for sql error
           try {
-            vars.put("reviews", database.findReviewsByUserId(user.getId()));
+            vars.put("reviews", SqliteDatabase.getInstance().findReviewsByUserId(user.getId()));
           } catch (Exception e) {
             e.printStackTrace();
           }
@@ -301,7 +301,7 @@ public class GUI {
       System.out.println("about to go to db methods");
       int event_id = -1;
       try {
-        database.insertEvent(owner_id, state, name, description, image, member_capacity, cost, location, tags, lat, lng);
+        SqliteDatabase.getInstance().insertEvent(owner_id, state, name, description, image, member_capacity, cost, location, tags, lat, lng);
       } catch(Exception e) {
         System.out.println("ERROR: SQL error");
         e.printStackTrace();
@@ -323,14 +323,14 @@ public class GUI {
       int id = Integer.parseInt(qm.value("id"));
       Profile user = null;
 
-      user = database.findUserProfileById(id);
+      user = SqliteDatabase.getInstance().findUserProfileById(id);
 
 
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       user.getProfileData(vars);
       List<Review> reviews = null;
       try {
-        reviews = database.findReviewsByUserId(id);
+        reviews = SqliteDatabase.getInstance().findReviewsByUserId(id);
       } catch(Exception e) {
         System.out.println("ERROR: SQL error in find reviews");
         e.printStackTrace();
@@ -364,7 +364,7 @@ public class GUI {
       Event event = null;
 
       try {
-        event = database.findEventById(id);
+        event = SqliteDatabase.getInstance().findEventById(id);
       } catch(Exception e) {
         System.out.println("ERROR: SQL error");
         e.printStackTrace();
@@ -374,7 +374,7 @@ public class GUI {
       event.getEventData(vars);
 
       try {
-        List<Integer> requests = database.findRequestsByEventId(event.getId());
+        List<Integer> requests = SqliteDatabase.getInstance().findRequestsByEventId(event.getId());
         vars.put("requests", requests);
       } catch (SQLException e) {
         e.printStackTrace();
@@ -395,10 +395,10 @@ public class GUI {
       double lng = Double.parseDouble(qm.value("lng"));
       List<Event> events = null;
       try {
-        List<Integer> handled = database.findEventIdsbyOwnerId(id);
-        handled.addAll(database.findEventsByRequestedId(id));
-        handled.addAll(database.findEventsByUserId(id));
-        events = database.findNewNearbyEvents(handled, lat, lng);
+        List<Integer> handled = SqliteDatabase.getInstance().findEventIdsbyOwnerId(id);
+        handled.addAll(SqliteDatabase.getInstance().findEventsByRequestedId(id));
+        handled.addAll(SqliteDatabase.getInstance().findEventsByUserId(id));
+        events = SqliteDatabase.getInstance().findNewNearbyEvents(handled, lat, lng);
       } catch(Exception e) {
         System.out.println("ERROR: SQL error");
         e.printStackTrace();
@@ -419,7 +419,7 @@ public class GUI {
       int id = Integer.parseInt(qm.value("id"));
       List<Event> events = null;
       try {
-        events = database.findEventsByOwnerId(id);
+        events = SqliteDatabase.getInstance().findEventsByOwnerId(id);
       } catch(Exception e) {
         System.out.println("ERROR: SQL error");
         e.printStackTrace();
@@ -441,7 +441,7 @@ public class GUI {
       int id = Integer.parseInt(qm.value("id"));
       List<Event> events = null;
       try {
-        events = database.findJoinedEventsByUserId(id);
+        events = SqliteDatabase.getInstance().findJoinedEventsByUserId(id);
       } catch(Exception e) {
         System.out.println("ERROR: SQL error");
         e.printStackTrace();
@@ -463,7 +463,7 @@ public class GUI {
       int id = Integer.parseInt(qm.value("id"));
       List<Event> events = null;
       try {
-        events = database.findPendingEventsByUserId(id);
+        events = SqliteDatabase.getInstance().findPendingEventsByUserId(id);
       } catch(Exception e) {
         System.out.println("ERROR: SQL error");
         e.printStackTrace();
@@ -488,12 +488,12 @@ public class GUI {
       int ownerId = -1;
 
       try {
-        userIds = database.findRequestsByEventId(eventId);
+        userIds = SqliteDatabase.getInstance().findRequestsByEventId(eventId);
 
         for (int userId : userIds) {
-          users.add(database.findUserProfileById(userId));
+          users.add(SqliteDatabase.getInstance().findUserProfileById(userId));
         }
-        ownerId = database.findOwnerIdByEventId(eventId);
+        ownerId = SqliteDatabase.getInstance().findOwnerIdByEventId(eventId);
 
 
       } catch(Exception e) {
@@ -519,7 +519,7 @@ public class GUI {
       int eventId = Integer.parseInt(qm.value("eventId"));
       Event event = null;
       try {
-      event = database.findEventById(eventId);
+      event = SqliteDatabase.getInstance().findEventById(eventId);
       } catch(Exception e) {
         System.out.println("ERROR: SQL error");
         e.printStackTrace();
@@ -531,9 +531,9 @@ public class GUI {
         Map<String, Object> variables = vars.build();
       }
       try {
-        database.requestUserIntoEvent(eventId, id, event.getHost().getId());
-        database.incrementHostRequestNotif(event.getHost().getId());
-        database.insertNotification(event.getHost().getId(), eventId, "REQUEST");
+        SqliteDatabase.getInstance().requestUserIntoEvent(eventId, id, event.getHost().getId());
+        SqliteDatabase.getInstance().incrementHostRequestNotif(event.getHost().getId());
+        SqliteDatabase.getInstance().insertNotification(event.getHost().getId(), eventId, "REQUEST");
       } catch(Exception e) {
         System.out.println("ERROR: SQL error");
         e.printStackTrace();
@@ -558,17 +558,17 @@ public class GUI {
 
       Event event = null;
       try {
-        event = database.findEventById(eventId);
+        event = SqliteDatabase.getInstance().findEventById(eventId);
         if (event.getState() != EventState.OPEN) {
           ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
           vars.put("hasError", true);
           vars.put("errorMsg", "Event is closed");
           Map<String, Object> variables = vars.build();
         } else {
-          database.insertUserIntoEvent(eventId, id, event.getHost().getId());
-          database.removeRequest(eventId, id);
-          database.incrementJoinedNotif(id);
-          database.insertNotification(id, eventId, "JOINED");
+          SqliteDatabase.getInstance().insertUserIntoEvent(eventId, id, event.getHost().getId());
+          SqliteDatabase.getInstance().removeRequest(eventId, id);
+          SqliteDatabase.getInstance().incrementJoinedNotif(id);
+          SqliteDatabase.getInstance().insertNotification(id, eventId, "JOINED");
         }
       } catch(Exception e) {
         System.out.println("ERROR: SQL error");
@@ -579,13 +579,13 @@ public class GUI {
       //event.getEventData(vars);
       try {
         if (event.getMembers().size() + 1 == event.getMaxMembers()) {
-          database.setEventState(eventId, "CLOSED");
+          SqliteDatabase.getInstance().setEventState(eventId, "CLOSED");
           vars.put("state", "CLOSED");
 
-          List<Integer> users = database.findUsersByEventId(eventId);
+          List<Integer> users = SqliteDatabase.getInstance().findUsersByEventId(eventId);
 
           for (int userId : users) {
-            database.insertNotification(userId, eventId, "STATE");
+            SqliteDatabase.getInstance().insertNotification(userId, eventId, "STATE");
           }
         }
         else {
@@ -612,8 +612,8 @@ public class GUI {
       int eventId = Integer.parseInt(qm.value("eventId"));
 
       try {
-        Event event = database.findEventById(eventId);
-        database.removeUserFromEvent(eventId, id, event.getHost().getId());
+        Event event = SqliteDatabase.getInstance().findEventById(eventId);
+        SqliteDatabase.getInstance().removeUserFromEvent(eventId, id, event.getHost().getId());
       } catch(Exception e) {
         System.out.println("ERROR: SQL error");
         e.printStackTrace();
@@ -635,13 +635,13 @@ public class GUI {
       int eventId = Integer.parseInt(qm.value("eventId"));
 
       try {
-        Event event = database.findEventById(eventId);
+        Event event = SqliteDatabase.getInstance().findEventById(eventId);
         if (event.getHost().getId() == id) {
-          database.setEventState(eventId, "CLOSED");
-          List<Integer> users = database.findUsersByEventId(eventId);
+          SqliteDatabase.getInstance().setEventState(eventId, "CLOSED");
+          List<Integer> users = SqliteDatabase.getInstance().findUsersByEventId(eventId);
 
           for (int userId : users) {
-            database.insertNotification(userId, eventId, "STATE");
+            SqliteDatabase.getInstance().insertNotification(userId, eventId, "STATE");
           }
         }
         else {
@@ -671,17 +671,17 @@ public class GUI {
       int eventId = Integer.parseInt(qm.value("eventId"));
 
       try {
-        Event event = database.findEventById(eventId);
+        Event event = SqliteDatabase.getInstance().findEventById(eventId);
         if (event.getHost().getId() == id) {
-          database.setEventState(eventId, "STARTED");
+          SqliteDatabase.getInstance().setEventState(eventId, "STARTED");
           for (int member: event.getMembers()) {
-            database.incrementJoinedNotif(member);
+            SqliteDatabase.getInstance().incrementJoinedNotif(member);
           }
 
-          List<Integer> users = database.findUsersByEventId(eventId);
+          List<Integer> users = SqliteDatabase.getInstance().findUsersByEventId(eventId);
 
           for (int userId : users) {
-            database.insertNotification(userId, eventId, "STATE");
+            SqliteDatabase.getInstance().insertNotification(userId, eventId, "STATE");
           }
         }
         else {
@@ -707,9 +707,9 @@ public class GUI {
       int eventId = Integer.parseInt(qm.value("eventId"));
 
       try {
-        Event event = database.findEventById(eventId);
+        Event event = SqliteDatabase.getInstance().findEventById(eventId);
         if (event.getHost().getId() == id) {
-          database.removeEvent(eventId);
+          SqliteDatabase.getInstance().removeEvent(eventId);
         }
         else {
           //TODO: tell them they don't have permission
@@ -736,7 +736,7 @@ public class GUI {
       List<Notification> notifications = new ArrayList<>();
 
       try {
-        notifications = database.findNotificationsById(userId);
+        notifications = SqliteDatabase.getInstance().findNotificationsById(userId);
 
       } catch(Exception e) {
         System.out.println("ERROR: SQL error");
@@ -753,13 +753,13 @@ public class GUI {
       try {
         for (Notification notif : notifications) {
           if (notif.getType() == NotificationType.MESSAGE) {
-            messages.add(database.findMessageById(notif.getNotifId()));
+            messages.add(SqliteDatabase.getInstance().findMessageById(notif.getNotifId()));
           } else if (notif.getType() == NotificationType.REQUEST) {
-            requests.add(database.findEventRequestById(notif.getNotifId()));
+            requests.add(SqliteDatabase.getInstance().findEventRequestById(notif.getNotifId()));
           } else if (notif.getType() == NotificationType.JOINED) {
-            joined.add(database.findJoinedEventById(notif.getNotifId()));
+            joined.add(SqliteDatabase.getInstance().findJoinedEventById(notif.getNotifId()));
           } else if (notif.getType() == NotificationType.STATE) {
-            state.add(database.findEventById(notif.getNotifId()));
+            state.add(SqliteDatabase.getInstance().findEventById(notif.getNotifId()));
           }
         }
       } catch (SQLException e) {
@@ -785,7 +785,7 @@ public class GUI {
       int userId = Integer.parseInt(qm.value("id"));
 
       try {
-        database.removeNotificationsById(userId);
+        SqliteDatabase.getInstance().removeNotificationsById(userId);
 
       } catch(Exception e) {
         System.out.println("ERROR: SQL error");

@@ -20,11 +20,11 @@ import java.util.List;
 @WebSocket
 public class ChatHandler {
     private Gson gson = new Gson();
-    private SqliteDatabase database;
+    //private SqliteDatabase database;
 
     public ChatHandler() {
         try {
-            database = new SqliteDatabase("data/database.sqlite3");
+            //database = new SqliteDatabase("data/database.sqlite3");
         } catch (Exception e) {
             System.out.println("ERROR: can't connect to database in chat");
         }
@@ -46,7 +46,6 @@ public class ChatHandler {
 
     @OnWebSocketMessage
      public void onMessage(Session user, String message) {
-        System.out.println(message);
 
         JsonObject obj = (JsonObject) new JsonParser().parse(message);
         int eventId = obj.get("eventId").getAsInt();
@@ -57,6 +56,7 @@ public class ChatHandler {
         }
 
         List<Integer> usersInRoom = Chat.roomMap.get(eventId);
+        System.out.println(usersInRoom);
 
         if (!usersInRoom.contains(userId)) {
             int[] val = {eventId, userId};
@@ -67,12 +67,12 @@ public class ChatHandler {
         Chat.broadcastMessage(eventId, message);
 
         try {
-            int messageId = database.insertMessage(eventId, userId, obj.get("text").getAsString());
+            int messageId = SqliteDatabase.getInstance().insertMessage(eventId, userId, obj.get("text").getAsString());
 
-            List<Integer> participants = database.findUsersByEventId(eventId);
+            List<Integer> participants = SqliteDatabase.getInstance().findUsersByEventId(eventId);
             for (int participant : participants) {
                 if (!Chat.roomMap.get(eventId).contains(participant)) {
-                    database.insertNotification(participant, messageId, "MESSAGE");
+                    SqliteDatabase.getInstance().insertNotification(participant, messageId, "MESSAGE");
                 }
             }
 
