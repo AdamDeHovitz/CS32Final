@@ -20,9 +20,11 @@ bulkAppControllers
 	      			userId: $rootScope.account.id
 	      		}, function(responseJSON) {
 	      			responseObject = JSON.parse(responseJSON);
-	      			console.log(responseObject)
-	      		}
+	      			console.log(responseObject);
+	      		});
 	        }
+	        
+	        $scope.getEventInfo();
 	        
 	        $scope.goPending = function() {
 		        $timeout(function() {

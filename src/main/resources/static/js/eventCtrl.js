@@ -17,14 +17,11 @@ bulkAppControllers.controller("eventCtrl", function($scope, $http, $rootScope,
 		$scope.curRequestsUrl = "requests";
 		$scope.curMapUrl = "map";
 		$scope.curMembersUrl = "members";
-	}
-	;
+	};
 
 	$scope.getEventInfo = function() {
-		$.post("/event-view", {
-			id : eventId,
-			userId: $rootScope.account.id
-		}, function(responseJSON) {
+		$.post("/event-view", {id : eventId, userId : $rootScope.account.id}, 
+				function(responseJSON) {
 			responseObject = JSON.parse(responseJSON);
 			$scope.event = responseObject;
 			var isOwner = responseObject.authorId == $rootScope.account.id;
@@ -33,24 +30,23 @@ bulkAppControllers.controller("eventCtrl", function($scope, $http, $rootScope,
 			for (var i = 0; i < responseObject.members.length; i++) {
 				if (responseObject.members[i] == $rootScope.account.id) {
 					isMember = true;
-				}
-			}
+				};
+			};
 			
 			if (responseObject.requests.length > 0) {
 				$scope.hasRequests = true;
 				$scope.requestNum = responseObject.requests.length;
-			}
+			};
 			if (responseObject.newMsgNum > 0) {
 				$scope.hasMessages = true;
 				$scope.messageNum = responseObject.newMsgNum;
-			}
-			
-			
+			};
+
 			for (var i = 0; i < responseObject.requests.length; i++) {
 				if (responseObject.requests[i] == $rootScope.account.id) {
 					requestedJoin = true;
-				}
-			}
+				};
+			};
 
 			$scope.isOwner = isOwner;
 			$scope.isMember = isMember;

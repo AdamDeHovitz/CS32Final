@@ -65,7 +65,7 @@ public class SqliteDatabase {
 
     String notification = "CREATE TABLE IF NOT EXISTS notification("
         + "id INTEGER PRIMARY KEY AUTOINCREMENT, " + "user_id INTEGER, "
-        + "notif_id INTEGER, " + "event_id INTEGER" + "type TEXT, "
+        + "notif_id INTEGER, " + "event_id INTEGER," + "type TEXT, "
         + "is_new BOOLEAN)";
 
     Statement prep = connection.createStatement();
