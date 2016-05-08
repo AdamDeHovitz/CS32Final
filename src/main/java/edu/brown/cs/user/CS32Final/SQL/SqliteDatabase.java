@@ -19,67 +19,99 @@ import edu.brown.cs.user.CS32Final.Entities.Event.EventRequest;
 import edu.brown.cs.user.CS32Final.Entities.Event.EventState;
 
 public class SqliteDatabase {
-  private Connection connection;
+    private Connection connection;
 
-  public SqliteDatabase(String db) throws SQLException {
-    try {
-      makeConnection(db);
-    } catch (ClassNotFoundException e) {
-      System.out.println("ERROR: Class not found");
-
+    private SqliteDatabase(String db) {
+        try {
+            makeConnection(db);
+        } catch (SQLException e) {
+            System.out.println("ERROR: SQL exception");
+        } catch (ClassNotFoundException e) {
+            System.out.println("ERROR: Class not found");
+        }
     }
-  }
 
-  public void createTables() throws SQLException {
-    String user = "CREATE TABLE IF NOT EXISTS user("
-        + "id INTEGER PRIMARY KEY AUTOINCREMENT, " + "email TEXT, "
-        + "password TEXT, " + "first_name TEXT, " + "last_name TEXT, "
-        + "image TEXT, " + "date TEXT, " + "requestNotif INTEGER DEFAULT 0, "
-        + "joinedNotif INTEGER DEFAULT 0)";
+    private static SqliteDatabase Instance = new SqliteDatabase("data/database.sqlite3");
 
-    String review = "CREATE TABLE IF NOT EXISTS review("
-        + "id INTEGER PRIMARY KEY AUTOINCREMENT, " + "user_id INTEGER, "
-        + "message TEXT, " + "rating REAL, " + "target_id INTEGER)";
+    public static SqliteDatabase getInstance() {
+        return Instance;
+    }
 
-    String event = "CREATE TABLE IF NOT EXISTS event("
-        + "id INTEGER PRIMARY KEY AUTOINCREMENT, " + "owner_id INTEGER, "
-        + "state TEXT, " + "name TEXT, " + "description TEXT, " + "image TEXT, "
-        + "member_capacity INT, " + "cost REAL, " + "location TEXT, "
-        + "lat REAL, " + "lng REAL)";
+    public void createTables() throws SQLException {
+        String user = "CREATE TABLE IF NOT EXISTS user(" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "email TEXT, " +
+                "password TEXT, " +
+                "first_name TEXT, " +
+                "last_name TEXT, " +
+                "image TEXT, " +
+                "date TEXT, " +
+                "requestNotif INTEGER DEFAULT 0, " +
+                "joinedNotif INTEGER DEFAULT 0)";
 
-    String eventTags = "CREATE TABLE IF NOT EXISTS event_tags("
-        + "id INTEGER PRIMARY KEY AUTOINCREMENT, " + "event_id INTEGER, "
-        + "tag TEXT)";
+        String review = "CREATE TABLE IF NOT EXISTS review(" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "user_id INTEGER, " +
+                "message TEXT, " +
+                "rating REAL, " +
+                "target_id INTEGER)";
 
-    String userEvent = "CREATE TABLE IF NOT EXISTS user_event("
-        + "id INTEGER PRIMARY KEY AUTOINCREMENT, " + "event_id INTEGER, "
-        + "user_id INTEGER, " + "owner_id INTEGER)";
+        String event = "CREATE TABLE IF NOT EXISTS event(" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "owner_id INTEGER, " +
+                "state TEXT, " +
+                "name TEXT, " +
+                "description TEXT, " +
+                "image TEXT, " +
+                "member_capacity INT, " +
+                "cost REAL, " +
+                "location TEXT, " +
+                "lat REAL, " +
+                "lng REAL)";
 
-    String userRequest = "CREATE TABLE IF NOT EXISTS user_request("
-        + "id INTEGER PRIMARY KEY AUTOINCREMENT, " + "event_id INTEGER, "
-        + "user_id INTEGER, " + "owner_id INTEGER)";
+        String eventTags = "CREATE TABLE IF NOT EXISTS event_tags(" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "event_id INTEGER, " +
+                "tag TEXT)";
 
-    String message = "CREATE TABLE IF NOT EXISTS message("
-        + "id INTEGER PRIMARY KEY AUTOINCREMENT, " + "event_id INTEGER, "
-        + "user_id INTEGER, " + "message TEXT)";
+        String userEvent = "CREATE TABLE IF NOT EXISTS user_event(" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "event_id INTEGER, " +
+                "user_id INTEGER, " +
+                "owner_id INTEGER)";
 
-    String notification = "CREATE TABLE IF NOT EXISTS notification("
-        + "id INTEGER PRIMARY KEY AUTOINCREMENT, " + "user_id INTEGER, "
-        + "notif_id INTEGER, " + "event_id INTEGER," + "type TEXT, "
-        + "is_new BOOLEAN)";
+        String userRequest = "CREATE TABLE IF NOT EXISTS user_request(" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "event_id INTEGER, " +
+                "user_id INTEGER, " +
+                "owner_id INTEGER)";
 
-    Statement prep = connection.createStatement();
-    prep.addBatch(user);
-    prep.addBatch(review);
-    prep.addBatch(event);
-    prep.addBatch(eventTags);
-    prep.addBatch(userEvent);
-    prep.addBatch(userRequest);
-    prep.addBatch(message);
-    prep.addBatch(notification);
+        String message = "CREATE TABLE IF NOT EXISTS message(" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "event_id INTEGER, " +
+                "user_id INTEGER, " +
+                "message TEXT)";
 
-    prep.executeBatch();
-  }
+        String notification = "CREATE TABLE IF NOT EXISTS notification(" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "user_id INTEGER, " +
+                "notif_id INTEGER, " +
+                "event_id INTEGER," +
+                "type TEXT, " +
+                "is_new BOOLEAN)";
+
+        Statement prep = connection.createStatement();
+        prep.addBatch(user);
+        prep.addBatch(review);
+        prep.addBatch(event);
+        prep.addBatch(eventTags);
+        prep.addBatch(userEvent);
+        prep.addBatch(userRequest);
+        prep.addBatch(message);
+        prep.addBatch(notification);
+
+        prep.executeBatch();
+    }
 
   /**
    * Method for inserting a user, with all the following information, into the
@@ -974,7 +1006,7 @@ public class SqliteDatabase {
     String urlToDB = "jdbc:sqlite:" + db;
     connection = DriverManager.getConnection(urlToDB);
     Statement stat = connection.createStatement();
-    stat.executeUpdate("PRAGMA foreign_keys = ON;");
+    stat.executeUpdate("PRAGMA foreign_keys = ON; PRAGMA journal_mode=WAL;");
   }
 
   private void closeResultSet(ResultSet rs) {
