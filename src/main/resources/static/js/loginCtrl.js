@@ -46,17 +46,23 @@ bulkAppControllers.controller("loginCtrl",
 	
 	var getNotifications = function() {
 		// post request for notifications
-		console.log($rootScope.$state);
+
+		$.post("/notification", {"id": $rootScope.account.id}, function(responseJSON) {
+			responseObject = JSON.parse(responseJSON);
+			console.log(responseObject);
+
+		});
 		
+		/*
 		var rand = Math.floor((Math.random() * 100) + 1);
 		if (rand > 100) {
 			console.log("new msg");
 			var f = function() {console.log("route!!");toaster.clear()};
 			toaster.pop({type: 'note', title: "title", body:"text", 
 				timeout: 50000, clickHandler: f, showCloseButton: false});			// new msg
-		}
+		}*/
 		
-	}
+	};
 
 	//TODO: resize when something touched to make sure can scroll (scrolldel.resize)
 

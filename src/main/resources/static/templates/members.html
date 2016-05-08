@@ -1,24 +1,28 @@
-<ion-view view-title="Requests">
+<ion-view view-title="Members">
   <ion-content class="padding">
   <div class="card" ng-show="currentMsg">
-  <div class="item">
-  {{currentMsg}}
   </div>
-  </div>
+  <div class="list">
+  <div class="item item-thumbnail-left">
+  		<img src="{{owner.image}}" ng-click="goProfile(owner.id);">
+		<b><h2 ng-click="goProfile(request.id);">{{owner.firstName}} {{owner.lastName}}</h2></b>
+		<p> Owner </p>
+		<div class="star-ratings-sprite" style="margin: 3px 0px;">
+ 	 <span style="width:{{(owner.rating / 5) * 100}}%" class="star-ratings-sprite-rating">
+  	</span></div>
+	</div>
+	</div>
+	
+  
   
   <div class="list">
   <div ng-repeat="request in requests" class="item item-thumbnail-left">
   		<img src="{{request.image}}" ng-click="goProfile(request.id);">
 		<b><h2 ng-click="goProfile(request.id);">{{request.firstName}} {{request.lastName}}</h2></b>
+		<p> Member </p>
 		<div class="star-ratings-sprite" style="margin: 3px 0px;">
  	 <span style="width:{{(request.rating / 5) * 100}}%" class="star-ratings-sprite-rating">
   	</span></div>
-		<div class="button button-small button-positive" style="min-width:80px;" ng-click="acceptRequest(request.id, request.firstName)">
- 			Accept
-		</div>
-		<div class="button button-small button-stable" ng-click="deleteRequest(request.id, request.firstName)" style="border: #b2b2b2 1px solid;min-width:60px">
-  			Delete
-		</div>
 	</div>
 </div>
 </ion-content>

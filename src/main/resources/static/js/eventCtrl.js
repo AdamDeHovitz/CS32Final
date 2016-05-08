@@ -8,14 +8,16 @@ bulkAppControllers.controller("eventCtrl",
 		console.log("events")
 		$scope.curProfileUrl = "events-profile";
 		$scope.curChatUrl = "events-chat";
-		$scope.curRequestsUrl = "events-requests"
-		$scope.curMapUrl = "events-map"
+		$scope.curRequestsUrl = "events-requests";
+		$scope.curMapUrl = "events-map";
+		$scope.curMembersUrl = "events-members";
 	} else {
 		$scope.curProfileUrl = "profile";
 		$scope.curChatUrl = "chat";
-		$scope.curRequestsUrl = "requests"
-		$scope.curMapUrl = "map"
-	}
+		$scope.curRequestsUrl = "requests";
+		$scope.curMapUrl = "map";
+		$scope.curMembersUrl = "members";
+	};
 	
 	 // A confirm dialog
 	 $scope.showConfirm = function(title, message, success) {

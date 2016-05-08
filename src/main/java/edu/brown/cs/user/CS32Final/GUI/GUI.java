@@ -45,7 +45,7 @@ public class GUI {
 
   private final Gson gson = new Gson();
 
-  public GUI(String db) {
+  public GUI() {
     try {
       database = new SqliteDatabase("data/database.sqlite3");
       database.createTables();
@@ -53,6 +53,7 @@ public class GUI {
       System.out.println("ERROR: SQL error");
       e.printStackTrace();
     }
+    runSparkServer();
   }
 
   private static FreeMarkerEngine createEngine() {
@@ -68,12 +69,22 @@ public class GUI {
     return new FreeMarkerEngine(config);
   }
 
+  private static int getHerokuAssignedPort() {
+    ProcessBuilder processBuilder = new ProcessBuilder();
+    if (processBuilder.environment().get("PORT") != null) {
+      return Integer.parseInt(processBuilder.environment().get("PORT"));
+    }
+    return 4567; //return default port if heroku-port isn't set (i.e. on localhost)
+  }
+
   /**
    * Runs the spark server.
    */
-  public void runSparkServer() {
+  private void runSparkServer() {
+    Spark.port(getHerokuAssignedPort());
+
     Spark.externalStaticFileLocation("src/main/resources/static");
-    Spark.exception(Exception.class, new ExceptionPrinter());
+    //Spark.exception(Exception.class, new ExceptionPrinter());
 
     FreeMarkerEngine freeMarker = createEngine();
 
@@ -514,6 +525,7 @@ public class GUI {
       try {
         database.requestUserIntoEvent(eventId, id, event.getHost().getId());
         database.incrementHostRequestNotif(event.getHost().getId());
+        database.insertNotification(event.getHost().getId(), eventId, "REQUEST");
       } catch(Exception e) {
         System.out.println("ERROR: SQL error");
         e.printStackTrace();
