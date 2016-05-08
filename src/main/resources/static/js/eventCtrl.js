@@ -19,39 +19,47 @@ bulkAppControllers.controller("eventCtrl", function($scope, $http, $rootScope,
 		$scope.curMembersUrl = "members";
 	};
 
-	
 	$scope.getEventInfo = function() {
-		$.post("/event-view", {
-			id : eventId
-		}, function(responseJSON) {
+		$.post("/event-view", {id : eventId, userId : $rootScope.account.id}, 
+				function(responseJSON) {
 			responseObject = JSON.parse(responseJSON);
-				$scope.event = responseObject;
-				var isOwner = responseObject.authorId == $rootScope.account.id;
-				var isMember = false;
-				var requestedJoin = false;
-				for (var i = 0; i < responseObject.members.length; i++) {
-					if (responseObject.members[i] == $rootScope.account.id) {
-						isMember = true;
-					}
-				}
-				/*
-				 * for (var i = 0; i < responseObject.requestedMembers.length; i++) { if
-				 * (responseObject.members[i] == $rootScope.account.id) { requestedJoin =
-				 * true; } }
-				 */
-				$scope.isOwner = isOwner;
-				$scope.isMember = isMember;
-				$scope.requestedJoin = requestedJoin;
-				console.log(responseObject);
+			$scope.event = responseObject;
+			var isOwner = responseObject.authorId == $rootScope.account.id;
+			var isMember = false;
+			var requestedJoin = false;
+			for (var i = 0; i < responseObject.members.length; i++) {
+				if (responseObject.members[i] == $rootScope.account.id) {
+					isMember = true;
+				};
+			};
+			
+			if (responseObject.requests.length > 0) {
+				$scope.hasRequests = true;
+				$scope.requestNum = responseObject.requests.length;
+			};
+			if (responseObject.newMsgNum > 0) {
+				$scope.hasMessages = true;
+				$scope.messageNum = responseObject.newMsgNum;
+			};
+
+			for (var i = 0; i < responseObject.requests.length; i++) {
+				if (responseObject.requests[i] == $rootScope.account.id) {
+					requestedJoin = true;
+				};
+			};
+
+			$scope.isOwner = isOwner;
+			$scope.isMember = isMember;
+			$scope.requestedJoin = requestedJoin;
+			console.log(responseObject);
 		});
 	};
-	
+
 	$scope.getEventInfo();
 	$scope.updateEvent = $interval($scope.getEventInfo, 5000);
-	
-	
+
 	$scope.$on('$ionicView.enter', function() {
-		//var updateEvent = $interval($scope.getEventInfo(), 5000);
+		// var updateEvent = $interval($scope.getEventInfo(), 5000);
 	});
 	$scope.$on('$ionicView.leave', function() {
 		$scope.updateEvent = undefined;
@@ -154,8 +162,6 @@ bulkAppControllers.controller("eventCtrl", function($scope, $http, $rootScope,
 
 		$scope.isMember = false;
 	}
-
-
 
 	$scope.goAuthor = function() {
 		if ($state.current.name == "tab.events-event") {
