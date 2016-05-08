@@ -5,7 +5,8 @@
           <p> {{getDistance(event) | number: 0}} meters away <br>
       	<b>${{(event.cost / event.maxMembers) | number: 2}}</b>/person
       </p>
-       <i class="icon ion-ios-arrow-right"></i>
+       <i class="icon ion-ios-arrow-right" ng-hide="eventNotifs && eventNotifs[event.id] > 0"></i>
+       <span class="badge badge-positive" ng-show="eventNotifs && eventNotifs[event.id] > 0">{{eventNotifs[event.id]}}</span>
     </a>
 
 

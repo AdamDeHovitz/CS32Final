@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -374,10 +375,18 @@ public class GUI {
         List<Integer> requests = SqliteDatabase.getInstance()
             .findRequestsByEventId(event.getId());
         int newMessageNum = SqliteDatabase.getInstance()
-            .getMessageNum(event.getId(), userId);
+            .getMessageNum(userId, event.getId());
         int newRequestNum = SqliteDatabase.getInstance()
-            .getRequestNum(event.getId(), userId);
+            .getRequestNum(userId, event.getId());
+        boolean newlyAccepted = SqliteDatabase.getInstance()
+            .getNewlyAccepted(userId, event.getId());
+
+        if (newlyAccepted) {
+          SqliteDatabase.getInstance().removeNewlyAccepted(userId, event.getId());
+        }
+
         vars.put("requests", requests);
+        vars.put("newlyAccepted", newlyAccepted);
         vars.put("newMessageNum", newMessageNum);
         vars.put("newRequestNum", newRequestNum);
       } catch (SQLException e) {
@@ -454,9 +463,12 @@ public class GUI {
       QueryParamsMap qm = req.queryMap();
 
       int id = Integer.parseInt(qm.value("id"));
+      Map<Integer, Integer> notifCount = new HashMap<>();
       List<Event> events = null;
       try {
         events = SqliteDatabase.getInstance().findEventsByOwnerId(id);
+        List<Integer> eventIds = SqliteDatabase.getInstance().findEventIdsbyOwnerId(id);
+        notifCount = SqliteDatabase.getInstance().getEventNotifNums(eventIds, id);
       } catch (Exception e) {
         System.out.println("ERROR: SQL error");
         e.printStackTrace();
@@ -464,6 +476,7 @@ public class GUI {
 
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       vars.put("events", events);
+      vars.put("eventNotifs", notifCount);
       Map<String, Object> variables = vars.build();
       return gson.toJson(variables);
     }
@@ -472,13 +485,15 @@ public class GUI {
   private class EventJoinedHandler implements Route {
     @Override
     public Object handle(final Request req, final Response res) {
-      System.out.println("JOIN HANDLER");
       QueryParamsMap qm = req.queryMap();
+      Map<Integer, Integer> eventNotifs = new HashMap<>();
+
 
       int id = Integer.parseInt(qm.value("id"));
       List<Event> events = null;
       try {
         events = SqliteDatabase.getInstance().findJoinedEventsByUserId(id);
+        eventNotifs = SqliteDatabase.getInstance().joinedEventsNotifMap(id);
       } catch (Exception e) {
         System.out.println("ERROR: SQL error");
         e.printStackTrace();
@@ -486,6 +501,7 @@ public class GUI {
 
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       vars.put("events", events);
+      vars.put("eventNotifs", eventNotifs);
 
       Map<String, Object> variables = vars.build();
       return gson.toJson(variables);
@@ -525,6 +541,7 @@ public class GUI {
       int ownerId = -1;
 
       try {
+        SqliteDatabase.getInstance().removeRequestNotifs(eventId);
         userIds = SqliteDatabase.getInstance().findRequestsByEventId(eventId);
 
         for (int userId : userIds) {

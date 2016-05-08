@@ -25,7 +25,6 @@ bulkAppControllers.controller("loginCtrl", function($scope, $rootScope, $state,
 		$scope.registerData = {};
 		$scope.forms.registerForm.$setPristine();
 		$scope.forms.registerForm.$setUntouched();
-
 	};
 	// Cleanup the modal when we're done with it!
 	$scope.$on('$destroy', function() {
@@ -170,7 +169,7 @@ bulkAppControllers.controller("loginCtrl", function($scope, $rootScope, $state,
 				  reviews : responseObject.reviews
 				};
 				$rootScope.authenticated = true;
-				$rootScope.stopNotifications = $interval(getNotifications, 5000);
+				$rootScope.stopNotifications = $interval(getNotifications, 3000);
 				$ionicViewSwitcher.nextDirection('forward');
 				$state.go("tab.feed");
 			}

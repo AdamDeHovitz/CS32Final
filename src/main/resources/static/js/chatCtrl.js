@@ -62,7 +62,7 @@ bulkAppControllers.controller("chatCtrl", function($scope, $rootScope, $state,
 			$interval.cancel(messageCheckTimer);
 			messageCheckTimer = undefined;
 		}
-		// add something to close socket on exit?
+		$scope.webSocket.close();
 	});
 
 	/*

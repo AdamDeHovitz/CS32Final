@@ -7,7 +7,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import edu.brown.cs.user.CS32Final.Entities.Account.Account;
 import edu.brown.cs.user.CS32Final.Entities.Account.Notification;
@@ -19,99 +21,75 @@ import edu.brown.cs.user.CS32Final.Entities.Event.EventRequest;
 import edu.brown.cs.user.CS32Final.Entities.Event.EventState;
 
 public class SqliteDatabase {
-    private Connection connection;
+  private Connection connection;
 
-    private SqliteDatabase(String db) {
-        try {
-            makeConnection(db);
-        } catch (SQLException e) {
-            System.out.println("ERROR: SQL exception");
-        } catch (ClassNotFoundException e) {
-            System.out.println("ERROR: Class not found");
-        }
+  private SqliteDatabase(String db) {
+    try {
+      makeConnection(db);
+    } catch (SQLException e) {
+      System.out.println("ERROR: SQL exception");
+    } catch (ClassNotFoundException e) {
+      System.out.println("ERROR: Class not found");
     }
+  }
 
-    private static SqliteDatabase Instance = new SqliteDatabase("data/database.sqlite3");
+  private static SqliteDatabase Instance = new SqliteDatabase(
+      "data/database.sqlite3");
 
-    public static SqliteDatabase getInstance() {
-        return Instance;
-    }
+  public static SqliteDatabase getInstance() {
+    return Instance;
+  }
 
-    public void createTables() throws SQLException {
-        String user = "CREATE TABLE IF NOT EXISTS user(" +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "email TEXT, " +
-                "password TEXT, " +
-                "first_name TEXT, " +
-                "last_name TEXT, " +
-                "image TEXT, " +
-                "date TEXT, " +
-                "requestNotif INTEGER DEFAULT 0, " +
-                "joinedNotif INTEGER DEFAULT 0)";
+  public void createTables() throws SQLException {
+    String user = "CREATE TABLE IF NOT EXISTS user("
+        + "id INTEGER PRIMARY KEY AUTOINCREMENT, " + "email TEXT, "
+        + "password TEXT, " + "first_name TEXT, " + "last_name TEXT, "
+        + "image TEXT, " + "date TEXT, " + "requestNotif INTEGER DEFAULT 0, "
+        + "joinedNotif INTEGER DEFAULT 0)";
 
-        String review = "CREATE TABLE IF NOT EXISTS review(" +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "user_id INTEGER, " +
-                "message TEXT, " +
-                "rating REAL, " +
-                "target_id INTEGER)";
+    String review = "CREATE TABLE IF NOT EXISTS review("
+        + "id INTEGER PRIMARY KEY AUTOINCREMENT, " + "user_id INTEGER, "
+        + "message TEXT, " + "rating REAL, " + "target_id INTEGER)";
 
-        String event = "CREATE TABLE IF NOT EXISTS event(" +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "owner_id INTEGER, " +
-                "state TEXT, " +
-                "name TEXT, " +
-                "description TEXT, " +
-                "image TEXT, " +
-                "member_capacity INT, " +
-                "cost REAL, " +
-                "location TEXT, " +
-                "lat REAL, " +
-                "lng REAL)";
+    String event = "CREATE TABLE IF NOT EXISTS event("
+        + "id INTEGER PRIMARY KEY AUTOINCREMENT, " + "owner_id INTEGER, "
+        + "state TEXT, " + "name TEXT, " + "description TEXT, " + "image TEXT, "
+        + "member_capacity INT, " + "cost REAL, " + "location TEXT, "
+        + "lat REAL, " + "lng REAL)";
 
-        String eventTags = "CREATE TABLE IF NOT EXISTS event_tags(" +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "event_id INTEGER, " +
-                "tag TEXT)";
+    String eventTags = "CREATE TABLE IF NOT EXISTS event_tags("
+        + "id INTEGER PRIMARY KEY AUTOINCREMENT, " + "event_id INTEGER, "
+        + "tag TEXT)";
 
-        String userEvent = "CREATE TABLE IF NOT EXISTS user_event(" +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "event_id INTEGER, " +
-                "user_id INTEGER, " +
-                "owner_id INTEGER)";
+    String userEvent = "CREATE TABLE IF NOT EXISTS user_event("
+        + "id INTEGER PRIMARY KEY AUTOINCREMENT, " + "event_id INTEGER, "
+        + "user_id INTEGER, " + "owner_id INTEGER)";
 
-        String userRequest = "CREATE TABLE IF NOT EXISTS user_request(" +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "event_id INTEGER, " +
-                "user_id INTEGER, " +
-                "owner_id INTEGER)";
+    String userRequest = "CREATE TABLE IF NOT EXISTS user_request("
+        + "id INTEGER PRIMARY KEY AUTOINCREMENT, " + "event_id INTEGER, "
+        + "user_id INTEGER, " + "owner_id INTEGER)";
 
-        String message = "CREATE TABLE IF NOT EXISTS message(" +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "event_id INTEGER, " +
-                "user_id INTEGER, " +
-                "message TEXT)";
+    String message = "CREATE TABLE IF NOT EXISTS message("
+        + "id INTEGER PRIMARY KEY AUTOINCREMENT, " + "event_id INTEGER, "
+        + "user_id INTEGER, " + "message TEXT)";
 
-        String notification = "CREATE TABLE IF NOT EXISTS notification(" +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "user_id INTEGER, " +
-                "notif_id INTEGER, " +
-                "event_id INTEGER," +
-                "type TEXT, " +
-                "is_new BOOLEAN)";
+    String notification = "CREATE TABLE IF NOT EXISTS notification("
+        + "id INTEGER PRIMARY KEY AUTOINCREMENT, " + "user_id INTEGER, "
+        + "notif_id INTEGER, " + "event_id INTEGER, " + "type TEXT, "
+        + "is_new BOOLEAN)";
 
-        Statement prep = connection.createStatement();
-        prep.addBatch(user);
-        prep.addBatch(review);
-        prep.addBatch(event);
-        prep.addBatch(eventTags);
-        prep.addBatch(userEvent);
-        prep.addBatch(userRequest);
-        prep.addBatch(message);
-        prep.addBatch(notification);
+    Statement prep = connection.createStatement();
+    prep.addBatch(user);
+    prep.addBatch(review);
+    prep.addBatch(event);
+    prep.addBatch(eventTags);
+    prep.addBatch(userEvent);
+    prep.addBatch(userRequest);
+    prep.addBatch(message);
+    prep.addBatch(notification);
 
-        prep.executeBatch();
-    }
+    prep.executeBatch();
+  }
 
   /**
    * Method for inserting a user, with all the following information, into the
@@ -274,9 +252,36 @@ public class SqliteDatabase {
     return toReturn;
   }
 
+  public boolean getNewlyAccepted(int user_id, int event_id) throws SQLException {
+    String sql = "SELECT id FROM notification WHERE type == 'JOINED' AND user_id == ? AND event_id == ?";
+    boolean toReturn = false;
+
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
+      prep.setInt(1, user_id);
+      prep.setInt(2, event_id);
+      try (ResultSet rs = prep.executeQuery()) {
+        while (rs.next()) {
+          return true;
+        }
+      }
+    }
+    return toReturn;
+  }
+
+  public void removeNewlyAccepted(int user_id, int event_id) throws SQLException {
+    String sql = "DELETE FROM notification WHERE type == 'JOINED' AND user_id == ? AND event_id == ?";
+
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
+      prep.setInt(1, user_id);
+      prep.setInt(2, event_id);
+
+      prep.executeUpdate();
+    }
+  }
+
   public int userEventsNotifNum(int userId) throws SQLException {
     int notifNum = 0;
-    String sql = "SELECT event_id FROM user_event WHERE user_id = ?;";
+    String sql = "SELECT id FROM event WHERE owner_id = ?;";
     try (PreparedStatement prep = connection.prepareStatement(sql)) {
       prep.setInt(1, userId);
 
@@ -307,6 +312,15 @@ public class SqliteDatabase {
 
     }
     return notifNum;
+  }
+
+  public Map<Integer, Integer> getEventNotifNums(List<Integer> eventIds,
+      int userId) throws SQLException {
+    Map<Integer, Integer> notifs = new HashMap<>();
+    for (Integer i : eventIds) {
+      notifs.put(i, eventNotifNum(i, userId));
+    }
+    return notifs;
   }
 
   public int eventNotifNum(int eventId, int userId) throws SQLException {
@@ -347,6 +361,14 @@ public class SqliteDatabase {
       prep.executeUpdate();
     }
 
+  }
+
+  public void removeRequestNotifs(int eventId) throws SQLException {
+    String sql = "DELETE FROM notification where type == 'REQUEST' AND event_id == ?";
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
+      prep.setInt(1, eventId);
+      prep.executeUpdate();
+    }
   }
 
   public void setEventState(int event_id, String state) throws SQLException {
@@ -408,7 +430,6 @@ public class SqliteDatabase {
   }
 
   public void incrementJoinedNotif(int user_id) throws SQLException {
-    System.out.println("id" + user_id);
     String sql = "UPDATE user " + "SET joinedNotif = joinedNotif + 1 "
         + "WHERE id = ?;";
     try (PreparedStatement prep = connection.prepareStatement(sql)) {
@@ -547,7 +568,7 @@ public class SqliteDatabase {
       throws SQLException {
     ResultSet rs = null;
     try {
-      String sql = "SELECT id FROM event WHERE owner_id = ?;";
+      String sql = "SELECT id FROM event WHERE owner_id = ? ORDER BY id DESC;";
       PreparedStatement prep = connection.prepareStatement(sql);
       prep.setInt(1, userId);
 
@@ -686,51 +707,47 @@ public class SqliteDatabase {
   }
 
   public Profile findUserProfileById(int id) {
-    ResultSet rs = null;
-    try {
-      String sql = "SELECT first_name, last_name, image, date FROM user WHERE id = ?;";
-      PreparedStatement prep = connection.prepareStatement(sql);
+    String sql = "SELECT first_name, last_name, image, date FROM user WHERE id = ?;";
+
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
       prep.setInt(1, id);
 
-      rs = prep.executeQuery();
+      try (ResultSet rs = prep.executeQuery()) {
 
-      if (rs.next()) {
-        String firstName = rs.getString(1);
-        String lastName = rs.getString(2);
-        String image = rs.getString(3);
-        String date = rs.getString(4);
-        List<Integer> reviews = findReviewsById(id);
+        if (rs.next()) {
+          String firstName = rs.getString(1);
+          String lastName = rs.getString(2);
+          String image = rs.getString(3);
+          String date = rs.getString(4);
+          List<Integer> reviews = findReviewsById(id);
 
-        return new Profile(id, firstName, lastName, image, date, reviews);
+          return new Profile(id, firstName, lastName, image, date, reviews);
+        }
       }
     } catch (SQLException e) {
-      System.out.println("error in find user profile :(");
-    } finally {
-      closeResultSet(rs);
+      return null;
     }
     return null;
   }
 
   public List<Integer> findReviewsById(int id) throws SQLException {
-    ResultSet rs = null;
-    try {
-      String sql = "SELECT id FROM review WHERE target_id = ?;";
-      PreparedStatement prep = connection.prepareStatement(sql);
+    String sql = "SELECT id FROM review WHERE target_id = ?;";
+
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
       prep.setInt(1, id);
 
       List<Integer> toReturn = new ArrayList<>();
 
-      rs = prep.executeQuery();
+      try (ResultSet rs = prep.executeQuery()) {
 
-      while (rs.next()) {
-        int review_id = rs.getInt(1);
+        while (rs.next()) {
+          int review_id = rs.getInt(1);
 
-        toReturn.add(review_id);
+          toReturn.add(review_id);
+        }
+
+        return toReturn;
       }
-
-      return toReturn;
-    } finally {
-      closeResultSet(rs);
     }
   }
 
@@ -793,29 +810,49 @@ public class SqliteDatabase {
   }
 
   public List<Event> findJoinedEventsByUserId(int userId) throws SQLException {
-    ResultSet rs = null;
-    try {
-      String sql = "SELECT event_id FROM user_event WHERE user_id = ?;";
-      PreparedStatement prep = connection.prepareStatement(sql);
+    String sql = "SELECT event_id FROM user_event WHERE user_id = ? ORDER BY event_id DESC;";
+
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
       prep.setInt(1, userId);
 
       List<Event> toReturn = new ArrayList<>();
-      rs = prep.executeQuery();
+      try (ResultSet rs = prep.executeQuery()) {
 
-      while (rs.next()) {
-        int event_id = rs.getInt(1);
-        toReturn.add(findEventById(event_id));
+        while (rs.next()) {
+          int event_id = rs.getInt(1);
+          toReturn.add(findEventById(event_id));
+        }
+        return toReturn;
       }
-      return toReturn;
-    } finally {
-      closeResultSet(rs);
     }
+
+  }
+
+  public Map<Integer, Integer> joinedEventsNotifMap(int userId)
+      throws SQLException {
+
+    String sql = "SELECT event_id FROM user_event WHERE user_id = ?;";
+    Map<Integer, Integer> toReturn = new HashMap<>();
+
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
+      prep.setInt(1, userId);
+
+      try (ResultSet rs = prep.executeQuery()) {
+
+        while (rs.next()) {
+          int event_id = rs.getInt(1);
+          toReturn.put(event_id, eventNotifNum(event_id, userId));
+        }
+      }
+    }
+
+    return toReturn;
   }
 
   public List<Event> findPendingEventsByUserId(int userId) throws SQLException {
     ResultSet rs = null;
     try {
-      String sql = "SELECT event_id FROM user_request WHERE user_id = ?;";
+      String sql = "SELECT event_id FROM user_request WHERE user_id = ? ORDER BY event_id DESC;";
       PreparedStatement prep = connection.prepareStatement(sql);
       prep.setInt(1, userId);
 
