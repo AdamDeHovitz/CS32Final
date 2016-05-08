@@ -1,0 +1,77 @@
+<ion-view view-title="Settings">
+  <ion-content class="padding">
+	<form name="forms.settingsForm" ng-submit="updateSettings()">
+      <div class="list">
+  		<label class="item item-input"
+  		ng-class="{ 'has-error': forms.settingsForm.firstName.$touched && forms.settingsForm.firstName.$invalid }">
+    	<span class="input-label">First Name*</span>
+   		<input type="text" name="firstName" ng-model="settingsData.firstName" required>
+  		</label>
+  		<div class="form-errors" 
+  		ng-show="forms.settingsForm.firstName.$touched && forms.settingsForm.firstName.$invalid " 
+  		ng-messages="forms.settingsForm.firstName.$error">
+        <div class="form-error" ng-message="required">Your first name is required.</div>
+    	</div>
+    	
+    	<label class="item item-input"
+  		ng-class="{ 'has-error': forms.settingsForm.lastName.$touched && forms.settingsForm.lastName.$invalid }">
+    	<span class="input-label">Last Name*</span>
+   		<input type="text" name="lastName" ng-model="settingsData.lastName" value="{{fullAccount.lastName}}" required>
+  		</label>
+  		<div class="form-errors" 
+  		ng-show="forms.settingsForm.lastName.$touched && forms.settingsForm.lastName.$invalid"
+  		ng-messages="forms.settingsForm.lastName.$error">
+        <div class="form-error" ng-message="required">Your last name is required.</div>
+    	</div>
+  		
+  		<label class="item item-input" 
+  		ng-class="{ 'has-error': forms.settingsForm.email.$touched && forms.settingsForm.email.$invalid }">
+    	<span class="input-label">Email*</span>
+   		<input type="email" name="email" ng-model="settingsData.email" value="{{fullAccount.email}}" required>
+  		</label>
+  		<div class="form-errors" 
+  		ng-show="forms.settingsForm.email.$touched && forms.settingsForm.email.$invalid"
+  		ng-messages="forms.settingsForm.email.$error">
+        <div class="form-error" ng-message="email">Not a valid email.</div>
+        <div class="form-error" ng-message="required">Your email is required.</div>
+    	</div>
+    	
+		<label class="item item-input"
+  		ng-class="{ 'has-error': forms.settingsForm.password.$touched && forms.settingsForm.password.$invalid }">
+    	    		<span class="input-label">New Password*</span>
+   		<input type="password" name="password" ng-model="settingsData.password"  
+   		ng-minlength="5" ng-maxlength="25">
+  		</label>
+  		<div class="form-errors" 
+  		ng-show="forms.settingsForm.password.$touched && forms.settingsForm.password.$invalid"
+  		ng-messages="forms.settingsForm.password.$error">
+    	<div class="form-error" ng-message="minlength">Your password must be 5 character.</div>
+    	<div class="form-error" ng-message="maxlength">Your password cannot be longer than 25 characters.</div>
+    	
+    	</div>
+  		
+  		
+  		<label class="item item-input"
+  		ng-class="{ 'has-error': forms.settingsForm.passwordMatch.$touched && forms.settingsForm.passwordMatch.$invalid }">
+    	<span class="input-label">
+    		<span class="input-label">Re-Type Password*</span>
+   			<input type="password" name="passwordMatch" 
+   			ng-model="settingsData.passwordMatch" equals="{{settingsData.password}}">
+  		</label>
+  		<div class="form-errors" 
+  		ng-show="forms.settingsForm.passwordMatch.$touched && forms.settingsForm.passwordMatch.$invalid"
+  		ng-messages="forms.settingsForm.passwordMatch.$error">
+  		<div class="form-error" ng-message="equals">Your passwords do not match.</div>
+    	</div>
+  		
+		<label class="item item-input">
+    		<span class="input-label">Image URL</span>
+   			<input type="text" ng-model="settingsData.img" name="img">
+  		</label>
+
+		</div>
+		<button ng-disabled="forms.settingsForm.$invalid" class="button button-block button-positive">Update</button>
+		
+	</form>
+  </ion-content>
+</ion-view>

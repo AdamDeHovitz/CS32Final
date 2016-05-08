@@ -556,9 +556,12 @@ public class GUI {
           vars.put("hasError", true);
           vars.put("errorMsg", "Event is closed");
           Map<String, Object> variables = vars.build();
+        } else {
+          database.insertUserIntoEvent(eventId, id, event.getHost().getId());
+          database.removeRequest(eventId, id);
+          database.incrementJoinedNotif(id);
+          database.insertNotification(id, eventId, "JOINED");
         }
-        database.insertUserIntoEvent(eventId, id, event.getHost().getId());
-        database.incrementJoinedNotif(id);
       } catch(Exception e) {
         System.out.println("ERROR: SQL error");
         e.printStackTrace();
