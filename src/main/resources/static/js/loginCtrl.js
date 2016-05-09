@@ -70,9 +70,11 @@ bulkAppControllers.controller("loginCtrl", function($scope, $rootScope, $state,
 			if (responseObject.messages.length > 0 && responseObject.messages[0]) {
 				hasNotif = true;
 				var notif = responseObject.messages[0];
-				//var title = ""
-				//var 
-				
+				var title = "New Message in \"" + notif.eventName + "\"";
+				var body = notif.username + ": " + notif.content;
+				route = function() {
+					$state.go(urlPrefix + 'chat', { eventId : notif.eventId });
+				};
 			} else if (responseObject.requests.length > 0
 			    && responseObject.requests[0]) {
 				hasNotif = true;
@@ -159,7 +161,6 @@ bulkAppControllers.controller("loginCtrl", function($scope, $rootScope, $state,
 		}, function(responseJSON) {
 			responseObject = JSON.parse(responseJSON);
 			console.log(responseObject);
-			$scope.closeModal();
 			if (responseObject.hasError) {
 				$scope.showAlert('Registration Failed', responseObject.errorMsg);
 			} else {
@@ -171,6 +172,7 @@ bulkAppControllers.controller("loginCtrl", function($scope, $rootScope, $state,
 				  img : responseObject.picture,
 				  reviews : responseObject.reviews
 				};
+				$timeout($scope.closeModal, 3000);
 				$rootScope.authenticated = true;
 				$rootScope.stopNotifications = $interval(getNotifications, 3000);
 				$ionicViewSwitcher.nextDirection('forward');

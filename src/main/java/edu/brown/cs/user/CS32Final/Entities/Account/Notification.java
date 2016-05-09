@@ -23,4 +23,13 @@ public class Notification {
         return notifId;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+      return "Notification [userId=" + userId + ", notifId=" + notifId
+          + ", type=" + type + "]";
+    }
+
 }
