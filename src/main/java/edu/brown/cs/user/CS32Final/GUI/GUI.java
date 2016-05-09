@@ -914,8 +914,6 @@ public class GUI {
         e.printStackTrace();
       }
 
-
-      System.out.println(messages);
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       vars.put("messages", messages);
       Map<String, Object> variables = vars.build();

@@ -38,9 +38,9 @@ bulkAppControllers.controller("eventCtrl", function($scope, $http, $rootScope,
 				$scope.hasRequests = true;
 				$scope.requestNum = responseObject.newRequestNum;
 			};
-			if (responseObject.newMsgNum > 0) {
+			if (responseObject.newMessageNum > 0) {
 				$scope.hasMessages = true;
-				$scope.messageNum = responseObject.newMsgNum;
+				$scope.messageNum = responseObject.newMessageNum;
 			};
 
 			for (var i = 0; i < responseObject.requests.length; i++) {

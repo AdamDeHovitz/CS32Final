@@ -496,7 +496,6 @@ public class SqliteDatabase {
 
   public List<Message> findMessagesByEventId(Integer eventId)
       throws SQLException {
-    System.out.println("eventId: " + eventId);
     String sql = "SELECT id, user_id, message FROM message WHERE event_id = ?;";
     List<Message> toReturn = new ArrayList<>();
 
@@ -506,7 +505,6 @@ public class SqliteDatabase {
       try (ResultSet rs = prep.executeQuery()) {
 
         while (rs.next()) {
-          System.out.println("message hit");
           int id = rs.getInt(1);
             int userId = rs.getInt(2);
             String message = rs.getString(3);

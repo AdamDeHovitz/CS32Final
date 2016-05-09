@@ -71,7 +71,7 @@ bulkAppControllers.controller("chatCtrl", function($scope, $rootScope, $state,
 			$interval.cancel(messageCheckTimer);
 			messageCheckTimer = undefined;
 		}
-		// add something to close socket on exit?
+		$scope.webSocket.close();
 	});
 
 	/*
@@ -87,6 +87,17 @@ bulkAppControllers.controller("chatCtrl", function($scope, $rootScope, $state,
 			responseObject = JSON.parse(responseJSON);
 			console.log(responseObject);
 			$scope.messages = [];
+			for (var i = 0; i < responseObject.messages.length; i++) {
+				var curMsg = responseObject.messages[i];
+				/*$scope.messages.push({
+					eventId: curMsg.eventId,
+					text: curMsg.content,
+					date: curMsg.date,
+					username: curMsg.name,
+					userId: curMsg.userId,
+					pic: curMsg.pic
+					});*/
+			}
 			//$scope.messages = responseObject.messages;
 			$scope.doneLoading = true;
 			viewScroll.scrollBottom();

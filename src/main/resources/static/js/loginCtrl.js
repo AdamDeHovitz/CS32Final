@@ -69,7 +69,10 @@ bulkAppControllers.controller("loginCtrl", function($scope, $rootScope, $state,
 
 			if (responseObject.messages.length > 0 && responseObject.messages[0]) {
 				hasNotif = true;
-				var notif = responseObject.messages[0]
+				var notif = responseObject.messages[0];
+				//var title = ""
+				//var 
+				
 			} else if (responseObject.requests.length > 0
 			    && responseObject.requests[0]) {
 				hasNotif = true;
