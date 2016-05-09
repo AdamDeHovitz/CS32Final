@@ -144,6 +144,28 @@ public class SqliteDatabase {
 
   }
 
+  public void updatePassword(int id, String password) throws SQLException {
+    String sql = "UPDATE user SET password = ? WHERE id = ?;";
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
+      prep.setString(1, password);
+      prep.setInt(2, id);
+      prep.executeUpdate();
+    }
+  }
+
+  public void updateSettings(int id, String firstName, String lastName, String email)
+    throws SQLException {
+    String sql = "UPDATE user SET email = ?, first_name = ?, last_name = ? WHERE id = ?;";
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
+      prep.setString(1, email);
+      prep.setString(2, firstName);
+      prep.setString(3, lastName);
+      prep.setInt(4, id);
+      prep.executeUpdate();
+    }
+
+  }
+
   public void insertReview(int user_id, String message, double rating,
       String target_id) throws SQLException {
     String sql = "INSERT INTO review (user_id, message, rating, target_id) VALUES (?, ?, ?, ?)";

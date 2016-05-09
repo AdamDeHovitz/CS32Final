@@ -671,7 +671,7 @@ public class GUI {
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       // event.getEventData(vars);
       try {
-        if (event.getMembers().size() + 1 == event.getMaxMembers()) {
+        if (event.getMembers().size() + 2 == event.getMaxMembers()) {
           SqliteDatabase.getInstance().setEventState(eventId, "CLOSED");
           vars.put("state", "CLOSED");
 
@@ -970,6 +970,35 @@ public class GUI {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
+
+      Account user;
+      int userId = Integer.parseInt(qm.value("id"));
+      String firstName = qm.value("firstName");
+      String lastName = qm.value("lastName");
+      String email = qm.value("email");
+      String oldPassword = qm.value("oldPassword");
+      String newPassword = qm.value("newPassword");
+      boolean hasError = false;
+      boolean failedAuth = false;
+
+
+      String hashedPassword = Hash.getHashedPassword(oldPassword);
+
+      try {
+        user = SqliteDatabase.getInstance().findUserAccountById(userId);
+        if (user.authenticate(hashedPassword)) {
+          SqliteDatabase.getInstance().updateSettings(userId, firstName, lastName, email);
+         if (newPassword != null && !newPassword.isEmpty()) {
+           SqliteDatabase.getInstance().updatePassword(userId, Hash.getHashedPassword(newPassword));
+         }
+        } else {
+          hasError = true;
+          failedAuth = true;
+        }
+      } catch (SQLException e) {
+        hasError = true;
+      }
+
       //Map<String, String>
 
       //int userId = Integer.parseInt(qm.value("id"));
@@ -978,6 +1007,11 @@ public class GUI {
       //}
 
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+      vars.put("hasError", hasError);
+      vars.put("firstName", firstName);
+      vars.put("lastName", lastName);
+      vars.put("email", email);
+      vars.put("failedAuth", failedAuth);
 
       Map<String, Object> variables = vars.build();
       return gson.toJson(variables);

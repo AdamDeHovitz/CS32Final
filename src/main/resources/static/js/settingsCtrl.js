@@ -1,5 +1,5 @@
 bulkAppControllers.controller("settingsCtrl", function($scope, $rootScope,
-    $http, $stateParams, $ionicPopup, $timeout) {
+    $http, $stateParams, $ionicPopup, $timeout, $state) {
 
 	$scope.settingsData = {};
 	$scope.forms = {};
@@ -25,7 +25,7 @@ bulkAppControllers.controller("settingsCtrl", function($scope, $rootScope,
 	$scope.updateSettings = function() {
 		console.log('Doing settings', $scope.settingsData);
 		var myPopup = $ionicPopup.show({
-		  template : '<input type="password" ng-model="data.password">',
+		  template : '<input type="password" ng-model="settingsData.oldPassword">',
 		  title : 'Confirm Changes',
 		  subTitle : 'Please enter your current password to confirm changes',
 		  scope : $scope,
@@ -35,20 +35,38 @@ bulkAppControllers.controller("settingsCtrl", function($scope, $rootScope,
 		    text : '<b>Sumbit</b>',
 		    type : 'button-positive',
 		    onTap : function(e) {
-			    if (!$scope.settingsData.password) {
+			    if (!$scope.settingsData.oldPassword) {
 				    // don't allow the user to close unless he enters wifi password
 				    e.preventDefault();
 			    } else {
 				    console.log($scope.settingsData);
-				    /*
-						 * $.post("/account-settings", settingsData, function(responseJSON) {
-						 * responseObject = JSON.parse(responseJSON); $scope.registerData =
-						 * {}; $scope.registerData['firstName'] = responseObject.firstName;
-						 * $scope.registerData['lastName'] = responseObject.lastName;
-						 * $scope.registerData['email'] = responseObject.email;
-						 * $scope.forms.settingsForm.$setPristine();
-						 * $scope.forms.settingsForm.$setUntouched(); });
-						 */
+				    $scope.settingsData.id = $rootScope.account.id;
+				    
+				    $.post("/settings", $scope.settingsData, function(responseJSON) {
+					    responseObject = JSON.parse(responseJSON);
+					    console.log(responseObject);
+					    
+					    $timeout(function() {
+						    if (!responseObject.hasError) {
+							    $scope.settingsData = {};
+						    	$rootScope.account.name = responseObject.firstName + " " + responseObject.lastName;
+						    	$scope.settingsData.firstName = responseObject.firstName;
+									$scope.settingsData.lastName = responseObject.lastName;
+									$scope.settingsData.email = responseObject.email;
+									$state.go("tab.account");
+						    } else if (responseObject.failedAuth) {
+						    	console.log("failedAuth");
+						    	var alertPopup = $ionicPopup.alert({
+						  		  title : "Failed Authentication",
+						  		  template : "Try Again."
+						  		});
+						    }
+						    
+						    $scope.forms.settingsForm.$setPristine();
+						    $scope.forms.settingsForm.$setUntouched();
+					    }, 0)
+				    });
+
 			    }
 		    }
 		  } ]

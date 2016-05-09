@@ -56,12 +56,15 @@
     	<span class="input-label">
     		<span class="input-label">Re-Type Password</span>
    			<input type="password" name="passwordMatch" 
-   			ng-model="settingsData.passwordMatch" equals="{{settingsData.password}}">
+   			ng-model="settingsData.passwordMatch" equals="{{settingsData.password}}" 
+   			ng-required="settingsData.password && settingsData.password.length > 0">
   		</label>
   		<div class="form-errors" 
   		ng-show="forms.settingsForm.passwordMatch.$touched && forms.settingsForm.passwordMatch.$invalid"
   		ng-messages="forms.settingsForm.passwordMatch.$error">
   		<div class="form-error" ng-message="equals">Your passwords do not match.</div>
+  		<div class="form-error" ng-message="required">Re-Enter password to change.</div>
+  		
     	</div>
   		
 		<label class="item item-input">
