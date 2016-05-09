@@ -827,6 +827,11 @@ public class GUI {
           List<Integer> participantIds = SqliteDatabase.getInstance().findAllUsersInEvent(eventId);
           List<Integer> usersLeftIds = SqliteDatabase.getInstance().findUsersLeftInEvent(eventId);
 
+          participantIds.add(event.getHost().getId());
+
+          System.out.println(participantIds);
+          System.out.println(usersLeftIds);
+
           for (int i = 0; i < participantIds.size(); i++) {
             int reviewerId = participantIds.get(i);
             for (int j = 0; j < participantIds.size(); j++) {
