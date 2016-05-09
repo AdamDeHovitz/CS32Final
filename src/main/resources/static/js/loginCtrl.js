@@ -1,10 +1,13 @@
-bulkAppControllers.controller("loginCtrl", 
+
+
+bulkAppControllers.controller("loginCtrl",
 	function($scope, $rootScope, $state, $rootScope, $ionicViewSwitcher, 
 		$ionicModal, $http, $ionicPopup, $interval, toaster) {
 
 	$scope.loginData = {};
 	$scope.registerData = {};
 	$scope.forms = {};
+	//$scope.fd = = new FormData();
 	
 	$scope.$on('$ionicView.enter', function() {
 	  	$scope.forms.registerForm.$setPristine();
@@ -65,7 +68,12 @@ bulkAppControllers.controller("loginCtrl",
 	};
 
 	//TODO: resize when something touched to make sure can scroll (scrolldel.resize)
+	/*
+    $scope.storeFile = function(files) {
 
+        $scope.fd.append("file", files[0]);
+        console.log($scope.fd);
+        }*/
 	$scope.doRegister = function() {
 		console.log('Doing register', $scope.registerData);
 
@@ -79,14 +87,37 @@ bulkAppControllers.controller("loginCtrl",
         };
         console.log(regisData);
 
-        
+        /*
+        $http.post(uploadUrl, fd, {
+                withCredentials: true,
+                headers: {'Content-Type': undefined },
+                transformRequest: angular.identity
+            }).success( ...all right!... ).error( ..damn!... );
+
+        };*/
+
+/*
+        console.log($scope.fd;
+        $scope.fd.append("firstName" : curData.firstName);
+        $scope.fd.append("lastName" : curData.lastName);
+        $scope.fd.append("email" : curData.email);
+        $scope.fd.append("password" : curData.password);
+
+        {
+                		  "firstName" : curData.firstName,
+                		  "lastName" : curData.lastName,
+                		  "email" : curData.email,
+                		  "password" : curData.password,
+                		  "image" : $scope.file}
+                		*/
         $.post("/register", {
-                "firstName": curData.firstName,
-                "lastName": curData.lastName,
-                "email": curData.email,
-                "password": curData.password,
-                "image": curData.img
-        }, function(responseJSON) {
+        		  "firstName" : curData.firstName,
+        		  "lastName" : curData.lastName,
+        		  "email" : curData.email,
+        		  "password" : curData.password,
+        		  "image" : curData.img
+        		},
+           function(responseJSON) {
         	responseObject = JSON.parse(responseJSON);
         	console.log(responseObject);
           $scope.closeModal();

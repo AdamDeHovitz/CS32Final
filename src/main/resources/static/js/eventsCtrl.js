@@ -1,6 +1,6 @@
 bulkAppControllers.controller("eventsCtrl", 
 	function($scope, $rootScope, $http, $ionicModal, $state, $timeout) {
-	
+	$("#loading").hide();
 	$scope.newMyEvents = false;
 	$scope.newMyEventsNum = 0; 
 	$scope.newJoinedEvents = false;
@@ -41,8 +41,6 @@ bulkAppControllers.controller("eventsCtrl",
 	$scope.createEvent = function() {
 		$scope.creationData["owner_id"] = $rootScope.account.id;
 		$scope.creationData["tags"] = [];
-		$scope.lat = null;
-		$scope.lng = null;
 		function getLoc(callback) {
         if (navigator.geolocation) {
           var startPos;
@@ -53,12 +51,12 @@ bulkAppControllers.controller("eventsCtrl",
 
           var geoSuccess = function(position) {
             startPos = position;
-            $scope.lat = startPos.coords.latitude;
-            $scope.lng = startPos.coords.longitude;
+            $rootScope.lat = startPos.coords.latitude;
+            $rootScope.lng = startPos.coords.longitude;
 
             console.log("retrieved location");
-            console.log($scope.lat);
-            console.log($scope.lng);
+            console.log($rootScope.lat);
+            console.log($rootScope.lng);
             callback();
           };
           var geoError = function(error) {
@@ -83,10 +81,8 @@ bulkAppControllers.controller("eventsCtrl",
 
         function createEvent() {
             console.log("STUFF");
-            console.log($scope.lat);
-            console.log($scope.lng);
-            $scope.creationData["lat"] = $scope.lat;
-            $scope.creationData["lng"] = $scope.lng;
+            $scope.creationData["lat"] = $rootScope.lat;
+            $scope.creationData["lng"] = $rootScope.lng;
             console.log($scope.creationData);
 
 
@@ -132,6 +128,18 @@ bulkAppControllers.controller("eventsCtrl",
 	  $scope.$on('modal.removed', function() {
 	    // Execute action
 	  });
+
+	  $scope.getDistance = function(event) {
+              var R = 6378137; // Earth’s mean radius in meter
+              var dLat = rad(event.lat - $rootScope.lat);
+              var dLong = rad(event.lng - $rootScope.lng);
+              var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                                           Math.cos(rad($rootScope.lat)) * Math.cos(rad(event.lat)) *
+                                           Math.sin(dLong / 2) * Math.sin(dLong / 2);
+                                           var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                                           var d = R * c;
+                                          return d; // returns the distance in meter
+                                           };
 	/*
 		if (!$rootScope.userId) {
 			$location.path("/");

@@ -1,4 +1,5 @@
 bulkAppControllers.controller("joinedEventsCtrl", function($scope, $rootScope, $http) {
+    $("#loading").hide();
 	$scope.curTitle = "Joined Events";
 	$scope.curUrl = "events-event";
 	$scope.curEvents = [];
