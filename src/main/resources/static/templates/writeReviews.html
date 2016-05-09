@@ -5,8 +5,7 @@
 <div class="list">
 	<div ng-repeat="review in reviews" class="item item-thumbnail-left">
 		<img src="{{review.image}}" ng-click="goProfile(review.userId);">
-		<b><h2 ng-click="goProfile(review.id);">{{review.firstName}}
-				{{review.lastName}}</h2></b>
+		<b><h2 ng-click="goProfile(review.id);">{{review.name}}</h2></b>
 		<div class="button button-small button-positive"
 			style="min-width: 80px;"
 			ng-click="reviewUser(review);">Review
@@ -17,6 +16,8 @@
 	</div>
 </div>
 
+<script id="new-review-modal.html" type="text/ng-template">
+
 <ion-modal-view>
 
 	<ion-header-bar>
@@ -26,6 +27,11 @@
    	<form name="forms.reviewCreate" ng-submit="createReview()">
     
     <ion-content class="padding">
+    <div class="item item-avatar">
+		<img src="{{curReview.image}}" ng-click="goProfile(curReview.userId);">
+		<b><h2 ng-click="goProfile(curReview.id);">{{curReview.name}}</h2></b>
+		<p> Event: {{curReview.name}} </p>
+	</div>
     
 
 	<label class="item item-input item-stacked-label">
@@ -40,6 +46,7 @@
 	</form>
 
 </ion-modal-view>
+</script>
 
 
 </ion-content> 

@@ -1,5 +1,5 @@
 bulkAppControllers.controller("writeReviewCtrl", 
-		function($scope, $rootScope, $http, $stateParams) {
+		function($scope, $rootScope, $http, $stateParams, $ionicModal) {
 	
 	$scope.forms = {};
 	$scope.reviewCreate = {};
@@ -23,6 +23,7 @@ bulkAppControllers.controller("writeReviewCtrl",
 	
 	$scope.reviewUser = function(review) {
 		$scope.curReview = review;
+		$scope.openModal();
 		console.log("reviewing!");
 	};
 	
