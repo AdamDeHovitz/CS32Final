@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -181,7 +183,7 @@ public class GUI {
       DateFormat df = new SimpleDateFormat("dd MMMM, yyyy");
 
       String dateString = df.format(date);
-      //String dateString = "19 May, 2016";
+
       Account user = null;
       boolean hasError = false;
       String errorMsg = "";
@@ -233,6 +235,15 @@ public class GUI {
       vars.put("errorMsg", errorMsg);
       variables = vars.build();
       return gson.toJson(variables);
+    }
+
+    private String getHashedPassword(String password) {
+      try {
+        MessageDigest md = MessageDigest.getInstance("MD5");
+      } catch (NoSuchAlgorithmException e) {
+        e.printStackTrace();
+      }
+      return "";
     }
   }
 
@@ -303,6 +314,7 @@ public class GUI {
       String name = qm.value("name");
       String description = qm.value("description");
       String image = qm.value("image");
+
       int member_capacity = Integer.parseInt(qm.value("members"));
       String rawCost = qm.value("cost");
       rawCost = rawCost.replace(",", "");
@@ -453,6 +465,7 @@ public class GUI {
       QueryParamsMap qm = req.queryMap();
 
       int id = Integer.parseInt(qm.value("id"));
+
       double lat = Double.parseDouble(qm.value("lat"));
       double lng = Double.parseDouble(qm.value("lng"));
       List<Event> events = null;

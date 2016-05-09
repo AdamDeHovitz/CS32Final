@@ -8,13 +8,22 @@ bulkAppControllers.controller("chatCtrl", function($scope, $rootScope, $state,
 	$scope.webSocket = new WebSocket("ws://" + location.hostname + ":"
 			+ location.port + "/chat/");
 	$scope.webSocket.onopen = function() {
-		console.log($scope.user.username + " joined chat yep");
+		var message = {
+			eventId : $scope.eventId,
+			text : ""
+		};
+
+		message.date = new Date();
+		message.username = $scope.user.username;
+		message.userId = $scope.user._id;
+		message.pic = $scope.user.pic;
+
+		$scope.webSocket.send(JSON.stringify(message));
 	};
 	$scope.webSocket.onmessage = function(msg) {
 		$scope.updateChat(msg);
 	};
 	$scope.webSocket.onclose = function() {
-		alert("WebSocket connection closed")
 	};
 
 	// mock user
