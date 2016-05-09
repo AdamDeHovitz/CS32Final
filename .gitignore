@@ -1,4 +1,5 @@
 .idea/
-.class
+*.class
 .mvn-classpath
 /target/
+data/database.sqlite3

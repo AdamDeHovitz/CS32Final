@@ -360,8 +360,12 @@ public class GUI {
 
       int id = Integer.parseInt(qm.value("id"));
       Profile user = null;
-
-      user = SqliteDatabase.getInstance().findUserProfileById(id);
+      try {
+        user = SqliteDatabase.getInstance().findUserProfileById(id);
+      } catch (SQLException e) {
+        System.out.println("ERROR: SQL error");
+        e.printStackTrace();
+      }
 
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       user.getProfileData(vars);

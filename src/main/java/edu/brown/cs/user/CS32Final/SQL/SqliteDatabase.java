@@ -20,7 +20,7 @@ import edu.brown.cs.user.CS32Final.Entities.Event.EventState;
 public class SqliteDatabase {
   private Connection connection;
 
-  private SqliteDatabase(String db) {
+  private SqliteDatabase(String db)  {
     try {
       makeConnection(db);
     } catch (SQLException e) {
@@ -780,7 +780,7 @@ public class SqliteDatabase {
     return null;
   }
 
-  public Profile findUserProfileById(int id) {
+  public Profile findUserProfileById(int id) throws SQLException {
     String sql = "SELECT first_name, last_name, image, date FROM user WHERE id = ?;";
 
     try (PreparedStatement prep = connection.prepareStatement(sql)) {
@@ -798,8 +798,6 @@ public class SqliteDatabase {
           return new Profile(id, firstName, lastName, image, date, reviews);
         }
       }
-    } catch (SQLException e) {
-      return null;
     }
     return null;
   }
@@ -969,18 +967,14 @@ public class SqliteDatabase {
     }
   }
 
-  public void updateNotification(int userId, boolean isNew) {
-    try {
-      String sql = "UPDATE notification SET is_new = ? WHERE user_id = ?;";
-      PreparedStatement prep = connection.prepareStatement(sql);
-      prep.setBoolean(1, isNew);
-      prep.setInt(2, userId);
+  public void updateNotification(int userId, boolean isNew) throws SQLException {
 
-      prep.executeUpdate();
+    String sql = "UPDATE notification SET is_new = ? WHERE user_id = ?;";
+    PreparedStatement prep = connection.prepareStatement(sql);
+    prep.setBoolean(1, isNew);
+    prep.setInt(2, userId);
 
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
+    prep.executeUpdate();
   }
 
   public Message findMessageById(int notifId) throws SQLException {
@@ -1224,13 +1218,11 @@ public class SqliteDatabase {
     stat.executeUpdate("PRAGMA foreign_keys = ON; PRAGMA journal_mode=WAL;");
   }
 
-  private void closeResultSet(ResultSet rs) {
+  private void closeResultSet(ResultSet rs) throws SQLException {
     if (rs != null) {
-      try {
-        rs.close();
-      } catch (SQLException e) {
-        System.out.println("ERROR: can't close result set");
-      }
+
+      rs.close();
+
     }
   }
 }

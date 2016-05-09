@@ -43,7 +43,6 @@ bulkAppControllers.controller("mapCtrl",
 
     function initMap() {
     var eventLoc = new google.maps.LatLng($scope.event.lat, $scope.event.lng);
-
     var mapOptions = {
                 center: eventLoc,
                 zoom: 20,
@@ -55,14 +54,26 @@ bulkAppControllers.controller("mapCtrl",
             var marker = new google.maps.Marker({
                 position: eventLoc,
                 map: map,
-                title: 'Event'
+                title: 'Event',
               });
+
+            var legend = document.getElementById('legend');
+
+            var div = document.createElement('div');
+            div.innerHTML = '<img src=http://maps.google.com/mapfiles/ms/icons/red-dot.png> Event';
+            legend.appendChild(div);
+            var div = document.createElement('div');
+            div.innerHTML = '<img src=http://maps.google.com/mapfiles/ms/icons/blue-dot.png> Your Location';
+            legend.appendChild(div);
+
+            map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(
+              document.getElementById('legend'));
             function addLoc() {
                 var urmarker = new google.maps.Marker({
                             position: $scope.yourLoc,
                             map: map,
                             icon: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png',
-                            title: 'You'
+                            title: 'You',
                           });
                 var bounds = new google.maps.LatLngBounds();
                 bounds.extend(eventLoc);

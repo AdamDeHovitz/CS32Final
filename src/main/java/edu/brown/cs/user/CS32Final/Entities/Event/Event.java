@@ -40,7 +40,8 @@ public class Event {
     }
 
     if (image == null) {
-      this.image = "";
+      this.image = "http://www.lovjuice.com/Lovjuice/wp-content/" +
+              "uploads/2016/03/Shopping-Cart-icon.png";
     } else {
       this.image = image;
     }
