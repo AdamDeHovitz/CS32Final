@@ -134,6 +134,10 @@ public class GUI {
     Spark.post("/notification", new NotificationHandler());
     Spark.post("/notification-remove", new NotificationRemoveHandler());
 
+    // Account
+    Spark.post("/account-info", new AccountInfoHandler());
+    Spark.post("/settings", new UpdateSettingsHandler());
+
     // Messages
     Spark.post("/messages", new MessageHandler());
 
@@ -199,8 +203,8 @@ public class GUI {
       try {
         if (!SqliteDatabase.getInstance().isInUserTable("email", email)) {
           try {
-            SqliteDatabase.getInstance().insertUser(email, hashedPassword, first_name,
-                    last_name, image, dateString);
+            SqliteDatabase.getInstance().insertUser(email, hashedPassword,
+                first_name, last_name, image, dateString);
           } catch (Exception e) {
             hasError = true;
             errorMsg = "There is a problem with adding to the database. Try again later.";
@@ -219,15 +223,15 @@ public class GUI {
             } else {
               user.getLoginData(vars);
               try {
-                vars.put("reviews",
-                        SqliteDatabase.getInstance().findReviewsByUserId(user.getId()));
+                vars.put("reviews", SqliteDatabase.getInstance()
+                    .findReviewsByUserId(user.getId()));
               } catch (Exception e) {
                 hasError = true;
                 errorMsg = "There is a problem with adding to the database. Try again later.";
               }
             }
-        }
-      } else {
+          }
+        } else {
           hasError = true;
           errorMsg = "Email has already been registered.";
         }
@@ -403,15 +407,16 @@ public class GUI {
       try {
         List<Integer> requests = SqliteDatabase.getInstance()
             .findRequestsByEventId(event.getId());
-        int newMessageNum = SqliteDatabase.getInstance()
-            .getMessageNum(userId, event.getId());
-        int newRequestNum = SqliteDatabase.getInstance()
-            .getRequestNum(userId, event.getId());
+        int newMessageNum = SqliteDatabase.getInstance().getMessageNum(userId,
+            event.getId());
+        int newRequestNum = SqliteDatabase.getInstance().getRequestNum(userId,
+            event.getId());
         boolean newlyAccepted = SqliteDatabase.getInstance()
             .getNewlyAccepted(userId, event.getId());
 
         if (newlyAccepted) {
-          SqliteDatabase.getInstance().removeNewlyAccepted(userId, event.getId());
+          SqliteDatabase.getInstance().removeNewlyAccepted(userId,
+              event.getId());
         }
 
         vars.put("requests", requests);
@@ -497,8 +502,10 @@ public class GUI {
       List<Event> events = null;
       try {
         events = SqliteDatabase.getInstance().findEventsByOwnerId(id);
-        List<Integer> eventIds = SqliteDatabase.getInstance().findEventIdsbyOwnerId(id);
-        notifCount = SqliteDatabase.getInstance().getEventNotifNums(eventIds, id);
+        List<Integer> eventIds = SqliteDatabase.getInstance()
+            .findEventIdsbyOwnerId(id);
+        notifCount = SqliteDatabase.getInstance().getEventNotifNums(eventIds,
+            id);
       } catch (Exception e) {
         System.out.println("ERROR: SQL error");
         e.printStackTrace();
@@ -517,7 +524,6 @@ public class GUI {
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
       Map<Integer, Integer> eventNotifs = new HashMap<>();
-
 
       int id = Integer.parseInt(qm.value("id"));
       List<Event> events = null;
@@ -908,8 +914,7 @@ public class GUI {
       List<Message> messages = new ArrayList<>();
       try {
         messages = SqliteDatabase.getInstance().findMessagesByEventId(eventId);
-        //SqliteDatabase.getInstance().clearMessageNotifs(eventId, userId);
-
+        // SqliteDatabase.getInstance().clearMessageNotifs(eventId, userId);
 
       } catch (Exception e) {
         System.out.println("ERROR: SQL error");
@@ -929,6 +934,48 @@ public class GUI {
 
       int authorId = Integer.parseInt(qm.value("authorId"));
       int targetId = Integer.parseInt(qm.value("userId"));
+
+      ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+
+      Map<String, Object> variables = vars.build();
+      return gson.toJson(variables);
+    }
+  }
+
+  private class AccountInfoHandler implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+
+      int userId = Integer.parseInt(qm.value("id"));
+      Account user = null;
+      boolean hasError = false;
+
+      try {
+        user = SqliteDatabase.getInstance().findUserAccountById(userId);
+      } catch (SQLException e) {
+        hasError = true;
+      }
+
+      ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+      vars.put("hasError", hasError);
+      vars.put("account", user);
+
+      Map<String, Object> variables = vars.build();
+      return gson.toJson(variables);
+    }
+  }
+
+  private class UpdateSettingsHandler implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+      //Map<String, String>
+
+      //int userId = Integer.parseInt(qm.value("id"));
+      //try {
+      //  getAccountInfo
+      //}
 
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
 

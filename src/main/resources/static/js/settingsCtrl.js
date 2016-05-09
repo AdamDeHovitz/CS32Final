@@ -1,29 +1,26 @@
 bulkAppControllers.controller("settingsCtrl", function($scope, $rootScope,
-    $http, $stateParams, $ionicPopup) {
+    $http, $stateParams, $ionicPopup, $timeout) {
 
 	$scope.settingsData = {};
 	$scope.forms = {};
-	$scope.fullAccount = {
-		  firstName : 'Bob',
-		  lastName : 'Smith',
-		  email : 'l@l',
-		  img : 'link?'
-		}
-	$scope.settingsData.firstName = $scope.fullAccount.firstName;
-	$scope.settingsData.lastName = $scope.fullAccount.lastName;
-	$scope.settingsData.email = $scope.fullAccount.email;
-
-
 	/*
+	 * $scope.fullAccount = { firstName : 'Bob', lastName : 'Smith', email :
+	 * 'l@l', img : 'link?' } $scope.settingsData.firstName =
+	 * $scope.fullAccount.firstName; $scope.settingsData.lastName =
+	 * $scope.fullAccount.lastName; $scope.settingsData.email =
+	 * $scope.fullAccount.email;
+	 */
+
 	$.post("/account-info", {
 		id : $scope.account.id
 	}, function(responseJSON) {
 		responseObject = JSON.parse(responseJSON);
-		// $scope.reviews = responseObject.reviews;
-		console.log(responseObject.reviews);
-	});*/
-
-
+		$timeout(function() {
+			$scope.settingsData.firstName = responseObject.account.prof.firstName;
+			$scope.settingsData.lastName = responseObject.account.prof.lastName;
+			$scope.settingsData.email = responseObject.account.email;
+		}, 0);
+	});
 
 	$scope.updateSettings = function() {
 		console.log('Doing settings', $scope.settingsData);
