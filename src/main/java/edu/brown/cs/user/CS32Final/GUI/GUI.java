@@ -314,7 +314,7 @@ public class GUI {
       String name = qm.value("name");
       String description = qm.value("description");
       String image = qm.value("image");
-      System.out.println(qm.value("members"));
+
       int member_capacity = Integer.parseInt(qm.value("members"));
       String rawCost = qm.value("cost");
       rawCost = rawCost.replace(",", "");
