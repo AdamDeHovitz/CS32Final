@@ -82,6 +82,7 @@ bulkAppControllers.controller("eventCtrl", function($scope, $http, $rootScope,
 		});
 	};
 
+
 	$scope.requestJoin = function() {
 		console.log("requesting");
 		var postParams = {
@@ -181,6 +182,18 @@ bulkAppControllers.controller("eventCtrl", function($scope, $http, $rootScope,
 			});
 		}
 	}
+		/*
+		if (!$rootScope.userId) {
+			$location.path("/");
+		}
+		var postData = $.param({
+			json: JSON.stringify({
+				userId: userId,
+			})
+		});
+		$http.post("/feedEntries", postData).success(function(data, status) {
+			$scope.events = data.entries;
+		});*/
 
 	/*
 	 * if (!$rootScope.userId) { $location.path("/"); } var postData = $.param({
@@ -189,3 +202,4 @@ bulkAppControllers.controller("eventCtrl", function($scope, $http, $rootScope,
 	 * });
 	 */
 });
+

@@ -1,10 +1,13 @@
-bulkAppControllers.controller("loginCtrl", function($scope, $rootScope, $state,
-    $rootScope, $ionicViewSwitcher, $ionicModal, $http, $ionicPopup, $interval,
+
+bulkAppControllers.controller("loginCtrl", function($scope, $rootScope, $state, $ionicViewSwitcher, $ionicModal, $http, $ionicPopup, $interval,
     $timeout, toaster) {
+
 
 	$scope.loginData = {};
 	$scope.registerData = {};
 	$scope.forms = {};
+
+	//$scope.fd = = new FormData();
 
 	$scope.$on('$ionicView.enter', function() {
 		$scope.forms.registerForm.$setPristine();
@@ -125,19 +128,7 @@ bulkAppControllers.controller("loginCtrl", function($scope, $rootScope, $state,
 			}
 			
 		});
-
-		/*
-		 * var rand = Math.floor((Math.random() * 100) + 1); if (rand > 95) {
-		 * console.log("new msg"); var f = function()
-		 * {console.log("route!!");toaster.clear()}; toaster.pop({type: 'note',
-		 * title: "title", body:"text", timeout: 50000, clickHandler: f,
-		 * showCloseButton: false}); // new msg }
-		 */
-
-	};
-
-	// TODO: resize when something touched to make sure can scroll
-	// (scrolldel.resize)
+ };
 
 	$scope.doRegister = function() {
 		console.log('Doing register', $scope.registerData);
@@ -226,6 +217,7 @@ bulkAppControllers.controller("loginCtrl", function($scope, $rootScope, $state,
 		});
 	};
 });
+
 /*
  * bulkAppcontrollers.controller("loginCtrl", ['$scope', '$http', '$rootScope',
  * '$location', function($scope, $http) { $scope.longin = function(username,

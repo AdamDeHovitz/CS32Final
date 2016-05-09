@@ -45,12 +45,12 @@ bulkApp.config(function($stateProvider, $urlRouterProvider) {
 		    controller : 'settingsCtrl'
 		  }
 	  }
-	}).state('tab.help', {
-	  url : '/help',
+	}).state('tab.about', {
+	  url : '/about',
 	  views : {
 		  'tab-account' : {
-		    templateUrl : 'templates/help.html',
-		    controller : 'helpCtrl'
+		    templateUrl : 'templates/about.html',
+		    controller : 'aboutCtrl'
 		  }
 	  }
 	}).state('tab.joined-events', {
@@ -252,6 +252,8 @@ bulkApp.config(function($stateProvider, $urlRouterProvider) {
 
 bulkApp.run(function($rootScope, $state) {
 	$rootScope.$state = $state;
+	$rootScope.lat = null;
+	$rootScope.lng = null;
 });
 
 var compareTo = function() {
@@ -349,6 +351,8 @@ bulkApp.directive('autolinker', [ '$timeout', function($timeout) {
 	  }
 	}
 } ]);
+
+
 
 function onProfilePicError(ele) {
 	this.ele.src = ''; // set a fallback
