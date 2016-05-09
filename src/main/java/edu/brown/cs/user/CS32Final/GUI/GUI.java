@@ -197,7 +197,8 @@ public class GUI {
 
       // check if email already in database
       try {
-        if (!SqliteDatabase.getInstance().isInUserTable("email", email)) {
+        if (!SqliteDatabase.getInstance().isInUserTable(email)) {
+          System.out.println("email not taken");
           try {
             SqliteDatabase.getInstance().insertUser(email, hashedPassword, first_name,
                     last_name, image, dateString);
@@ -284,6 +285,8 @@ public class GUI {
         try {
           vars.put("reviews",
               SqliteDatabase.getInstance().findReviewsByUserId(user.getId()));
+
+          SqliteDatabase.getInstance().updateNotification(user.getId(), false);
         } catch (Exception e) {
           e.printStackTrace();
         }
@@ -665,7 +668,8 @@ public class GUI {
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       // event.getEventData(vars);
       try {
-        if (event.getMembers().size() + 1 == event.getMaxMembers()) {
+        if (event.getMembers().size() + 1 >= event.getMaxMembers()) {
+
           SqliteDatabase.getInstance().setEventState(eventId, "CLOSED");
           vars.put("state", "CLOSED");
 
@@ -908,8 +912,7 @@ public class GUI {
       List<Message> messages = new ArrayList<>();
       try {
         messages = SqliteDatabase.getInstance().findMessagesByEventId(eventId);
-        //SqliteDatabase.getInstance().clearMessageNotifs(eventId, userId);
-
+        SqliteDatabase.getInstance().clearMessageNotifs(eventId, userId);
 
       } catch (Exception e) {
         System.out.println("ERROR: SQL error");

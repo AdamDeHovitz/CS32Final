@@ -911,7 +911,7 @@ public class SqliteDatabase {
         toReturn.add(new Notification(userId, notif_id, type));
 
       }
-      updateNotification(userId);
+      updateNotification(userId, false);
 
       return toReturn;
     } finally {
@@ -919,12 +919,12 @@ public class SqliteDatabase {
     }
   }
 
-  public void updateNotification(int id) {
+  public void updateNotification(int userId, boolean isNew) {
     try {
       String sql = "UPDATE notification SET is_new = ? WHERE user_id = ?;";
       PreparedStatement prep = connection.prepareStatement(sql);
-      prep.setBoolean(1, false);
-      prep.setInt(2, id);
+      prep.setBoolean(1, isNew);
+      prep.setInt(2, userId);
 
       prep.executeUpdate();
 
@@ -1068,17 +1068,17 @@ public class SqliteDatabase {
     return -1;
   }
 
-  public boolean isInUserTable(String field, String val) throws SQLException {
+  public boolean isInUserTable(String val) throws SQLException {
     ResultSet rs = null;
     try {
-      String sql = "SELECT * FROM user WHERE ? = ?;";
+      String sql = "SELECT first_name FROM user WHERE email = ?;";
       PreparedStatement prep = connection.prepareStatement(sql);
-      prep.setString(1, field);
-      prep.setString(2, val);
+      prep.setString(1, val);
 
       rs = prep.executeQuery();
 
       return rs.next();
+
     } finally {
       closeResultSet(rs);
     }
