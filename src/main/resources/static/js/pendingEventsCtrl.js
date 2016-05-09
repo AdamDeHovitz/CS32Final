@@ -1,5 +1,4 @@
 bulkAppControllers.controller("pendingEventsCtrl", function($scope, $rootScope, $http) {
-    $("#loading").hide();
 	$scope.curTitle = "Pending Events";
 	$scope.curUrl = "events-event";
 	$scope.curEvents = [];

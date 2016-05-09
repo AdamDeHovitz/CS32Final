@@ -1,5 +1,4 @@
 bulkAppControllers.controller("myEventsCtrl", function($scope, $rootScope, $http) {
-	$("#loading").hide();
 	$scope.curTitle = "My Events";
 	$scope.curUrl = "events-event";
 	$scope.curEvents = [];

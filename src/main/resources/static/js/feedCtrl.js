@@ -12,28 +12,6 @@ bulkAppControllers
 		        // console.log('UserMessages ionicView.enter');
 		      $scope.loading = true;
 
-              var geoSuccess = function(position) {
-                startPos = position;
-                $rootScope.lat = startPos.coords.latitude;
-                $rootScope.lng = startPos.coords.longitude;
-
-                console.log("retrieved location");
-                console.log($rootScope.lat);
-                console.log($rootScope.lng);
-                callback();
-              };
-              var geoError = function(error) {
-                console.log('Error occurred. Error code: ' + error.code);
-                // error.code can be:
-                //   0: unknown error
-                //   1: permission denied
-                //   2: position unavailable (error response from location provider)
-                //   3: timed out
-                $scope.lat = null;
-                $scope.lng = null;
-                callback();
-              };
-
 	        });
 
 	        $scope.$on('$ionicView.leave', function() {
@@ -72,7 +50,7 @@ bulkAppControllers
 								// provider)
 				        // 3: timed out
 				        $rootScope.lat = null;
-				        $rootSscope.lng = null;
+				        $rootScope.lng = null;
 				        callback();
 			        };
 
@@ -100,7 +78,6 @@ bulkAppControllers
                         			$timeout(function() {$scope.curEvents = responseObject.events;}, 0);
                         			console.log(responseObject);
                         	})
-                        	$("#loading").hide();
                         }
                 getLoc(getFeed);
                 var rad = function(x) {

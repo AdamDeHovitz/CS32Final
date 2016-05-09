@@ -2,7 +2,7 @@ bulkAppControllers.controller("mapCtrl",
 	function($scope, $rootScope, $http, $ionicLoading, $stateParams, $state, $timeout, $interval) {
     console.log("here i am");
 	var eventId = $stateParams.eventId;
-	$.post("/event-view", {id: eventId}, function(responseJSON) {
+	$.post("/event-view", {id : eventId, userId : $rootScope.account.id}, function(responseJSON) {
     			responseObject = JSON.parse(responseJSON);
     			$scope.event = responseObject;
     			console.log(event);
@@ -19,19 +19,16 @@ bulkAppControllers.controller("mapCtrl",
                   }
                   var geoSuccess = function(position) {
                     startPos = position;
-                    $scope.lat = startPos.coords.latitude;
-                    $scope.lng = startPos.coords.longitude;
+                    $rootScope.lat = startPos.coords.latitude;
+                    $rootScope.lng = startPos.coords.longitude;
 
                     console.log("retrieved location");
-                    console.log($scope.lat);
-                    console.log($scope.lng);
-                    $scope.yourLoc = new google.maps.LatLng($scope.lat, $scope.lng);
+                    $scope.yourLoc = new google.maps.LatLng($rootScope.lat,
+                    $rootScope.lng);
                     callback();
                   };
                   var geoError = function(error) {
                     console.log('Error occurred. Error code: ' + error.code);
-                    $scope.lat = null;
-                    $scope.lng = null;
                     callback();
                   };
 

@@ -716,9 +716,10 @@ public class SqliteDatabase {
           List<Integer> members = findUsersByEventId(eventId);
           double nlat = rs.getDouble(10);
           double nlng = rs.getDouble(11);
-
-          toReturn.add(new Event(eventId, state, name, description, image, host,
-              members, member_capacity, cost, location, tags, nlat, nlng));
+          if (members.size() + 1 < member_capacity) {
+            toReturn.add(new Event(eventId, state, name, description, image, host,
+                    members, member_capacity, cost, location, tags, nlat, nlng));
+          }
         }
       }
     } finally {
