@@ -24,6 +24,7 @@ bulkAppControllers.controller("eventCtrl", function($scope, $http, $rootScope,
 				function(responseJSON) {
 			responseObject = JSON.parse(responseJSON);
 			$scope.event = responseObject;
+			$scope.newlyAccepted = responseObject.newlyAccepted;
 			var isOwner = responseObject.authorId == $rootScope.account.id;
 			var isMember = false;
 			var requestedJoin = false;
@@ -33,9 +34,9 @@ bulkAppControllers.controller("eventCtrl", function($scope, $http, $rootScope,
 				};
 			};
 			
-			if (responseObject.requests.length > 0) {
+			if (responseObject.newRequestNum > 0) {
 				$scope.hasRequests = true;
-				$scope.requestNum = responseObject.requests.length;
+				$scope.requestNum = responseObject.newRequestNum;
 			};
 			if (responseObject.newMsgNum > 0) {
 				$scope.hasMessages = true;
@@ -62,7 +63,7 @@ bulkAppControllers.controller("eventCtrl", function($scope, $http, $rootScope,
 		// var updateEvent = $interval($scope.getEventInfo(), 5000);
 	});
 	$scope.$on('$ionicView.leave', function() {
-		$scope.updateEvent = undefined;
+		$interval.cancel($scope.updateEvent);
 	});
 
 	// A confirm dialog

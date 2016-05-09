@@ -4,50 +4,40 @@ bulkAppControllers
         function($scope, $rootScope, $http, $ionicModal, $state, $timeout,
             $ionicPopup) {
 
-	        $scope.newMyEvents = false;
 	        $scope.newMyEventsNum = 0;
-	        $scope.newJoinedEvents = false;
 	        $scope.newJoinedEventsNum = 0;
-	        $scope.newPendingEvents = false;
-	        $scope.newPendingEventsNum = 0;
 	        $scope.creationData = {};
 	        $scope.forms = {};
 	        $scope.positiveIntRegex = "^[1-9][0-9]*$";
 	        $scope.moneyRegex = "^\\$?[0-9][0-9\\,]*(\\.\\d{1,2})?$|^\\$?[\\.]([\\d][\\d]?)$";
 
 	        $scope.getEventInfo = function() {
-	      		$.post("/events-view", {
-	      			userId: $rootScope.account.id
-	      		}, function(responseJSON) {
-	      			responseObject = JSON.parse(responseJSON);
-	      			console.log(responseObject);
-	      		});
-	        }
-	        
-	        $scope.getEventInfo();
-	        
+		        $.post("/events-view", {
+			        userId : $rootScope.account.id
+		        }, function(responseJSON) {
+			        responseObject = JSON.parse(responseJSON);
+			        console.log(responseObject);
+			        $timeout(function() {
+				        $scope.newMyEventsNum = responseObject.myEventNotifNum;
+				        $scope.newJoinedEventsNum = responseObject.joinedEventNotifNum;
+			        }, 0);
+		        });
+	        };
+
+	        $scope.$on('$ionicView.enter', function() {
+	        	console.log("enter");
+		        $scope.getEventInfo();
+	        });
+
 	        $scope.goPending = function() {
-		        $timeout(function() {
-			        $scope.newPendingEvents = false;
-			        $scope.newPendingEventsNum = 0;
-		        }, 1000);
 		        $state.go('tab.pending-events');
 	        };
 
 	        $scope.goMyEvents = function() {
-		        $timeout(function() {
-			        $scope.newMyEvents = false;
-			        $scope.newMyEventsNum = 0;
-		        }, 1000);
-
 		        $state.go('tab.my-events');
 	        };
 
 	        $scope.goJoined = function() {
-		        $timeout(function() {
-			        $scope.newJoinedEvents = false;
-			        $scope.newJoinedEventsNum = 0;
-		        }, 1000);
 		        $state.go('tab.joined-events');
 	        };
 
@@ -87,7 +77,7 @@ bulkAppControllers
 					        // 0: unknown error
 					        // 1: permission denied
 					        // 2: position unavailable (error response from location
-									// provider)
+					        // provider)
 					        // 3: timed out
 					        callback();
 				        };

@@ -4,18 +4,17 @@
 	<div class="list">
 	<a class="item item-icon-right" href="" ng-click="goMyEvents();">
 		My Events
-	<span class="badge badge-positive" ng-show="newMyEvents">{{newMyEventsNum}}</span>
-	<i class="icon ion-ios-arrow-right" ng-hide="newMyEvents"></i>
+	<span class="badge badge-positive" ng-show="newMyEventsNum > 0">{{newMyEventsNum}}</span>
+	<i class="icon ion-ios-arrow-right" ng-hide="newMyEventsNum > 0"></i>
 	</a>
 	<a class="item item-icon-right" href="" ng-click="goJoined();">
 		Joined Events
-	<span class="badge badge-positive" ng-show="newJoinedEvents">{{newJoinedEventsNum}}</span>
-	<i class="icon ion-ios-arrow-right" ng-hide="newJoinedEvents"></i>
+	<span class="badge badge-positive" ng-show="newJoinedEventsNum > 0">{{newJoinedEventsNum}}</span>
+	<i class="icon ion-ios-arrow-right" ng-hide="newJoinedEventsNum > 0"></i>
 	</a>
 	<a class="item item-icon-right" href="" ng-click="goPending();">
 		Pending Events
-	<span class="badge badge-positive" ng-show="newPendingEvents">{{newPendingEventsNum}}</span>
-	<i class="icon ion-ios-arrow-right" ng-hide="newPendingEvents"></i>
+	<i class="icon ion-ios-arrow-right"></i>
 	</a>
 	</div>
   </ion-content>

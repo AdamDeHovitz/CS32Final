@@ -1,12 +1,18 @@
 <ion-view view-title="Event: {{event.title}}" cache-view="false">
+<ion-nav-title>Event: {{event.title}}</ion-nav-title>
 <ion-content class="padding" ng-show="event">
   
 <div class="list card">
 
   <div class="item item-divider item-icon-left" ng-show="event.state=='STARTED'">
-   <i class="icon ion-alert"></i>
+   <i class="icon ion-ios-information"></i>
   <h2><b>EVENT HAS STARTED</b></h2>
   </div>
+    <div class="item item-divider item-icon-left" ng-show="newlyAccepted">
+   <i class="icon ion-ios-checkmark"></i>
+  <h2><b>{{event.author}} has accepted you to this event.</b></h2>
+  </div>
+  
   <div class="item item-avatar">
     <img src="{{event.authorImg}}" ng-click="goAuthor();">
     <h2><b>{{event.title}}</b></h2>
