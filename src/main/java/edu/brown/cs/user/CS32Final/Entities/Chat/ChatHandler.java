@@ -9,7 +9,6 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -21,16 +20,6 @@ import edu.brown.cs.user.CS32Final.SQL.SqliteDatabase;
 
 @WebSocket
 public class ChatHandler {
-  private Gson gson = new Gson();
-  // private SqliteDatabase database;
-
-  public ChatHandler() {
-    try {
-      // database = new SqliteDatabase("data/database.sqlite3");
-    } catch (Exception e) {
-      System.out.println("ERROR: can't connect to database in chat");
-    }
-  }
 
   @OnWebSocketConnect
   public void onConnect(Session user) throws Exception {
@@ -65,24 +54,25 @@ public class ChatHandler {
       Chat.usernameMap.put(user, val);
       usersInRoom.add(userId);
     }
+    if (!obj.get("text").equals("")) {
+        Chat.broadcastMessage(eventId, message);
 
-    Chat.broadcastMessage(eventId, message);
+        try {
+            int messageId = SqliteDatabase.getInstance().insertMessage(eventId,
+                    userId, obj.get("text").getAsString());
 
-    try {
-      int messageId = SqliteDatabase.getInstance().insertMessage(eventId,
-          userId, obj.get("text").getAsString());
+            List<Integer> participants = SqliteDatabase.getInstance()
+                    .findUsersByEventId(eventId);
+            for (int participant : participants) {
+                if (!Chat.roomMap.get(eventId).contains(participant)) {
+                    SqliteDatabase.getInstance().insertNotification(participant,
+                            messageId, eventId, "MESSAGE");
+                }
+            }
 
-      List<Integer> participants = SqliteDatabase.getInstance()
-          .findUsersByEventId(eventId);
-      for (int participant : participants) {
-        if (!Chat.roomMap.get(eventId).contains(participant)) {
-          SqliteDatabase.getInstance().insertNotification(participant,
-              messageId, eventId, "MESSAGE");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-      }
-
-    } catch (Exception e) {
-      e.printStackTrace();
     }
   }
 }

@@ -7,7 +7,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -129,6 +132,9 @@ public class GUI {
     // Notifications
     Spark.post("/notification", new NotificationHandler());
     Spark.post("/notification-remove", new NotificationRemoveHandler());
+
+    // Messages
+    Spark.post("/messages", new MessageHandler());
   }
 
   /**
@@ -170,7 +176,12 @@ public class GUI {
       String first_name = qm.value("firstName");
       String last_name = qm.value("lastName");
       String image = qm.value("image");
-      String date = "19 May, 2016";
+
+      Date date = new Date();
+      DateFormat df = new SimpleDateFormat("dd MMMM, yyyy");
+
+      String dateString = df.format(date);
+      //String dateString = "19 May, 2016";
       Account user = null;
       boolean hasError = false;
       String errorMsg = "";
@@ -178,36 +189,44 @@ public class GUI {
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
 
       // check if email already in database
-
       try {
-        SqliteDatabase.getInstance().insertUser(email, password, first_name,
-            last_name, image, date);
-      } catch (Exception e) {
-        hasError = true;
-        errorMsg = "There is a problem with adding to the database. Try again later.";
-      }
-
-      if (!hasError) {
-        try {
-          user = SqliteDatabase.getInstance().findUserByUsername(email);
-        } catch (Exception e) {
-          hasError = true;
-          errorMsg = "There is a problem with adding to the database. Try again later.";
-        }
-        if (user == null) {
-          hasError = true;
-          errorMsg = "There is a problem with adding to the database. Try again later.";
-        } else {
-          user.getLoginData(vars);
+        if (!SqliteDatabase.getInstance().isInUserTable("email", email)) {
           try {
-            vars.put("reviews",
-                SqliteDatabase.getInstance().findReviewsByUserId(user.getId()));
+            SqliteDatabase.getInstance().insertUser(email, password, first_name,
+                    last_name, image, dateString);
           } catch (Exception e) {
             hasError = true;
             errorMsg = "There is a problem with adding to the database. Try again later.";
           }
+
+          if (!hasError) {
+            try {
+              user = SqliteDatabase.getInstance().findUserByUsername(email);
+            } catch (Exception e) {
+              hasError = true;
+              errorMsg = "There is a problem with adding to the database. Try again later.";
+            }
+            if (user == null) {
+              hasError = true;
+              errorMsg = "There is a problem with adding to the database. Try again later.";
+            } else {
+              user.getLoginData(vars);
+              try {
+                vars.put("reviews",
+                        SqliteDatabase.getInstance().findReviewsByUserId(user.getId()));
+              } catch (Exception e) {
+                hasError = true;
+                errorMsg = "There is a problem with adding to the database. Try again later.";
+              }
+            }
+        }
+      } else {
+          hasError = true;
+          errorMsg = "Email has already been registered.";
         }
 
+      } catch (SQLException e) {
+        e.printStackTrace();
       }
 
       vars.put("hasError", hasError);
@@ -860,6 +879,32 @@ public class GUI {
       }
 
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+      Map<String, Object> variables = vars.build();
+      return gson.toJson(variables);
+    }
+  }
+
+  private class MessageHandler implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+
+      int eventId = Integer.parseInt(qm.value("id"));
+      int userId = Integer.parseInt(qm.value("userId"));
+
+      List<Message> messages = new ArrayList<>();
+      try {
+        messages = SqliteDatabase.getInstance().findMessagesByEventId(eventId);
+        //SqliteDatabase.getInstance().clearMessageNotifs(eventId, userId);
+      } catch (Exception e) {
+        System.out.println("ERROR: SQL error");
+        e.printStackTrace();
+      }
+
+
+
+      ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+      vars.put("messages", messages);
       Map<String, Object> variables = vars.build();
       return gson.toJson(variables);
     }

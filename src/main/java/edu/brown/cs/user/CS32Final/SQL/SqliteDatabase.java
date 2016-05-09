@@ -482,10 +482,10 @@ public class SqliteDatabase {
 
   }
 
-  public List<Integer> findMessagesByEventId(Integer eventId)
+  public List<Message> findMessagesByEventId(Integer eventId)
       throws SQLException {
-    String sql = "SELECT id FROM message WHERE event_id = ?;";
-    List<Integer> toReturn = new ArrayList<>();
+    String sql = "SELECT id, user_id, message FROM message WHERE event_id = ?;";
+    List<Message> toReturn = new ArrayList<>();
 
     try (PreparedStatement prep = connection.prepareStatement(sql)) {
       prep.setInt(1, eventId);
@@ -494,7 +494,9 @@ public class SqliteDatabase {
 
         while (rs.next()) {
           int id = rs.getInt(1);
-          toReturn.add(id);
+            int userId = rs.getInt(2);
+            String message = rs.getString(3);
+            toReturn.add(new Message(id, userId, eventId, message));
         }
       }
     }
@@ -527,7 +529,7 @@ public class SqliteDatabase {
     try {
       String sql = "SELECT id FROM review WHERE target_id = ?;";
       PreparedStatement prep = connection.prepareStatement(sql);
-      prep.setInt(1, userId);
+        prep.setInt(1, userId);
 
       List<Integer> toReturn = new ArrayList<>();
       rs = prep.executeQuery();
@@ -619,7 +621,7 @@ public class SqliteDatabase {
     try {
       String sql = "SELECT id FROM user WHERE email = ?;";
       PreparedStatement prep = connection.prepareStatement(sql);
-      prep.setString(1, username);
+        prep.setString(1, username);
 
       rs = prep.executeQuery();
 
@@ -1036,6 +1038,22 @@ public class SqliteDatabase {
     }
     return -1;
   }
+
+    public boolean isInUserTable(String field, String val) throws SQLException {
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT * FROM user WHERE ? = ?;";
+            PreparedStatement prep = connection.prepareStatement(sql);
+            prep.setString(1, field);
+            prep.setString(2, val);
+
+            rs = prep.executeQuery();
+
+            return rs.next();
+        } finally {
+            closeResultSet(rs);
+        }
+    }
 
   private void makeConnection(String db)
       throws SQLException, ClassNotFoundException {

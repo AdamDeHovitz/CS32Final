@@ -62,7 +62,7 @@ bulkAppControllers.controller("chatCtrl", function($scope, $rootScope, $state,
 			$interval.cancel(messageCheckTimer);
 			messageCheckTimer = undefined;
 		}
-		$scope.webSocket.close();
+		// add something to close socket on exit?
 	});
 
 	/*
@@ -73,30 +73,16 @@ bulkAppControllers.controller("chatCtrl", function($scope, $rootScope, $state,
 
 	function getMessages() {
 
-		$scope.doneLoading = true;
-		$scope.messages = [];
-		$timeout(function() {
+		$.post("/messages", {id: $scope.eventId, userId: $rootScope.account.id},
+				function(responseJSON) {
+			responseObject = JSON.parse(responseJSON);
+			console.log(responseObject);
+			$scope.messages = [];
+			//$scope.messages = responseObject.messages;
+			$scope.doneLoading = true;
 			viewScroll.scrollBottom();
-		}, 1000);
-		// get messages from database
-
-		// the service is mock but you would probably pass the
-		// toUser's GUID here
-		/*
-		 * MockService.getUserMessages({ toUserId: $scope.toUser._id
-		 * }).then(function(data) { $scope.doneLoading = true; $scope.messages =
-		 * data.messages;
-		 * 
-		 * $timeout(function() { viewScroll.scrollBottom(); }, 0); });
-		 */
+		});
 	}
-
-	/*
-	 * $scope.$watch('input.message', function(newValue, oldValue) {
-	 * //console.log('input.message $watch, newValue ' + newValue); if (!newValue)
-	 * newValue = ''; localStorage['userMessage-' + $scope.toUser._id] = newValue;
-	 * });
-	 */
 
 	$scope.sendMessage = function(sendMessageForm) {
 		var message = {
