@@ -54,7 +54,7 @@ public class ChatHandler {
       Chat.usernameMap.put(user, val);
       usersInRoom.add(userId);
     }
-    if (!obj.get("text").equals("")) {
+    if (obj.get("text") != null && !obj.get("text").getAsString().isEmpty()) {
         Chat.broadcastMessage(eventId, message);
 
         try {

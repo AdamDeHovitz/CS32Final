@@ -279,6 +279,18 @@ public class SqliteDatabase {
     }
   }
 
+  public void clearMessageNotifs(int eventId, int userId) throws SQLException {
+    String sql = "DELETE FROM notification WHERE type == 'MESSAGE' AND user_id == ? and event_id == ?";
+
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
+      prep.setInt(1, userId);
+      prep.setInt(2, eventId);
+
+      prep.executeUpdate();
+    }
+  }
+
+
   public int userEventsNotifNum(int userId) throws SQLException {
     int notifNum = 0;
     String sql = "SELECT id FROM event WHERE owner_id = ?;";
@@ -484,6 +496,7 @@ public class SqliteDatabase {
 
   public List<Message> findMessagesByEventId(Integer eventId)
       throws SQLException {
+    System.out.println("eventId: " + eventId);
     String sql = "SELECT id, user_id, message FROM message WHERE event_id = ?;";
     List<Message> toReturn = new ArrayList<>();
 
@@ -493,6 +506,7 @@ public class SqliteDatabase {
       try (ResultSet rs = prep.executeQuery()) {
 
         while (rs.next()) {
+          System.out.println("message hit");
           int id = rs.getInt(1);
             int userId = rs.getInt(2);
             String message = rs.getString(3);
@@ -503,6 +517,7 @@ public class SqliteDatabase {
     return toReturn;
 
   }
+
 
   public List<Integer> findEventsByUserId(Integer userId) throws SQLException {
     String sql = "SELECT event_id FROM user_event WHERE user_id = ?;";

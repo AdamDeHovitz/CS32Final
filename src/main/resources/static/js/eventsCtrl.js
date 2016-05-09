@@ -128,9 +128,6 @@ bulkAppControllers
 		        $scope.modal.show();
 	        };
 	        $scope.closeModal = function() {
-		        $scope.creationData = {};
-		        $scope.forms.eventCreate.$setPristine();
-		        $scope.forms.eventCreate.$setUntouched();
 		        $scope.modal.hide();
 	        };
 	        // Cleanup the modal when we're done with it!
