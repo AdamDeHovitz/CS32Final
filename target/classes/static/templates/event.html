@@ -77,11 +77,11 @@
   <button class="button button-positive button-block" ng-show="!isMember && !isOwner && !requestedJoin && event.state=='OPEN'" 
   ng-click="showConfirm('Request Join', 'Are you sure you want to request to join this event', requestJoin);">Request Join</button>
   <button class="button button-positive button-block" ng-show="isOwner && event.state == 'OPEN'"
-  ng-click="showConfirm('Confirm Close', 'Are you sure you want to close this event', confirmClose);">Close Event</button>
+  ng-click="showConfirm('Confirm Close', 'Are you sure you want to close this event', confirmClose);">Close Requesting</button>
   <button class="button button-positive button-block" ng-show="isOwner && event.state == 'CLOSED'"
   ng-click="showConfirm('Confirm Close', 'Are you sure you want to start this event', confirmStart);">Start Event</button>
   <button class="button button-positive button-block" ng-show="isOwner && event.state == 'STARTED'"
-  ng-click="showConfirm('Confirm Close', 'Are you sure you want to remove this event', confirmRemove);">Remove Event</button>
+  ng-click="showConfirm('Confirm Close', 'Are you sure this event is finished?', confirmRemove);">Mark as Complete</button>
   <button class="button button-assertive button-block" ng-show="isMember && !isOwner" 
   ng-click="showConfirm('Confirm Leave', 'Are you sure you want to leave this event', confirmLeave);">Leave Event</button>
   

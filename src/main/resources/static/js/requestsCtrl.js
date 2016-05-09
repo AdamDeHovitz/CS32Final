@@ -1,5 +1,5 @@
 bulkAppControllers.controller("requestsCtrl", 
-	function($scope, $rootScope, $http, $stateParams, $state, $timeout, $interval) {
+	function($scope, $rootScope, $http, $stateParams, $state, $timeout, $interval, $ionicPopup) {
 
 	var eventId = $stateParams.eventId;
 	$scope.$on('$ionicView.enter', function() {
@@ -60,6 +60,12 @@ bulkAppControllers.controller("requestsCtrl",
 			function(responseJSON) {
 				responseObject = JSON.parse(responseJSON);
 				console.log(responseObject);
+				if (responseObject.state == "CLOSED") {
+					var alertPopup = $ionicPopup.alert({
+		  		  title : "Full Event",
+		  		  template : "Your event has reached the maximum participant level, get chatting!"
+		  		});
+				}
 		});
 		$scope.requests = newList;
 		$scope.currentMsg = name + " has been accepted.";

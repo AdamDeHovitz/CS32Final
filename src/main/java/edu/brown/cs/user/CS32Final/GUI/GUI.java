@@ -18,12 +18,8 @@ import java.util.Map;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
+import edu.brown.cs.user.CS32Final.Entities.Account.*;
 import edu.brown.cs.user.CS32Final.Hash;
-import edu.brown.cs.user.CS32Final.Entities.Account.Account;
-import edu.brown.cs.user.CS32Final.Entities.Account.Notification;
-import edu.brown.cs.user.CS32Final.Entities.Account.NotificationType;
-import edu.brown.cs.user.CS32Final.Entities.Account.Profile;
-import edu.brown.cs.user.CS32Final.Entities.Account.Review;
 import edu.brown.cs.user.CS32Final.Entities.Chat.ChatHandler;
 import edu.brown.cs.user.CS32Final.Entities.Chat.Message;
 import edu.brown.cs.user.CS32Final.Entities.Event.Event;
@@ -134,11 +130,16 @@ public class GUI {
     Spark.post("/notification", new NotificationHandler());
     Spark.post("/notification-remove", new NotificationRemoveHandler());
 
+    // Account
+    Spark.post("/account-info", new AccountInfoHandler());
+    Spark.post("/settings", new UpdateSettingsHandler());
+
     // Messages
     Spark.post("/messages", new MessageHandler());
 
     // Reviews
     Spark.post("/review", new ReviewHandler());
+    Spark.post("/pending-reviews", new PendingReviewHandler());
   }
 
   /**
@@ -200,8 +201,8 @@ public class GUI {
         if (!SqliteDatabase.getInstance().isInUserTable(email)) {
           System.out.println("email not taken");
           try {
-            SqliteDatabase.getInstance().insertUser(email, hashedPassword, first_name,
-                    last_name, image, dateString);
+            SqliteDatabase.getInstance().insertUser(email, hashedPassword,
+                first_name, last_name, image, dateString);
           } catch (Exception e) {
             hasError = true;
             errorMsg = "There is a problem with adding to the database. Try again later.";
@@ -220,15 +221,15 @@ public class GUI {
             } else {
               user.getLoginData(vars);
               try {
-                vars.put("reviews",
-                        SqliteDatabase.getInstance().findReviewsByUserId(user.getId()));
+                vars.put("reviews", SqliteDatabase.getInstance()
+                    .findReviewsByUserId(user.getId()));
               } catch (Exception e) {
                 hasError = true;
                 errorMsg = "There is a problem with adding to the database. Try again later.";
               }
             }
-        }
-      } else {
+          }
+        } else {
           hasError = true;
           errorMsg = "Email has already been registered.";
         }
@@ -406,15 +407,16 @@ public class GUI {
       try {
         List<Integer> requests = SqliteDatabase.getInstance()
             .findRequestsByEventId(event.getId());
-        int newMessageNum = SqliteDatabase.getInstance()
-            .getMessageNum(userId, event.getId());
-        int newRequestNum = SqliteDatabase.getInstance()
-            .getRequestNum(userId, event.getId());
+        int newMessageNum = SqliteDatabase.getInstance().getMessageNum(userId,
+            event.getId());
+        int newRequestNum = SqliteDatabase.getInstance().getRequestNum(userId,
+            event.getId());
         boolean newlyAccepted = SqliteDatabase.getInstance()
             .getNewlyAccepted(userId, event.getId());
 
         if (newlyAccepted) {
-          SqliteDatabase.getInstance().removeNewlyAccepted(userId, event.getId());
+          SqliteDatabase.getInstance().removeNewlyAccepted(userId,
+              event.getId());
         }
 
         vars.put("requests", requests);
@@ -500,8 +502,10 @@ public class GUI {
       List<Event> events = null;
       try {
         events = SqliteDatabase.getInstance().findEventsByOwnerId(id);
-        List<Integer> eventIds = SqliteDatabase.getInstance().findEventIdsbyOwnerId(id);
-        notifCount = SqliteDatabase.getInstance().getEventNotifNums(eventIds, id);
+        List<Integer> eventIds = SqliteDatabase.getInstance()
+            .findEventIdsbyOwnerId(id);
+        notifCount = SqliteDatabase.getInstance().getEventNotifNums(eventIds,
+            id);
       } catch (Exception e) {
         System.out.println("ERROR: SQL error");
         e.printStackTrace();
@@ -520,7 +524,6 @@ public class GUI {
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
       Map<Integer, Integer> eventNotifs = new HashMap<>();
-
 
       int id = Integer.parseInt(qm.value("id"));
       List<Event> events = null;
@@ -668,8 +671,7 @@ public class GUI {
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       // event.getEventData(vars);
       try {
-        if (event.getMembers().size() + 1 >= event.getMaxMembers()) {
-
+        if (event.getMembers().size() + 2 == event.getMaxMembers()) {
           SqliteDatabase.getInstance().setEventState(eventId, "CLOSED");
           vars.put("state", "CLOSED");
 
@@ -708,6 +710,13 @@ public class GUI {
         Event event = SqliteDatabase.getInstance().findEventById(eventId);
         SqliteDatabase.getInstance().removeUserFromEvent(eventId, id,
             event.getHost().getId());
+
+        EventState state = SqliteDatabase.getInstance().getEventStateById(eventId);
+        if (state != null && (state == EventState.CLOSED || state == EventState.STARTED)) {
+          // add user relation to the leftEventUser table
+          SqliteDatabase.getInstance().insertUserIntoLeftEvent(eventId, id, event.getHost().getId());
+        }
+
       } catch (Exception e) {
         System.out.println("ERROR: SQL error");
         e.printStackTrace();
@@ -806,7 +815,27 @@ public class GUI {
       try {
         Event event = SqliteDatabase.getInstance().findEventById(eventId);
         if (event.getHost().getId() == id) {
+          // Event is done: delete event
+          List<Integer> participantIds = SqliteDatabase.getInstance().findAllUsersInEvent(eventId);
+          List<Integer> usersLeftIds = SqliteDatabase.getInstance().findUsersLeftInEvent(eventId);
+
+          for (int i = 0; i < participantIds.size(); i++) {
+            int reviewerId = participantIds.get(i);
+            for (int j = 0; j < participantIds.size(); j++) {
+              int targetId = participantIds.get(j);
+              if (reviewerId != targetId) {
+                SqliteDatabase.getInstance().insertPendingReview(reviewerId, targetId, event.getName());
+              }
+            }
+
+            for (int userLeftId : usersLeftIds) {
+              SqliteDatabase.getInstance().insertPendingReview(reviewerId, userLeftId, event.getName());
+            }
+
+          }
+
           SqliteDatabase.getInstance().removeEvent(eventId);
+
         } else {
           // TODO: tell them they don't have permission
         }
@@ -948,6 +977,97 @@ public class GUI {
     }
   }
 
+  private class AccountInfoHandler implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
 
+      int userId = Integer.parseInt(qm.value("id"));
+      Account user = null;
+      boolean hasError = false;
+
+      try {
+        user = SqliteDatabase.getInstance().findUserAccountById(userId);
+      } catch (SQLException e) {
+        hasError = true;
+      }
+
+      ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+      vars.put("hasError", hasError);
+      vars.put("account", user);
+
+      Map<String, Object> variables = vars.build();
+      return gson.toJson(variables);
+    }
+  }
+
+  private class UpdateSettingsHandler implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+
+      Account user;
+      int userId = Integer.parseInt(qm.value("id"));
+      String firstName = qm.value("firstName");
+      String lastName = qm.value("lastName");
+      String email = qm.value("email");
+      String oldPassword = qm.value("oldPassword");
+      String newPassword = qm.value("newPassword");
+      boolean hasError = false;
+      boolean failedAuth = false;
+
+
+      String hashedPassword = Hash.getHashedPassword(oldPassword);
+
+      try {
+        user = SqliteDatabase.getInstance().findUserAccountById(userId);
+        if (user.authenticate(hashedPassword)) {
+          SqliteDatabase.getInstance().updateSettings(userId, firstName, lastName, email);
+         if (newPassword != null && !newPassword.isEmpty()) {
+           SqliteDatabase.getInstance().updatePassword(userId, Hash.getHashedPassword(newPassword));
+         }
+        } else {
+          hasError = true;
+          failedAuth = true;
+        }
+      } catch (SQLException e) {
+        hasError = true;
+      }
+
+      ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+      vars.put("hasError", hasError);
+      vars.put("firstName", firstName);
+      vars.put("lastName", lastName);
+      vars.put("email", email);
+      vars.put("failedAuth", failedAuth);
+
+      Map<String, Object> variables = vars.build();
+      return gson.toJson(variables);
+    }
+  }
+
+  private class PendingReviewHandler implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+
+      int userId = Integer.parseInt(qm.value("id"));
+
+      List<PendingReview> pendingReviews = new ArrayList<>();
+
+      try {
+        pendingReviews = SqliteDatabase.getInstance().findPendingReviewsByUserId(userId);
+
+      } catch(SQLException e) {
+        e.printStackTrace();
+      }
+
+      ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+      vars.put("pendingReviews", pendingReviews);
+
+      Map<String, Object> variables = vars.build();
+      return gson.toJson(variables);
+    }
+  }
 
 }
