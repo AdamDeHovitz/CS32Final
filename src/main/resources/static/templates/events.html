@@ -18,7 +18,8 @@
 	</a>
 	<a class="item item-icon-right" href="" ng-click="goWriteReviews();">
 		Reviews
-	<i class="icon ion-ios-arrow-right"></i>
+		<span class="badge badge-positive" ng-show="newReviewsNum > 0">{{newReviewsNum}}</span>
+		<i class="icon ion-ios-arrow-right" ng-hide="newReviewsNum > 0"></i>
 	</a>
 	</div>
   </ion-content>

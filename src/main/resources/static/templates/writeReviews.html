@@ -4,8 +4,9 @@
 
 <div class="list">
 	<div ng-repeat="review in reviews" class="item item-thumbnail-left">
-		<img src="{{review.image}}" ng-click="goProfile(review.userId);">
-		<b><h2 ng-click="goProfile(review.id);">{{review.name}}</h2></b>
+		<img src="{{review.image}}" ng-click="goProfile(review.targetId);">
+		<b><h2 ng-click="goProfile(review.targetId);">{{review.name}}</h2></b>
+		<p> Event: {{review.eventName}}</p>
 		<div class="button button-small button-positive"
 			style="min-width: 80px;"
 			ng-click="reviewUser(review);">Review
@@ -28,9 +29,9 @@
     
     <ion-content class="padding">
     <div class="item item-avatar">
-		<img src="{{curReview.image}}" ng-click="goProfile(curReview.userId);">
-		<b><h2 ng-click="goProfile(curReview.id);">{{curReview.name}}</h2></b>
-		<p> Event: {{curReview.name}} </p>
+		<img src="{{curReview.image}}" ng-click="goProfile(curReview.targetId);">
+		<b><h2 ng-click="goProfile(curReview.targetId);">{{curReview.name}}</h2></b>
+		<p> Event: {{curReview.eventName}} </p>
 	</div>
     
 

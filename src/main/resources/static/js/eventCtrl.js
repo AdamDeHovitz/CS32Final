@@ -24,43 +24,45 @@ bulkAppControllers.controller("eventCtrl", function($scope, $http, $rootScope,
 				function(responseJSON) {
 			responseObject = JSON.parse(responseJSON);
 			if (responseObject.hasError) {
+				$interval.cancel($scope.updateEvent);
 				$state.go("tab.events");
 				var alertPopup = $ionicPopup.alert({
 	  		  title : "Event Nonexistent",
 	  		  template : "This event does not exist or has been removed"
 	  		});
+			} else {
+			
+				$scope.event = responseObject;
+				$scope.newlyAccepted = responseObject.newlyAccepted;
+				var isOwner = responseObject.authorId == $rootScope.account.id;
+				var isMember = false;
+				var requestedJoin = false;
+				for (var i = 0; i < responseObject.members.length; i++) {
+					if (responseObject.members[i] == $rootScope.account.id) {
+						isMember = true;
+					};
+				};
+				
+				if (responseObject.newRequestNum > 0) {
+					$scope.hasRequests = true;
+					$scope.requestNum = responseObject.newRequestNum;
+				};
+				if (responseObject.newMessageNum > 0) {
+					$scope.hasMessages = true;
+					$scope.messageNum = responseObject.newMessageNum;
+				};
+	
+				for (var i = 0; i < responseObject.requests.length; i++) {
+					if (responseObject.requests[i] == $rootScope.account.id) {
+						requestedJoin = true;
+					};
+				};
+	
+				$scope.isOwner = isOwner;
+				$scope.isMember = isMember;
+				$scope.requestedJoin = requestedJoin;
 			}
-			
-			$scope.event = responseObject;
-			$scope.newlyAccepted = responseObject.newlyAccepted;
-			var isOwner = responseObject.authorId == $rootScope.account.id;
-			var isMember = false;
-			var requestedJoin = false;
-			for (var i = 0; i < responseObject.members.length; i++) {
-				if (responseObject.members[i] == $rootScope.account.id) {
-					isMember = true;
-				};
-			};
-			
-			if (responseObject.newRequestNum > 0) {
-				$scope.hasRequests = true;
-				$scope.requestNum = responseObject.newRequestNum;
-			};
-			if (responseObject.newMessageNum > 0) {
-				$scope.hasMessages = true;
-				$scope.messageNum = responseObject.newMessageNum;
-			};
-
-			for (var i = 0; i < responseObject.requests.length; i++) {
-				if (responseObject.requests[i] == $rootScope.account.id) {
-					requestedJoin = true;
-				};
-			};
-
-			$scope.isOwner = isOwner;
-			$scope.isMember = isMember;
-			$scope.requestedJoin = requestedJoin;
-			console.log(responseObject);
+				console.log(responseObject);
 		});
 	};
 

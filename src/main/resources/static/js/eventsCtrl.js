@@ -6,6 +6,7 @@ bulkAppControllers
 
 	        $scope.newMyEventsNum = 0;
 	        $scope.newJoinedEventsNum = 0;
+	        $scope.newReviewsNum = 0;
 	        $scope.creationData = {};
 	        $scope.forms = {};
 	        $scope.positiveIntRegex = "^[2-9][0-9]*$";
@@ -20,6 +21,7 @@ bulkAppControllers
 			        $timeout(function() {
 				        $scope.newMyEventsNum = responseObject.myEventNotifNum;
 				        $scope.newJoinedEventsNum = responseObject.joinedEventNotifNum;
+				        $scope.newReviewsNum = responseObject.newReviewNum;
 			        }, 0);
 		        });
 	        };
