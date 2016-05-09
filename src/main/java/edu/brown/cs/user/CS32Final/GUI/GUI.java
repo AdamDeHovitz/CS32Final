@@ -6,8 +6,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -20,6 +18,7 @@ import java.util.Map;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
+import edu.brown.cs.user.CS32Final.Hash;
 import edu.brown.cs.user.CS32Final.Entities.Account.Account;
 import edu.brown.cs.user.CS32Final.Entities.Account.Notification;
 import edu.brown.cs.user.CS32Final.Entities.Account.NotificationType;
@@ -174,7 +173,10 @@ public class GUI {
       QueryParamsMap qm = req.queryMap();
 
       String email = qm.value("email");
+
       String password = qm.value("password");
+      String hashedPassword = Hash.getHashedPassword(password);
+
       String first_name = qm.value("firstName");
       String last_name = qm.value("lastName");
       String image = qm.value("image");
@@ -194,7 +196,7 @@ public class GUI {
       try {
         if (!SqliteDatabase.getInstance().isInUserTable("email", email)) {
           try {
-            SqliteDatabase.getInstance().insertUser(email, password, first_name,
+            SqliteDatabase.getInstance().insertUser(email, hashedPassword, first_name,
                     last_name, image, dateString);
           } catch (Exception e) {
             hasError = true;
@@ -236,15 +238,6 @@ public class GUI {
       variables = vars.build();
       return gson.toJson(variables);
     }
-
-    private String getHashedPassword(String password) {
-      try {
-        MessageDigest md = MessageDigest.getInstance("MD5");
-      } catch (NoSuchAlgorithmException e) {
-        e.printStackTrace();
-      }
-      return "";
-    }
   }
 
   /**
@@ -256,6 +249,8 @@ public class GUI {
       QueryParamsMap qm = req.queryMap();
       String username = qm.value("username");
       String password = qm.value("password");
+
+      String hashedPassword = Hash.getHashedPassword(password);
 
       Map<String, Object> variables = null;
       Account user;
@@ -278,7 +273,7 @@ public class GUI {
         return gson.toJson(variables);
       }
 
-      if (user.authenticate(password)) {
+      if (user.authenticate(hashedPassword)) {
         ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
 
         user.getLoginData(vars);
@@ -905,17 +900,23 @@ public class GUI {
       int eventId = Integer.parseInt(qm.value("id"));
       int userId = Integer.parseInt(qm.value("userId"));
 
+      ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+
       List<Message> messages = new ArrayList<>();
+      Profile profile = null;
       try {
         messages = SqliteDatabase.getInstance().findMessagesByEventId(eventId);
+        profile = SqliteDatabase.getInstance().findUserProfileById(userId);
         //SqliteDatabase.getInstance().clearMessageNotifs(eventId, userId);
+
+
       } catch (Exception e) {
         System.out.println("ERROR: SQL error");
         e.printStackTrace();
       }
 
-      ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       vars.put("messages", messages);
+      vars.put("user", profile);
       Map<String, Object> variables = vars.build();
       return gson.toJson(variables);
     }

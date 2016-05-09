@@ -59,7 +59,7 @@ public class ChatHandler {
 
         try {
             int messageId = SqliteDatabase.getInstance().insertMessage(eventId,
-                    userId, obj.get("text").getAsString());
+                    userId, obj.get("text").getAsString(), obj.get("date").getAsString());
 
             List<Integer> participants = SqliteDatabase.getInstance()
                     .findUsersByEventId(eventId);
