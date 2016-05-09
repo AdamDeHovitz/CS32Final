@@ -40,6 +40,10 @@ bulkAppControllers
 	        $scope.goJoined = function() {
 		        $state.go('tab.joined-events');
 	        };
+	        
+	        $scope.goWriteReviews = function() {
+	        	$state.go('tab.write-reviews');
+	        };
 
 	        $scope.createEvent = function() {
 		        $scope.closeModal();

@@ -44,7 +44,7 @@
 	 <script src="js/mapCtrl.js"></script>
 	 <script src="js/membersCtrl.js"></script>
 	 <script src="js/settingsCtrl.js"></script>
-	 
+	 <script src="js/writeReviewCtrl.js"></script>
 	 
 	 
      <script src="js/main.js"></script>
