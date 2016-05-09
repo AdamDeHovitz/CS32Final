@@ -197,7 +197,9 @@ public class Event {
             .put("desiredMembers", getMaxMembers())
             .put("lat", getLat())
             .put("lng", getLng())
+            .put("state", getState())
             .put("tags", getTags());
+
 
   }
 

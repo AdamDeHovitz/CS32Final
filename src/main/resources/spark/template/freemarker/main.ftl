@@ -44,6 +44,7 @@
 	 <script src="js/requestsCtrl.js"></script>
 	 <script src="js/mapCtrl.js"></script>
 	 <script src="js/membersCtrl.js"></script>
+	 <script src="js/settingsCtrl.js"></script>
 	 
 	 
 	 

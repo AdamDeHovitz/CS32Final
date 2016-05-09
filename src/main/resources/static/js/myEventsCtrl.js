@@ -8,6 +8,7 @@ bulkAppControllers.controller("myEventsCtrl", function($scope, $rootScope, $http
 			responseObject = JSON.parse(responseJSON);
 			$scope.$apply(function() {
 				$scope.curEvents = responseObject.events;
+				$scope.eventNotifs = responseObject.eventNotifs;
 			});
 			console.log(responseObject);
 	});

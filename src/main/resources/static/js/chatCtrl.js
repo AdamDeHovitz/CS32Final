@@ -8,13 +8,24 @@ bulkAppControllers.controller("chatCtrl", function($scope, $rootScope, $state,
 	$scope.webSocket = new WebSocket("ws://" + location.hostname + ":"
 			+ location.port + "/chat/");
 	$scope.webSocket.onopen = function() {
-		console.log($scope.user.username + " joined chat yep");
+		var message = {
+			eventId : $scope.eventId,
+			text : ""
+		};
+
+		message.date = new Date();
+		message.username = $scope.user.username;
+		message.userId = $scope.user._id;
+		message.pic = $scope.user.pic;
+
+		$scope.webSocket.send(JSON.stringify(message));
+		console.log("opening");
 	};
 	$scope.webSocket.onmessage = function(msg) {
 		$scope.updateChat(msg);
 	};
 	$scope.webSocket.onclose = function() {
-		alert("WebSocket connection closed")
+		console.log("official closing");
 	};
 
 	// mock user
@@ -62,7 +73,8 @@ bulkAppControllers.controller("chatCtrl", function($scope, $rootScope, $state,
 			$interval.cancel(messageCheckTimer);
 			messageCheckTimer = undefined;
 		}
-		// add something to close socket on exit?
+		console.log("closing");
+		$scope.webSocket.close();
 	});
 
 	/*
@@ -73,30 +85,27 @@ bulkAppControllers.controller("chatCtrl", function($scope, $rootScope, $state,
 
 	function getMessages() {
 
-		$scope.doneLoading = true;
-		$scope.messages = [];
-		$timeout(function() {
-			viewScroll.scrollBottom();
-		}, 1000);
-		// get messages from database
-
-		// the service is mock but you would probably pass the
-		// toUser's GUID here
-		/*
-		 * MockService.getUserMessages({ toUserId: $scope.toUser._id
-		 * }).then(function(data) { $scope.doneLoading = true; $scope.messages =
-		 * data.messages;
-		 * 
-		 * $timeout(function() { viewScroll.scrollBottom(); }, 0); });
-		 */
+		$.post("/messages", {id: $scope.eventId, userId: $rootScope.account.id},
+				function(responseJSON) {
+			responseObject = JSON.parse(responseJSON);
+			console.log(responseObject);
+			$scope.messages = [];
+			for (var i = 0; i < responseObject.messages.length; i++) {
+				var curMsg = responseObject.messages[i];
+				$scope.messages.push({
+					eventId: curMsg.eventId,
+					text: curMsg.content,
+					date: curMsg.date,
+					username: curMsg.username,
+					userId: curMsg.userId,
+					pic: curMsg.image
+				});
+			}
+			//$scope.messages = responseObject.messages;
+			$scope.doneLoading = true;
+			$timeout(function() {viewScroll.scrollBottom();}, 300);
+		});
 	}
-
-	/*
-	 * $scope.$watch('input.message', function(newValue, oldValue) {
-	 * //console.log('input.message $watch, newValue ' + newValue); if (!newValue)
-	 * newValue = ''; localStorage['userMessage-' + $scope.toUser._id] = newValue;
-	 * });
-	 */
 
 	$scope.sendMessage = function(sendMessageForm) {
 		var message = {

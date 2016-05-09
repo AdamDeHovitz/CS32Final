@@ -1,135 +1,151 @@
-bulkAppControllers.controller("eventsCtrl", 
-	function($scope, $rootScope, $http, $ionicModal, $state, $timeout) {
-	$("#loading").hide();
-	$scope.newMyEvents = false;
-	$scope.newMyEventsNum = 0; 
-	$scope.newJoinedEvents = false;
-	$scope.newJoinedEventsNum = 0; 
-	$scope.newPendingEvents = false;
-	$scope.newPendingEventsNum = 0; 
-	$scope.creationData = {};
-	$scope.forms = {};
-	$scope.positiveIntRegex = "^[1-9][0-9]*$";
-	$scope.moneyRegex = "^\\$?[0-9][0-9\\,]*(\\.\\d{1,2})?$|^\\$?[\\.]([\\d][\\d]?)$";
+bulkAppControllers
+    .controller(
+        "eventsCtrl",
+        function($scope, $rootScope, $http, $ionicModal, $state, $timeout,
+            $ionicPopup) {
 
-	
-	$scope.goPending = function() {
-		$timeout(function(){
-			$scope.newPendingEvents = false;
-			$scope.newPendingEventsNum = 0; 
-		}, 1000);
-		$state.go('tab.pending-events');
-	};
-	
-	$scope.goMyEvents = function() {
-		$timeout(function(){
-			$scope.newMyEvents = false;
-			$scope.newMyEventsNum = 0; 
-		}, 1000);
+	        $scope.newMyEventsNum = 0;
+	        $scope.newJoinedEventsNum = 0;
+	        $scope.creationData = {};
+	        $scope.forms = {};
+	        $scope.positiveIntRegex = "^[2-9][0-9]*$";
+	        $scope.moneyRegex = "^\\$?[0-9][0-9\\,]*(\\.\\d{1,2})?$|^\\$?[\\.]([\\d][\\d]?)$";
 
-		$state.go('tab.my-events');
-	};
-	
-	$scope.goJoined = function() {
-		$timeout(function(){
-			$scope.newJoinedEvents = false;
-			$scope.newJoinedEventsNum = 0; 
-		}, 1000);
-		$state.go('tab.joined-events');
-	};
+	        $scope.getEventInfo = function() {
+		        $.post("/events-view", {
+			        userId : $rootScope.account.id
+		        }, function(responseJSON) {
+			        responseObject = JSON.parse(responseJSON);
+			        console.log(responseObject);
+			        $timeout(function() {
+				        $scope.newMyEventsNum = responseObject.myEventNotifNum;
+				        $scope.newJoinedEventsNum = responseObject.joinedEventNotifNum;
+			        }, 0);
+		        });
+	        };
 
-	$scope.createEvent = function() {
-		$scope.creationData["owner_id"] = $rootScope.account.id;
-		$scope.creationData["tags"] = [];
-		function getLoc(callback) {
-        if (navigator.geolocation) {
-          var startPos;
-          var geoOptions = {
-             maximumAge:  2 * 1000,
-             timeout: 10 * 1000
-          }
+	        $scope.$on('$ionicView.enter', function() {
+	        	console.log("enter");
+		        $scope.getEventInfo();
+	        });
 
-          var geoSuccess = function(position) {
-            startPos = position;
-            $rootScope.lat = startPos.coords.latitude;
-            $rootScope.lng = startPos.coords.longitude;
+	        $scope.goPending = function() {
+		        $state.go('tab.pending-events');
+	        };
 
-            console.log("retrieved location");
-            console.log($rootScope.lat);
-            console.log($rootScope.lng);
-            callback();
-          };
-          var geoError = function(error) {
-            console.log('Error occurred. Error code: ' + error.code);
-            // error.code can be:
-            //   0: unknown error
-            //   1: permission denied
-            //   2: position unavailable (error response from location provider)
-            //   3: timed out
-            callback();
-          };
+	        $scope.goMyEvents = function() {
+		        $state.go('tab.my-events');
+	        };
 
-          navigator.geolocation.getCurrentPosition(geoSuccess, geoError, geoOptions);
+	        $scope.goJoined = function() {
+		        $state.go('tab.joined-events');
+	        };
 
-        }
-        else {
-            console.log('Geolocation is not supported for this Browser/OS version yet.');
-            callback();
-        }
-        }
+	        $scope.createEvent = function() {
+		        $scope.closeModal();
+		        var myPopup = $ionicPopup.show({
+		          template : "<ion-spinner class='loader-center'></ion-spinner>",
+		          title : 'Creating Event',
+		          scope : $scope
+		        });
 
+		        $scope.creationData["owner_id"] = $rootScope.account.id;
+		        $scope.creationData["tags"] = [];
+		        function getLoc(callback) {
+			        if (navigator.geolocation) {
+				        var startPos;
+				        var geoOptions = {
+				          maximumAge : 2 * 1000,
+				          timeout : 10 * 1000
+				        }
 
-        function createEvent() {
-            console.log("STUFF");
-            $scope.creationData["lat"] = $rootScope.lat;
-            $scope.creationData["lng"] = $rootScope.lng;
-            console.log($scope.creationData);
+				        var geoSuccess = function(position) {
+					        startPos = position;
+					        $rootScope.lat = startPos.coords.latitude;
+					        $rootScope.lng = startPos.coords.longitude;
 
+					        console.log("retrieved location");
+					        console.log($rootScope.lat);
+					        console.log($rootScope.lng);
+					        callback();
+				        };
+				        var geoError = function(error) {
+					        console.log('Error occurred. Error code: ' + error.code);
+					        // error.code can be:
+					        // 0: unknown error
+					        // 1: permission denied
+					        // 2: position unavailable (error response from location
+					        // provider)
+					        // 3: timed out
+					        callback();
+				        };
 
-		$.post("/event-create", $scope.creationData, function(responseJSON) {
-			console.log(responseJSON);
-			responseObject = JSON.parse(responseJSON);
-			console.log(responseObject);
-		});
-		var curData = $scope.creationData;
-		$scope.closeModal();
-		$state.go('tab.my-events');
-		}
-		getLoc(createEvent);
+				        navigator.geolocation.getCurrentPosition(geoSuccess, geoError,
+				            geoOptions);
 
-		//TODO: need to reset data?
+			        } else {
+				        console
+				            .log('Geolocation is not supported for this Browser/OS version yet.');
+				        callback();
+			        }
+		        }
 
-	}
-	
-	$ionicModal.fromTemplateUrl('new-event-modal.html', {
-	    scope: $scope,
-	    animation: 'slide-in-up'
-	  }).then(function(modal) {
-	    $scope.modal = modal;
-	  });
-	  $scope.openModal = function() {
-	    $scope.modal.show();
-	  };
-	  $scope.closeModal = function() {
-	    $scope.modal.hide();
-	    $scope.creationData = {};
-	  	$scope.forms.eventCreate.$setPristine();
-	  	$scope.forms.eventCreate.$setUntouched();
-	  };
-	  //Cleanup the modal when we're done with it!
-	  $scope.$on('$destroy', function() {
-	    $scope.modal.remove();
-	  });
-	  // Execute action on hide modal
-	  $scope.$on('modal.hidden', function() {
-	    // Execute action
-	  });
-	  // Execute action on remove modal
-	  $scope.$on('modal.removed', function() {
-	    // Execute action
-	  });
+		        function createEvent() {
+			        $scope.creationData["lat"] = $rootScope.lat;
+			        $scope.creationData["lng"] = $rootScope.lng;
+			        console.log($scope.creationData);
 
-	  $scope.getDistance = function(event) {
+			        $.post("/event-create", $scope.creationData, function(
+			            responseJSON) {
+				        console.log(responseJSON);
+				        responseObject = JSON.parse(responseJSON);
+				        console.log(responseObject);
+				        $scope.creationData = {};
+				        $scope.forms.eventCreate.$setPristine();
+				        $scope.forms.eventCreate.$setUntouched();
+			        });
+			        myPopup.close();
+			        $state.go('tab.my-events');
+		        }
+		        getLoc(createEvent);
+
+		        // TODO: need to reset data?
+
+	        }
+
+	        $ionicModal.fromTemplateUrl('new-event-modal.html', {
+	          scope : $scope,
+	          animation : 'slide-in-up'
+	        }).then(function(modal) {
+		        $scope.modal = modal;
+	        });
+	        $scope.openModal = function() {
+		        $scope.modal.show();
+	        };
+	        $scope.closeModal = function() {
+		        $scope.modal.hide();
+	        };
+	        // Cleanup the modal when we're done with it!
+	        $scope.$on('$destroy', function() {
+		        $scope.modal.remove();
+	        });
+	        // Execute action on hide modal
+	        $scope.$on('modal.hidden', function() {
+		        // Execute action
+	        });
+	        // Execute action on remove modal
+	        $scope.$on('modal.removed', function() {
+		        // Execute action
+	        });
+	        /*
+					 * if (!$rootScope.userId) { $location.path("/"); } var eventId =
+					 * $routeParams.eventId; var postData = $.param({ json:
+					 * JSON.stringify({ userId: userId, eventId: eventId }) });
+					 * $http.post("/eventData", postData).success(function(data, status) {
+					 * $scope.events = data.entries; });
+					 */
+
+ $scope.getDistance = function(event) {
               var R = 6378137; // Earth’s mean radius in meter
               var dLat = rad(event.lat - $rootScope.lat);
               var dLong = rad(event.lng - $rootScope.lng);
@@ -140,20 +156,4 @@ bulkAppControllers.controller("eventsCtrl",
                                            var d = R * c;
                                           return d; // returns the distance in meter
                                            };
-	/*
-		if (!$rootScope.userId) {
-			$location.path("/");
-		}
-		var eventId = $routeParams.eventId;
-		var postData = $.param({
-			json: JSON.stringify({
-				userId: userId,
-				eventId: eventId
-			})
-		});
-		$http.post("/eventData", postData).success(function(data, status) {
-			$scope.events = data.entries;
-		});
-	*/
-
-});
+        });
