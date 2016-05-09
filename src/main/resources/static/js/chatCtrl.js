@@ -19,11 +19,13 @@ bulkAppControllers.controller("chatCtrl", function($scope, $rootScope, $state,
 		message.pic = $scope.user.pic;
 
 		$scope.webSocket.send(JSON.stringify(message));
+		console.log("opening");
 	};
 	$scope.webSocket.onmessage = function(msg) {
 		$scope.updateChat(msg);
 	};
 	$scope.webSocket.onclose = function() {
+		console.log("official closing");
 	};
 
 	// mock user
@@ -71,6 +73,7 @@ bulkAppControllers.controller("chatCtrl", function($scope, $rootScope, $state,
 			$interval.cancel(messageCheckTimer);
 			messageCheckTimer = undefined;
 		}
+		console.log("closing");
 		$scope.webSocket.close();
 	});
 
