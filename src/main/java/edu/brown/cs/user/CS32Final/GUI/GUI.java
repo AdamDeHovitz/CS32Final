@@ -104,7 +104,7 @@ public class GUI {
     Spark.post("/register", new RegisterHandler());
     Spark.post("/login", new LoginHandler());
     Spark.post("/profile", new ProfileHandler());
-    // Spark.post("/profile-reviews", new ReviewsHandler());
+    //Spark.post("/profile-reviews", new ProfileReviewsHandler());
 
     // Event creation
     Spark.post("/event-create", new EventCreateHandler());
@@ -928,13 +928,23 @@ public class GUI {
       QueryParamsMap qm = req.queryMap();
 
       int authorId = Integer.parseInt(qm.value("authorId"));
-      int targetId = Integer.parseInt(qm.value("userId"));
+      int targetId = Integer.parseInt(qm.value("targetId"));
+      int rating = Integer.parseInt(qm.value("rating"));
+      String text = qm.value("text");
+
+      try {
+        SqliteDatabase.getInstance().insertReview(authorId, text, rating, targetId);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
 
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
-
+      vars.put("success", true);
       Map<String, Object> variables = vars.build();
       return gson.toJson(variables);
     }
   }
+
+
 
 }

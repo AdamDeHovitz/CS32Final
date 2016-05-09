@@ -145,13 +145,13 @@ public class SqliteDatabase {
   }
 
   public void insertReview(int user_id, String message, double rating,
-      String target_id) throws SQLException {
+      int target_id) throws SQLException {
     String sql = "INSERT INTO review (user_id, message, rating, target_id) VALUES (?, ?, ?, ?)";
     try (PreparedStatement prep = connection.prepareStatement(sql)) {
       prep.setInt(1, user_id);
       prep.setString(2, message);
       prep.setDouble(3, rating);
-      prep.setString(4, target_id);
+      prep.setInt(4, target_id);
 
       prep.executeUpdate();
     }
