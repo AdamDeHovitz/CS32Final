@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -181,7 +183,7 @@ public class GUI {
       DateFormat df = new SimpleDateFormat("dd MMMM, yyyy");
 
       String dateString = df.format(date);
-      //String dateString = "19 May, 2016";
+
       Account user = null;
       boolean hasError = false;
       String errorMsg = "";
@@ -233,6 +235,15 @@ public class GUI {
       vars.put("errorMsg", errorMsg);
       variables = vars.build();
       return gson.toJson(variables);
+    }
+
+    private String getHashedPassword(String password) {
+      try {
+        MessageDigest md = MessageDigest.getInstance("MD5");
+      } catch (NoSuchAlgorithmException e) {
+        e.printStackTrace();
+      }
+      return "";
     }
   }
 
