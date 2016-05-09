@@ -159,7 +159,7 @@ public class SqliteDatabase {
 
   public int insertMessage(int event_id, int user_id, String message, String time)
       throws SQLException {
-    String sql = "INSERT INTO message (event_id, user_id, message) VALUES (?, ?, ?, ?)";
+    String sql = "INSERT INTO message (event_id, user_id, message, time) VALUES (?, ?, ?, ?)";
     try (PreparedStatement prep = connection.prepareStatement(sql)) {
       prep.setInt(1, event_id);
       prep.setInt(2, user_id);
@@ -512,9 +512,11 @@ public class SqliteDatabase {
             String message = rs.getString(3);
             String time = rs.getString(4);
 
-            String username = findUserProfileById(userId).getName();
+          Profile user = findUserProfileById(userId);
+            String username = user.getName();
             String eventName = findEventById(eventId).getName();
-            toReturn.add(new Message(id, userId, eventId, message, time, username, eventName));
+            String image = user.getImage();
+            toReturn.add(new Message(id, userId, eventId, message, time, username, eventName, image));
         }
       }
     }
@@ -945,10 +947,12 @@ public class SqliteDatabase {
         String message = rs.getString(3);
           String time = rs.getString(4);
 
-          String username = findUserProfileById(userId).getName();
+        Profile user = findUserProfileById(userId);
+          String username = user.getName();
           String eventName = findEventById(eventId).getName();
+        String image = user.getImage();
 
-        return (new Message(notifId, eventId, userId, message, time, username, eventName));
+        return (new Message(notifId, eventId, userId, message, time, username, eventName, image));
       }
     } finally {
       closeResultSet(rs);

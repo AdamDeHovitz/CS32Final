@@ -17,7 +17,9 @@ public class Message {
   private String username;
   private String eventName;
 
-  public Message(int notifId, int userId, int eventId, String message, String date, String username, String eventName) {
+  private String image;
+
+  public Message(int notifId, int userId, int eventId, String message, String date, String username, String eventName, String image) {
     this.id = notifId;
     this.userId = userId;
     this.eventId = eventId;
@@ -26,5 +28,6 @@ public class Message {
 
     this.username = username;
     this.eventName = eventName;
+    this.image = image;
   }
 }

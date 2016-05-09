@@ -54,6 +54,7 @@ public class ChatHandler {
       Chat.usernameMap.put(user, val);
       usersInRoom.add(userId);
     }
+
     if (obj.get("text") != null && !obj.get("text").getAsString().isEmpty()) {
         Chat.broadcastMessage(eventId, message);
 
@@ -63,6 +64,7 @@ public class ChatHandler {
 
             List<Integer> participants = SqliteDatabase.getInstance()
                     .findUsersByEventId(eventId);
+            participants.add(SqliteDatabase.getInstance().findOwnerIdByEventId(eventId));
             for (int participant : participants) {
                 if (!Chat.roomMap.get(eventId).contains(participant)) {
                     SqliteDatabase.getInstance().insertNotification(participant,
