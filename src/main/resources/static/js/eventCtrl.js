@@ -23,6 +23,14 @@ bulkAppControllers.controller("eventCtrl", function($scope, $http, $rootScope,
 		$.post("/event-view", {id : eventId, userId : $rootScope.account.id}, 
 				function(responseJSON) {
 			responseObject = JSON.parse(responseJSON);
+			if (responseObject.hasError) {
+				$state.go("tab.events");
+				var alertPopup = $ionicPopup.alert({
+	  		  title : "Event Nonexistent",
+	  		  template : "This event does not exist or has been removed"
+	  		});
+			}
+			
 			$scope.event = responseObject;
 			$scope.newlyAccepted = responseObject.newlyAccepted;
 			var isOwner = responseObject.authorId == $rootScope.account.id;
@@ -146,7 +154,7 @@ bulkAppControllers.controller("eventCtrl", function($scope, $http, $rootScope,
 			$.post("/delete-event", {id: $scope.account.id, eventId: eventId}, function(responseJSON) {
 				responseObject = JSON.parse(responseJSON);
 				console.log(responseObject);
-				// figure out where to route
+				$state.go("tab.events");
 			});
 			/*
 			 * $.post("/event-remove", postParams, function(responseJSON) {

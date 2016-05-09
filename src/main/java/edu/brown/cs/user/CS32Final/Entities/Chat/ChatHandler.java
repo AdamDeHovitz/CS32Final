@@ -23,16 +23,19 @@ public class ChatHandler {
 
   @OnWebSocketConnect
   public void onConnect(Session user) throws Exception {
+      System.out.println("in socket open");
   }
 
   @OnWebSocketClose
   public void onClose(Session user, int statusCode, String reason) {
+    System.out.println("in socket close");
+
     int eventId = Chat.usernameMap.get(user)[0];
     int userId = Chat.usernameMap.get(user)[1];
-    System.out.println("closing user " + userId);
+
     Chat.usernameMap.remove(user);
 
-    Chat.roomMap.get(eventId).remove(userId);
+    Chat.roomMap.get(eventId).remove(Integer.valueOf(userId));
   }
 
   @OnWebSocketMessage
@@ -47,7 +50,6 @@ public class ChatHandler {
     }
 
     List<Integer> usersInRoom = Chat.roomMap.get(eventId);
-    System.out.println(usersInRoom);
 
     if (!usersInRoom.contains(userId)) {
       int[] val = { eventId, userId };
