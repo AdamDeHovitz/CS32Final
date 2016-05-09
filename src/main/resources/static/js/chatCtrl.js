@@ -89,18 +89,18 @@ bulkAppControllers.controller("chatCtrl", function($scope, $rootScope, $state,
 			$scope.messages = [];
 			for (var i = 0; i < responseObject.messages.length; i++) {
 				var curMsg = responseObject.messages[i];
-				/*$scope.messages.push({
+				$scope.messages.push({
 					eventId: curMsg.eventId,
 					text: curMsg.content,
 					date: curMsg.date,
-					username: curMsg.name,
+					username: curMsg.username,
 					userId: curMsg.userId,
 					pic: curMsg.pic
-					});*/
+				});
 			}
 			//$scope.messages = responseObject.messages;
 			$scope.doneLoading = true;
-			viewScroll.scrollBottom();
+			$timeout(function() {viewScroll.scrollBottom();}, 300);
 		});
 	}
 

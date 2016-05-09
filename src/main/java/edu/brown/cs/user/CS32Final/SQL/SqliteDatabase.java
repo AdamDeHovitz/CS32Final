@@ -157,14 +157,14 @@ public class SqliteDatabase {
     }
   }
 
-  public int insertMessage(int event_id, int user_id, String message, String time)
-      throws SQLException {
-    String sql = "INSERT INTO message (event_id, user_id, message) VALUES (?, ?, ?, ?)";
+  public int insertMessage(int event_id, int user_id, String message,
+      String time) throws SQLException {
+    String sql = "INSERT INTO message (event_id, user_id, message, time) VALUES (?, ?, ?, ?)";
     try (PreparedStatement prep = connection.prepareStatement(sql)) {
       prep.setInt(1, event_id);
       prep.setInt(2, user_id);
       prep.setString(3, message);
-        prep.setString(4, time);
+      prep.setString(4, time);
 
       prep.executeUpdate();
       int id = findIdOfLastMessage(event_id, user_id, message, time);
@@ -172,8 +172,8 @@ public class SqliteDatabase {
     }
   }
 
-  public int findIdOfLastMessage(int event_id, int user_id, String message, String time)
-      throws SQLException {
+  public int findIdOfLastMessage(int event_id, int user_id, String message,
+      String time) throws SQLException {
 
     String sql = "SELECT id FROM message WHERE event_id = ? AND user_id = ? AND message = ? AND time = ?";
 
@@ -182,7 +182,7 @@ public class SqliteDatabase {
       prep.setInt(1, event_id);
       prep.setInt(2, user_id);
       prep.setString(3, message);
-        prep.setString(4, time);
+      prep.setString(4, time);
 
       try (ResultSet rs = prep.executeQuery()) {
         if (rs.next()) {
@@ -254,7 +254,8 @@ public class SqliteDatabase {
     return toReturn;
   }
 
-  public boolean getNewlyAccepted(int user_id, int event_id) throws SQLException {
+  public boolean getNewlyAccepted(int user_id, int event_id)
+      throws SQLException {
     String sql = "SELECT id FROM notification WHERE type == 'JOINED' AND user_id == ? AND event_id == ?";
     boolean toReturn = false;
 
@@ -270,7 +271,8 @@ public class SqliteDatabase {
     return toReturn;
   }
 
-  public void removeNewlyAccepted(int user_id, int event_id) throws SQLException {
+  public void removeNewlyAccepted(int user_id, int event_id)
+      throws SQLException {
     String sql = "DELETE FROM notification WHERE type == 'JOINED' AND user_id == ? AND event_id == ?";
 
     try (PreparedStatement prep = connection.prepareStatement(sql)) {
@@ -291,7 +293,6 @@ public class SqliteDatabase {
       prep.executeUpdate();
     }
   }
-
 
   public int userEventsNotifNum(int userId) throws SQLException {
     int notifNum = 0;
@@ -508,20 +509,20 @@ public class SqliteDatabase {
 
         while (rs.next()) {
           int id = rs.getInt(1);
-            int userId = rs.getInt(2);
-            String message = rs.getString(3);
-            String time = rs.getString(4);
+          int userId = rs.getInt(2);
+          String message = rs.getString(3);
+          String time = rs.getString(4);
 
-            String username = findUserProfileById(userId).getName();
-            String eventName = findEventById(eventId).getName();
-            toReturn.add(new Message(id, userId, eventId, message, time, username, eventName));
+          String username = findUserProfileById(userId).getName();
+          String eventName = findEventById(eventId).getName();
+          toReturn.add(new Message(id, userId, eventId, message, time, username,
+              eventName));
         }
       }
     }
     return toReturn;
 
   }
-
 
   public List<Integer> findEventsByUserId(Integer userId) throws SQLException {
     String sql = "SELECT event_id FROM user_event WHERE user_id = ?;";
@@ -548,7 +549,7 @@ public class SqliteDatabase {
     try {
       String sql = "SELECT id FROM review WHERE target_id = ?;";
       PreparedStatement prep = connection.prepareStatement(sql);
-        prep.setInt(1, userId);
+      prep.setInt(1, userId);
 
       List<Integer> toReturn = new ArrayList<>();
       rs = prep.executeQuery();
@@ -640,7 +641,7 @@ public class SqliteDatabase {
     try {
       String sql = "SELECT id FROM user WHERE email = ?;";
       PreparedStatement prep = connection.prepareStatement(sql);
-        prep.setString(1, username);
+      prep.setString(1, username);
 
       rs = prep.executeQuery();
 
@@ -943,12 +944,13 @@ public class SqliteDatabase {
         int eventId = rs.getInt(1);
         int userId = rs.getInt(2);
         String message = rs.getString(3);
-          String time = rs.getString(4);
+        String time = rs.getString(4);
 
-          String username = findUserProfileById(userId).getName();
-          String eventName = findEventById(eventId).getName();
+        String username = findUserProfileById(userId).getName();
+        String eventName = findEventById(eventId).getName();
 
-        return (new Message(notifId, eventId, userId, message, time, username, eventName));
+        return (new Message(notifId, userId, eventId, message, time, username,
+            eventName));
       }
     } finally {
       closeResultSet(rs);
@@ -1062,21 +1064,21 @@ public class SqliteDatabase {
     return -1;
   }
 
-    public boolean isInUserTable(String field, String val) throws SQLException {
-        ResultSet rs = null;
-        try {
-            String sql = "SELECT * FROM user WHERE ? = ?;";
-            PreparedStatement prep = connection.prepareStatement(sql);
-            prep.setString(1, field);
-            prep.setString(2, val);
+  public boolean isInUserTable(String field, String val) throws SQLException {
+    ResultSet rs = null;
+    try {
+      String sql = "SELECT * FROM user WHERE ? = ?;";
+      PreparedStatement prep = connection.prepareStatement(sql);
+      prep.setString(1, field);
+      prep.setString(2, val);
 
-            rs = prep.executeQuery();
+      rs = prep.executeQuery();
 
-            return rs.next();
-        } finally {
-            closeResultSet(rs);
-        }
+      return rs.next();
+    } finally {
+      closeResultSet(rs);
     }
+  }
 
   private void makeConnection(String db)
       throws SQLException, ClassNotFoundException {

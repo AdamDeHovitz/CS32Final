@@ -8,7 +8,7 @@ bulkAppControllers
 	        $scope.newJoinedEventsNum = 0;
 	        $scope.creationData = {};
 	        $scope.forms = {};
-	        $scope.positiveIntRegex = "^[1-9][0-9]*$";
+	        $scope.positiveIntRegex = "^[2-9][0-9]*$";
 	        $scope.moneyRegex = "^\\$?[0-9][0-9\\,]*(\\.\\d{1,2})?$|^\\$?[\\.]([\\d][\\d]?)$";
 
 	        $scope.getEventInfo = function() {
