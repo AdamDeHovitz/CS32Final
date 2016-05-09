@@ -136,6 +136,9 @@ public class GUI {
 
     // Messages
     Spark.post("/messages", new MessageHandler());
+
+    // Reviews
+    Spark.post("/review", new ReviewHandler());
   }
 
   /**
@@ -903,10 +906,8 @@ public class GUI {
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
 
       List<Message> messages = new ArrayList<>();
-      Profile profile = null;
       try {
         messages = SqliteDatabase.getInstance().findMessagesByEventId(eventId);
-        profile = SqliteDatabase.getInstance().findUserProfileById(userId);
         //SqliteDatabase.getInstance().clearMessageNotifs(eventId, userId);
 
 
@@ -916,7 +917,21 @@ public class GUI {
       }
 
       vars.put("messages", messages);
-      vars.put("user", profile);
+      Map<String, Object> variables = vars.build();
+      return gson.toJson(variables);
+    }
+  }
+
+  private class ReviewHandler implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+
+      int authorId = Integer.parseInt(qm.value("authorId"));
+      int targetId = Integer.parseInt(qm.value("userId"));
+
+      ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+
       Map<String, Object> variables = vars.build();
       return gson.toJson(variables);
     }

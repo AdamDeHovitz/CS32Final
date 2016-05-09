@@ -513,10 +513,12 @@ public class SqliteDatabase {
           String message = rs.getString(3);
           String time = rs.getString(4);
 
-          String username = findUserProfileById(userId).getName();
+          Profile user = findUserProfileById(userId);
+          String username = user.getName();
           String eventName = findEventById(eventId).getName();
+          String image = user.getImage();
           toReturn.add(new Message(id, userId, eventId, message, time, username,
-              eventName));
+              eventName, image));
         }
       }
     }
@@ -946,11 +948,13 @@ public class SqliteDatabase {
         String message = rs.getString(3);
         String time = rs.getString(4);
 
-        String username = findUserProfileById(userId).getName();
+        Profile user = findUserProfileById(userId);
+        String username = user.getName();
         String eventName = findEventById(eventId).getName();
+        String image = user.getImage();
 
         return (new Message(notifId, userId, eventId, message, time, username,
-            eventName));
+            eventName, image));
       }
     } finally {
       closeResultSet(rs);

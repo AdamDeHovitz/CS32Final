@@ -95,7 +95,7 @@ bulkAppControllers.controller("chatCtrl", function($scope, $rootScope, $state,
 					date: curMsg.date,
 					username: curMsg.username,
 					userId: curMsg.userId,
-					pic: curMsg.pic
+					pic: curMsg.image
 				});
 			}
 			//$scope.messages = responseObject.messages;
