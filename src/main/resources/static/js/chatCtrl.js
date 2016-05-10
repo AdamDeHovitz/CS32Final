@@ -103,7 +103,10 @@ bulkAppControllers.controller("chatCtrl", function($scope, $rootScope, $state,
 			}
 			//$scope.messages = responseObject.messages;
 			$scope.doneLoading = true;
-			$timeout(function() {viewScroll.scrollBottom();}, 300);
+			$timeout(function() {
+				if ($scope.messages.length > 0) {
+					viewScroll.scrollBottom();
+				}}, 300);
 		});
 	}
 

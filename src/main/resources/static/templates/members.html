@@ -1,29 +1,56 @@
 <ion-view view-title="Members">
   <ion-content class="padding">
-  <div class="card" ng-show="currentMsg">
-  </div>
+
   <div class="list">
-  <div class="item item-thumbnail-left">
+  	<div class="item item-divider">
+  	Owner
+  	</div>
+    <div class="item item-thumbnail-left">
   		<img src="{{owner.image}}" ng-click="goProfile(owner.id);">
-		<b><h2 ng-click="goProfile(request.id);">{{owner.firstName}} {{owner.lastName}}</h2></b>
-		<p> Owner </p>
-		<div class="star-ratings-sprite" style="margin: 3px 0px;">
- 	 <span style="width:{{(owner.rating / 5) * 100}}%" class="star-ratings-sprite-rating">
-  	</span></div>
+		<b><h2 ng-click="goProfile(owner.id);">{{owner.firstName}} {{owner.lastName}}</h2></b>
+	<p ng-if="owner.rating == 0">No reviews yet.</p>
+	<div ng-if="owner.rating != 0">
+	  <span class="star-rating-disabled" >
+		<input type="radio"  value="1" 
+		ng-checked="Math.floor(owner.rating) == 1" ng-disabled="Math.floor(owner.rating) != 1"><i></i>
+		<input type="radio" value="2"
+		ng-checked="Math.floor(owner.rating) == 2" ng-disabled="Math.floor(owner.rating) != 2"><i></i>
+  		<input type="radio"  value="3"
+  		ng-checked="Math.floor(owner.rating) == 3" ng-disabled="Math.floor(owner.rating) != 3"><i></i>
+  		<input type="radio"value="4"
+  		ng-checked="Math.floor(owner.rating) == 4" ng-disabled="Math.floor(owner.rating) != 4"><i></i>
+  		<input type="radio" value="5"
+  		ng-checked="Math.floor(owner.rating) == 5" ng-disabled="Math.floor(owner.rating) != 5"><i></i>
+  		<br>
+	</span>	
 	</div>
 	</div>
 	
   
-  
-  <div class="list">
-  <div ng-repeat="request in requests" class="item item-thumbnail-left">
-  		<img src="{{request.image}}" ng-click="goProfile(request.id);">
-		<b><h2 ng-click="goProfile(request.id);">{{request.firstName}} {{request.lastName}}</h2></b>
-		<p> Member </p>
-		<div class="star-ratings-sprite" style="margin: 3px 0px;">
- 	 <span style="width:{{(request.rating / 5) * 100}}%" class="star-ratings-sprite-rating">
-  	</span></div>
+    <div class="item item-divider" ng-show="members.length > 0">
+  	Participants
+  	</div>
+    <div ng-repeat="member in members" class="item item-thumbnail-left">
+  		<img src="{{member.image}}" ng-click="goProfile(member.id);">
+		<b><h2 ng-click="goProfile(member.id);">{{member.firstName}} {{member.lastName}}</h2></b>
+	<p ng-if="member.rating < 1">No reviews yet.</p>
+	<div ng-if="member.rating > 0">
+	  <span class="star-rating-disabled" >
+		<input type="radio"  value="1" 
+		ng-checked="Math.floor(member.rating) == 1" ng-disabled="Math.floor(member.rating) != 1"><i></i>
+		<input type="radio" value="2"
+		ng-checked="Math.floor(member.rating) == 2" ng-disabled="Math.floor(member.rating) != 2"><i></i>
+  		<input type="radio"  value="3"
+  		ng-checked="Math.floor(member.rating) == 3" ng-disabled="Math.floor(member.rating) != 3"><i></i>
+  		<input type="radio"value="4"
+  		ng-checked="Math.floor(member.rating) == 4" ng-disabled="Math.floor(member.rating) != 4"><i></i>
+  		<input type="radio" value="5"
+  		ng-checked="Math.floor(member.rating) == 5" ng-disabled="Math.floor(member.rating) != 5"><i></i>
+  		<br>
+	</span>	
 	</div>
+	</div>
+  
 </div>
 </ion-content>
 </ion-view>

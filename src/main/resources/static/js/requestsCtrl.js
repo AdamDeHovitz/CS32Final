@@ -10,7 +10,7 @@ bulkAppControllers.controller("requestsCtrl",
 		$scope.currentMsg = undefined;
 	});
 	
-	$scope.Math = window.math;
+	$scope.Math = window.Math;
 
 	var getRequests = function() {
 		$.post("/user-requests", {"id": eventId}, function(responseJSON) {
@@ -64,6 +64,7 @@ bulkAppControllers.controller("requestsCtrl",
 				responseObject = JSON.parse(responseJSON);
 				console.log(responseObject);
 				if (responseObject.state == "CLOSED") {
+					$scope.requests = [];
 					$timeout(function() {
 						$scope.requests = [];
 						console.log("requests");

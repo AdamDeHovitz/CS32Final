@@ -8,8 +8,8 @@
     <h2><b>{{profile.name}}</b></h2>
 	Member since {{profile.date}}.
 	<br>
-	<p ng-if="profile.rating == 0">No reviews yet.</p>
-	<div ng-if="profile.rating != 0">
+	<p ng-if="profile.rating < 1">No reviews yet.</p>
+	<div ng-if="profile.rating > 0">
 	  <span class="star-rating-disabled" >
 		<input type="radio"  value="1" 
 		ng-checked="Math.floor(profile.rating) == 1" ng-disabled="Math.floor(profile.rating) != 1"><i></i>
