@@ -16,6 +16,7 @@ public class Profile {
   private String image; //maybe an image class?
   private String date;
   private List<Integer> reviews;
+  private double rating;
 
   public Profile(int id, String firstName, String lastName, String image, String date) {
     this.id = id;
@@ -45,6 +46,14 @@ public class Profile {
 
   public String getImage() {
     return image;
+  }
+
+  public double getRating() {
+    return rating;
+  }
+
+  public void setRating(double rating) {
+    this.rating = rating;
   }
 
 //  public double getRating() {
