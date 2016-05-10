@@ -64,6 +64,9 @@ bulkAppControllers.controller("requestsCtrl",
 				responseObject = JSON.parse(responseJSON);
 				console.log(responseObject);
 				if (responseObject.state == "CLOSED") {
+					$timeout(function() {
+						$scope.requests = [];
+					}, 0);
 					var alertPopup = $ionicPopup.alert({
 		  		  title : "Full Event",
 		  		  template : "Your event has reached the maximum participant level, get chatting!"
