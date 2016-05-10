@@ -177,11 +177,7 @@ public class GUI {
   private class RegisterHandler implements Route {
     @Override
     public Object handle(final Request req, final Response arg1) {
-      /*
-      System.out.println(req.attributes());
-      System.out.println(req.attributes());
-      System.out.println(req.params());
-      System.out.println(req.toString());*/
+
       QueryParamsMap qm = req.queryMap();
 
       String email = qm.value("email");
@@ -193,9 +189,8 @@ public class GUI {
       String last_name = qm.value("lastName");
       String image = qm.value("image");
 
-
       Date date = new Date();
-      DateFormat df = new SimpleDateFormat("dd MMMM, yyyy");
+      DateFormat df = new SimpleDateFormat("MMMM, yyyy");
 
       String dateString = df.format(date);
 
