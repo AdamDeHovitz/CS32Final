@@ -9,10 +9,13 @@ bulkAppControllers.controller("requestsCtrl",
 	$scope.$on('$ionicView.leave', function() {
 		$scope.currentMsg = undefined;
 	});
+	
+	$scope.Math = window.math;
 
 	var getRequests = function() {
 		$.post("/user-requests", {"id": eventId}, function(responseJSON) {
 			responseObject = JSON.parse(responseJSON);
+			console.log(responseObject);
 			$scope.requests = responseObject.requests;
         });
 	}

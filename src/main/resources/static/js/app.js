@@ -77,6 +77,14 @@ bulkApp.config(function($stateProvider, $urlRouterProvider) {
 		    controller : 'myEventsCtrl'
 		  }
 	  }
+	}).state('tab.write-reviews', {
+	  url : '/write-reviews',
+	  views : {
+		  'tab-events' : {
+		    templateUrl : 'templates/writeReviews.html',
+		    controller : 'writeReviewCtrl'
+		  }
+	  }
 	}).state('tab.event', {
 	  url : '/event/:eventId',
 	  views : {

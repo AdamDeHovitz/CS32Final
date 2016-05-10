@@ -2,6 +2,7 @@ bulkAppControllers.controller("myEventsCtrl", function($scope, $rootScope, $http
 	$scope.curTitle = "My Events";
 	$scope.curUrl = "events-event";
 	$scope.curEvents = [];
+	$("#search").hide();
 
 	$.post("/event-owner", {id: $rootScope.account.id}, function(responseJSON) {
 			responseObject = JSON.parse(responseJSON);

@@ -18,8 +18,13 @@ import java.util.Map;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
-import edu.brown.cs.user.CS32Final.Entities.Account.*;
 import edu.brown.cs.user.CS32Final.Hash;
+import edu.brown.cs.user.CS32Final.Entities.Account.Account;
+import edu.brown.cs.user.CS32Final.Entities.Account.Notification;
+import edu.brown.cs.user.CS32Final.Entities.Account.NotificationType;
+import edu.brown.cs.user.CS32Final.Entities.Account.PendingReview;
+import edu.brown.cs.user.CS32Final.Entities.Account.Profile;
+import edu.brown.cs.user.CS32Final.Entities.Account.Review;
 import edu.brown.cs.user.CS32Final.Entities.Chat.ChatHandler;
 import edu.brown.cs.user.CS32Final.Entities.Chat.Message;
 import edu.brown.cs.user.CS32Final.Entities.Event.Event;
@@ -36,8 +41,6 @@ import spark.Route;
 import spark.Spark;
 import spark.TemplateViewRoute;
 import spark.template.freemarker.FreeMarkerEngine;
-
-import javax.servlet.annotation.MultipartConfig;
 
 /**
  * Created by adamdeho on 4/21/16.
@@ -419,10 +422,9 @@ public class GUI {
         Map<String, Object> variables = vars.build();
         return gson.toJson(variables);
       }
-      event.getEventData(vars);
-
 
       try {
+        event.getEventData(vars);
         List<Integer> requests = SqliteDatabase.getInstance()
             .findRequestsByEventId(event.getId());
         int newMessageNum = SqliteDatabase.getInstance().getMessageNum(userId,
@@ -441,7 +443,7 @@ public class GUI {
         vars.put("newlyAccepted", newlyAccepted);
         vars.put("newMessageNum", newMessageNum);
         vars.put("newRequestNum", newRequestNum);
-      } catch (SQLException e) {
+      } catch (Exception e) {
         hasError = true;
       }
       vars.put("hasError", hasError);
@@ -456,6 +458,7 @@ public class GUI {
       QueryParamsMap qm = req.queryMap();
       int myEventNotifNum = 0;
       int joinedEventNotifNum = 0;
+      int newReviewNum = 0;
 
       int userId = Integer.parseInt(qm.value("userId"));
       boolean hasError = false;
@@ -466,6 +469,7 @@ public class GUI {
             .userEventsNotifNum(userId);
         joinedEventNotifNum = SqliteDatabase.getInstance()
             .joinedEventsNotifNum(userId);
+        newReviewNum = SqliteDatabase.getInstance().getNewPendingReviewsNum(userId);
       } catch (SQLException e) {
         hasError = true;
       }
@@ -473,6 +477,7 @@ public class GUI {
       vars.put("hasError", hasError);
       vars.put("myEventNotifNum", myEventNotifNum);
       vars.put("joinedEventNotifNum", joinedEventNotifNum);
+      vars.put("newReviewNum", newReviewNum);
       Map<String, Object> variables = vars.build();
       return gson.toJson(variables);
     }
@@ -486,9 +491,19 @@ public class GUI {
       QueryParamsMap qm = req.queryMap();
 
       int id = Integer.parseInt(qm.value("id"));
+      double lat;
+      double lng;
+      try {
+        lat = Double.parseDouble(qm.value("lat"));
+        lng = Double.parseDouble(qm.value("lng"));
+      } catch(NumberFormatException e) {
+        e.printStackTrace();
+        ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+        vars.put("hasError", true);
+        Map<String, Object> variables = vars.build();
+        return gson.toJson(variables);
 
-      double lat = Double.parseDouble(qm.value("lat"));
-      double lng = Double.parseDouble(qm.value("lng"));
+      }
       List<Event> events = null;
       try {
         List<Integer> handled = SqliteDatabase.getInstance()
@@ -516,8 +531,9 @@ public class GUI {
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
 
-      int id = Integer.parseInt(qm.value("id"));
+      //int id = Integer.parseInt(qm.value("id"));
       String line = qm.value("search");
+      System.out.println(line);
       List<Event> events = null;
       try {
         events = SqliteDatabase.getInstance().findEventsByKeys(line);
@@ -1013,10 +1029,12 @@ public class GUI {
       int authorId = Integer.parseInt(qm.value("authorId"));
       int targetId = Integer.parseInt(qm.value("targetId"));
       int rating = Integer.parseInt(qm.value("rating"));
+      int pendingId = Integer.parseInt(qm.value("pendingId"));
       String text = qm.value("text");
 
       try {
         SqliteDatabase.getInstance().insertReview(authorId, text, rating, targetId);
+        SqliteDatabase.getInstance().removePendingReview(pendingId);
       } catch (Exception e) {
         e.printStackTrace();
       }
@@ -1108,7 +1126,7 @@ public class GUI {
 
       try {
         pendingReviews = SqliteDatabase.getInstance().findPendingReviewsByUserId(userId);
-
+        SqliteDatabase.getInstance().setPendingReviewsSeen(userId);
       } catch(SQLException e) {
         e.printStackTrace();
       }
