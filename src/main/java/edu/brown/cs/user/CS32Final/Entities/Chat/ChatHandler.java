@@ -23,12 +23,12 @@ public class ChatHandler {
 
   @OnWebSocketConnect
   public void onConnect(Session user) throws Exception {
-      System.out.println("in socket open");
+      //System.out.println("in socket open");
   }
 
   @OnWebSocketClose
   public void onClose(Session user, int statusCode, String reason) {
-    System.out.println("in socket close");
+    //System.out.println("in socket close");
 
     int eventId = Chat.usernameMap.get(user)[0];
     int userId = Chat.usernameMap.get(user)[1];
