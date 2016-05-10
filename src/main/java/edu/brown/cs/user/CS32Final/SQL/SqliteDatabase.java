@@ -929,11 +929,41 @@ public class SqliteDatabase {
           String date = rs.getString(4);
           List<Integer> reviews = findReviewsById(id);
 
-          return new Profile(id, firstName, lastName, image, date, reviews);
+          Profile profile = new Profile(id, firstName, lastName, image, date, reviews);
+
+          double rating = findRatingByUserId(id);
+
+          profile.setRating(rating);
+
+          return profile;
         }
       }
     }
     return null;
+  }
+
+  public double findRatingByUserId(int userId) throws SQLException {
+    String sql = "SELECT rating FROM review WHERE target_id = ?;";
+
+    double totalRating = 0;
+    double totalNum = 0;
+
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
+      prep.setInt(1, userId);
+
+      try (ResultSet rs = prep.executeQuery()) {
+
+        while (rs.next()) {
+          totalRating += rs.getDouble(1);
+          totalNum++;
+        }
+
+        if (totalNum > 0) {
+          return totalRating / totalNum;
+        }
+      }
+    }
+    return -1;
   }
 
   public List<Integer> findReviewsById(int id) throws SQLException {
