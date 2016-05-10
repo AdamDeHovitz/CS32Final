@@ -27,9 +27,11 @@ bulkAppControllers.controller("loginCtrl", function($scope, $rootScope, $state,
 	};
 	$scope.closeModal = function() {
 		$scope.modal.hide();
-		$scope.registerData = {};
-		$scope.forms.registerForm.$setPristine();
-		$scope.forms.registerForm.$setUntouched();
+		$timeout(function() {
+            $scope.registerData = {};
+            $scope.forms.registerForm.$setPristine();
+            $scope.forms.registerForm.$setUntouched();
+        }, 1000);
 	};
 	// Cleanup the modal when we're done with it!
 	$scope.$on('$destroy', function() {
@@ -168,6 +170,7 @@ bulkAppControllers.controller("loginCtrl", function($scope, $rootScope, $state,
 		  "password" : curData.password,
 		  "image" : curData.img
 		}, function(responseJSON) {
+		    $scope.closeModal();
 			responseObject = JSON.parse(responseJSON);
 			console.log(responseObject);
 			if (responseObject.hasError) {
