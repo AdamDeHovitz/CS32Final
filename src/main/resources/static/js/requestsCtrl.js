@@ -66,6 +66,7 @@ bulkAppControllers.controller("requestsCtrl",
 				if (responseObject.state == "CLOSED") {
 					$timeout(function() {
 						$scope.requests = [];
+						console.log("requests");
 					}, 0);
 					var alertPopup = $ionicPopup.alert({
 		  		  title : "Full Event",

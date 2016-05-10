@@ -748,12 +748,14 @@ public class SqliteDatabase {
       double lng) throws SQLException {
     List<Event> toReturn = new ArrayList();
     ResultSet rs = null;
+
     String sql = "SELECT id, owner_id, state, name, description, image,"
         + " member_capacity, cost, location, lat, lng FROM event "
         + "WHERE ABS(lat - ?) < 0.2 AND " + "ABS(lng - ?) < 0.2 ORDER BY"
         + "((? - lat) * (? - lat) + " + "(? - lng) * (? - lng) * ?);";
 
     double fudge = Math.pow(Math.cos(Math.toRadians(lat)), 2);
+
     try (PreparedStatement prep = connection.prepareStatement(sql)) {
 
       prep.setDouble(1, lat);
