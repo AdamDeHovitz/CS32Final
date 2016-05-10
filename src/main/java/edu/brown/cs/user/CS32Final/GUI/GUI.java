@@ -108,6 +108,7 @@ public class GUI {
     Spark.post("/event-create", new EventCreateHandler());
 
     // View events
+    Spark.post("/event-search", new EventSearchHandler());
     Spark.post("/event-view", new EventViewHandler());
     Spark.post("/events-view", new EventsViewHandler());
     Spark.post("/event-feed", new EventFeedHandler());
@@ -504,6 +505,29 @@ public class GUI {
     }
   }
 
+  private class EventSearchHandler implements Route {
+
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+
+      int id = Integer.parseInt(qm.value("id"));
+      String line = qm.value("search");
+      List<Event> events = null;
+      try {
+        events = SqliteDatabase.getInstance().findEventsByKeys(line);
+      } catch (Exception e) {
+        System.out.println("ERROR: SQL error");
+        e.printStackTrace();
+      }
+      ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+      vars.put("events", events);
+
+      Map<String, Object> variables = vars.build();
+      return gson.toJson(variables);
+    }
+  }
+
   private class EventOwnerHandler implements Route {
     @Override
     public Object handle(final Request req, final Response res) {
@@ -685,6 +709,7 @@ public class GUI {
       try {
         if (event.getMembers().size() + 2 == event.getMaxMembers()) {
           SqliteDatabase.getInstance().setEventState(eventId, "CLOSED");
+          SqliteDatabase.getInstance().cancelRequests(eventId);
           vars.put("state", "CLOSED");
 
           List<Integer> users = SqliteDatabase.getInstance()
@@ -752,6 +777,7 @@ public class GUI {
       try {
         Event event = SqliteDatabase.getInstance().findEventById(eventId);
         if (event.getHost().getId() == id) {
+          SqliteDatabase.getInstance().cancelRequests(eventId);
           SqliteDatabase.getInstance().setEventState(eventId, "CLOSED");
           List<Integer> users = SqliteDatabase.getInstance()
               .findUsersByEventId(eventId);
@@ -826,6 +852,7 @@ public class GUI {
 
       try {
         Event event = SqliteDatabase.getInstance().findEventById(eventId);
+
         if (event.getHost().getId() == id) {
           // Event is done: delete event
           List<Integer> participantIds = SqliteDatabase.getInstance().findAllUsersInEvent(eventId);
@@ -845,11 +872,13 @@ public class GUI {
             }
 
           }
-
+          SqliteDatabase.getInstance().cancelRequests(eventId);
+          SqliteDatabase.getInstance().removeLeft(eventId);
+          SqliteDatabase.getInstance().removeNotifications(eventId);
           SqliteDatabase.getInstance().removeEvent(eventId);
 
         } else {
-          // TODO: tell them they don't have permission
+          System.out.println("ERROR: user lacks necessary permission");
         }
       } catch (Exception e) {
         System.out.println("ERROR: SQL error");
