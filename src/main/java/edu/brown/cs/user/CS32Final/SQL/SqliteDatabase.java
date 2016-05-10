@@ -11,7 +11,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import edu.brown.cs.user.CS32Final.Entities.Account.*;
+import edu.brown.cs.user.CS32Final.Entities.Account.Account;
+import edu.brown.cs.user.CS32Final.Entities.Account.Notification;
+import edu.brown.cs.user.CS32Final.Entities.Account.PendingReview;
+import edu.brown.cs.user.CS32Final.Entities.Account.Profile;
+import edu.brown.cs.user.CS32Final.Entities.Account.Review;
 import edu.brown.cs.user.CS32Final.Entities.Chat.Message;
 import edu.brown.cs.user.CS32Final.Entities.Event.Event;
 import edu.brown.cs.user.CS32Final.Entities.Event.EventRequest;
@@ -22,7 +26,7 @@ public class SqliteDatabase {
   private static final String CAPS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   private static final String LETTERS = "abcdefghijklmnopqrstuvwxyz";
 
-  private SqliteDatabase(String db)  {
+  private SqliteDatabase(String db) {
     try {
       makeConnection(db);
     } catch (SQLException e) {
@@ -78,12 +82,12 @@ public class SqliteDatabase {
         + "is_new BOOLEAN)";
 
     String userLeftEvent = "CREATE TABLE IF NOT EXISTS user_left_event("
-            + "id INTEGER PRIMARY KEY AUTOINCREMENT, event_id INTEGER, "
-            + "user_id INTEGER, owner_id INTEGER)";
+        + "id INTEGER PRIMARY KEY AUTOINCREMENT, event_id INTEGER, "
+        + "user_id INTEGER, owner_id INTEGER)";
 
     String pendingReview = "CREATE TABLE IF NOT EXISTS pending_review("
-            + "id INTEGER PRIMARY KEY AUTOINCREMENT, " + "reviewer_id INTEGER, "
-            + "target_id, event_name TEXT)";
+        + "id INTEGER PRIMARY KEY AUTOINCREMENT, " + "reviewer_id INTEGER, "
+        + "target_id, event_name TEXT, seen BOOLEAN)";
 
     Statement prep = connection.createStatement();
     prep.addBatch(user);
@@ -162,8 +166,8 @@ public class SqliteDatabase {
     }
   }
 
-  public void updateSettings(int id, String firstName, String lastName, String email)
-    throws SQLException {
+  public void updateSettings(int id, String firstName, String lastName,
+      String email) throws SQLException {
     String sql = "UPDATE user SET email = ?, first_name = ?, last_name = ? WHERE id = ?;";
     try (PreparedStatement prep = connection.prepareStatement(sql)) {
       prep.setString(1, email);
@@ -414,6 +418,7 @@ public class SqliteDatabase {
       prep.executeUpdate();
     }
   }
+
   public void removeLeft(int eventId) throws SQLException {
     String sql = "DELETE FROM user_left_event WHERE event_id = ?";
 
@@ -473,7 +478,6 @@ public class SqliteDatabase {
     }
   }
 
-
   public void requestUserIntoEvent(int event_id, int user_id, int owner_id)
       throws SQLException {
     String sql = "INSERT INTO user_request (event_id, user_id, owner_id) VALUES (?, ?, ?)";
@@ -487,13 +491,23 @@ public class SqliteDatabase {
 
   }
 
-  public void insertPendingReview(int reviewerId, int targetId, String eventName) throws SQLException {
-    String sql = "INSERT INTO pending_review (reviewer_id, target_id, event_name) VALUES (?, ?, ?)";
+  public void insertPendingReview(int reviewerId, int targetId,
+      String eventName) throws SQLException {
+    String sql = "INSERT INTO pending_review (reviewer_id, target_id, event_name, seen) VALUES (?, ?, ?, ?)";
     try (PreparedStatement prep = connection.prepareStatement(sql)) {
       prep.setInt(1, reviewerId);
       prep.setInt(2, targetId);
       prep.setString(3, eventName);
+      prep.setBoolean(4, false);
 
+      prep.executeUpdate();
+    }
+  }
+
+  public void removePendingReview(int reviewId) throws SQLException {
+    String sql = "DELETE FROM pending_review WHERE id = ?";
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
+      prep.setInt(1, reviewId);
       prep.executeUpdate();
     }
   }
@@ -623,9 +637,9 @@ public class SqliteDatabase {
   public List<Integer> findReviewIDsByUserId(Integer userId)
       throws SQLException {
     ResultSet rs = null;
-    try {
-      String sql = "SELECT id FROM review WHERE target_id = ?;";
-      PreparedStatement prep = connection.prepareStatement(sql);
+    String sql = "SELECT id FROM review WHERE target_id = ?;";
+
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
       prep.setInt(1, userId);
 
       List<Integer> toReturn = new ArrayList<>();
@@ -643,9 +657,9 @@ public class SqliteDatabase {
 
   public List<Review> findReviewsByUserId(Integer userId) throws SQLException {
     ResultSet rs = null;
-    try {
-      String sql = "SELECT user_id, rating, message FROM review WHERE target_id = ?;";
-      PreparedStatement prep = connection.prepareStatement(sql);
+    String sql = "SELECT user_id, rating, message FROM review WHERE target_id = ?;";
+
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
       prep.setInt(1, userId);
 
       List<Review> toReturn = new ArrayList<>();
@@ -666,9 +680,9 @@ public class SqliteDatabase {
   public List<Integer> findEventIdsbyOwnerId(Integer userId)
       throws SQLException {
     ResultSet rs = null;
-    try {
-      String sql = "SELECT id FROM event WHERE owner_id = ? ORDER BY id DESC;";
-      PreparedStatement prep = connection.prepareStatement(sql);
+    String sql = "SELECT id FROM event WHERE owner_id = ? ORDER BY id DESC;";
+
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
       prep.setInt(1, userId);
 
       List<Integer> toReturn = new ArrayList<>();
@@ -695,9 +709,8 @@ public class SqliteDatabase {
   public List<Integer> findEventsByRequestedId(Integer userId)
       throws SQLException {
     ResultSet rs = null;
-    try {
-      String sql = "SELECT event_id FROM user_request WHERE user_id = ?;";
-      PreparedStatement prep = connection.prepareStatement(sql);
+    String sql = "SELECT event_id FROM user_request WHERE user_id = ?;";
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
       prep.setInt(1, userId);
 
       List<Integer> toReturn = new ArrayList<>();
@@ -715,9 +728,9 @@ public class SqliteDatabase {
 
   public Account findUserByUsername(String username) throws SQLException {
     ResultSet rs = null;
-    try {
-      String sql = "SELECT id FROM user WHERE email = ?;";
-      PreparedStatement prep = connection.prepareStatement(sql);
+    String sql = "SELECT id FROM user WHERE email = ?;";
+
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
       prep.setString(1, username);
 
       rs = prep.executeQuery();
@@ -735,14 +748,14 @@ public class SqliteDatabase {
       double lng) throws SQLException {
     List<Event> toReturn = new ArrayList();
     ResultSet rs = null;
+    String sql = "SELECT id, owner_id, state, name, description, image,"
+        + " member_capacity, cost, location, lat, lng FROM event "
+        + "WHERE ABS(lat - ?) < 0.2 AND " + "ABS(lng - ?) < 0.2 ORDER BY"
+        + "((? - lat) * (? - lat) + " + "(? - lng) * (? - lng) * ?);";
 
     double fudge = Math.pow(Math.cos(Math.toRadians(lat)), 2);
-    try {
-      String sql = "SELECT id, owner_id, state, name, description, image,"
-          + " member_capacity, cost, location, lat, lng FROM event "
-          + "WHERE ABS(lat - ?) < 0.2 AND " + "ABS(lng - ?) < 0.2 ORDER BY"
-          + "((? - lat) * (? - lat) + " + "(? - lng) * (? - lng) * ?);";
-      PreparedStatement prep = connection.prepareStatement(sql);
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
+
       prep.setDouble(1, lat);
       prep.setDouble(2, lng);
       prep.setDouble(3, lat);
@@ -770,8 +783,9 @@ public class SqliteDatabase {
           double nlat = rs.getDouble(10);
           double nlng = rs.getDouble(11);
           if (members.size() + 1 < member_capacity) {
-            toReturn.add(new Event(eventId, state, name, description, image, host,
-                    members, member_capacity, cost, location, tags, nlat, nlng));
+            toReturn.add(new Event(eventId, state, name, description, image,
+                host, members, member_capacity, cost, location, tags, nlat,
+                nlng));
           }
         }
       }
@@ -782,12 +796,13 @@ public class SqliteDatabase {
   }
 
   /**
-          * Parses a String that represents a line and adds all words (lowercase).
-          * Words are all alphabetical characters seperated by anyamount of none
-  * alphabetical characters
-  *
-  * @param line     the String to be parsed
-  */
+   * Parses a String that represents a line and adds all words (lowercase).
+   * Words are all alphabetical characters seperated by anyamount of none
+   * alphabetical characters
+   *
+   * @param line
+   *          the String to be parsed
+   */
   public static List<String> parseLine(String line) {
     List<String> wordList = new ArrayList<>();
     StringBuffer buf = new StringBuffer();
@@ -816,7 +831,7 @@ public class SqliteDatabase {
       System.out.println(bword);
     }
     double matches = 0;
-    for (String aword: a) {
+    for (String aword : a) {
       boolean found = false;
       for (int x = 0; !found && x < b.size(); x++) {
         if (levDistance(aword, b.get(x)) < 1) {
@@ -845,24 +860,20 @@ public class SqliteDatabase {
 
     for (int i = 1; i <= a.length(); i++)
       for (int j = 1; j <= b.length(); j++)
-        distance[i][j] = minimum(
-                distance[i - 1][j] + 1,
-                distance[i][j - 1] + 1,
-                distance[i - 1][j - 1] + ((a.charAt(i - 1) == b.charAt(j - 1)) ? 0 : 1));
+        distance[i][j] = minimum(distance[i - 1][j] + 1, distance[i][j - 1] + 1,
+            distance[i - 1][j - 1]
+                + ((a.charAt(i - 1) == b.charAt(j - 1)) ? 0 : 1));
 
     return distance[a.length()][b.length()];
   }
-
-
 
   public List<Event> findEventsByKeys(String line) throws SQLException {
     List<Event> toReturn = new ArrayList();
     ResultSet rs = null;
 
-
     try {
       String sql = "SELECT id, owner_id, state, name, description, image,"
-              + " member_capacity, cost, location, lat, lng FROM event;";
+          + " member_capacity, cost, location, lat, lng FROM event;";
       PreparedStatement prep = connection.prepareStatement(sql);
 
       rs = prep.executeQuery();
@@ -870,7 +881,6 @@ public class SqliteDatabase {
       while (rs.next() && toReturn.size() < 10) {
         String name = rs.getString(4);
         if (compare(parseLine(line), parseLine(name))) {
-
 
           Integer eventId = rs.getInt(1);
           int owner_id = rs.getInt(2);
@@ -886,8 +896,9 @@ public class SqliteDatabase {
           double nlat = rs.getDouble(10);
           double nlng = rs.getDouble(11);
           if (members.size() + 1 < member_capacity) {
-            toReturn.add(new Event(eventId, state, name, description, image, host,
-                    members, member_capacity, cost, location, tags, nlat, nlng));
+            toReturn.add(new Event(eventId, state, name, description, image,
+                host, members, member_capacity, cost, location, tags, nlat,
+                nlng));
           }
         }
 
@@ -900,9 +911,9 @@ public class SqliteDatabase {
 
   public Account findUserAccountById(int id) throws SQLException {
     ResultSet rs = null;
-    try {
-      String sql = "SELECT email, password, requestNotif, joinedNotif FROM user WHERE id = ?;";
-      PreparedStatement prep = connection.prepareStatement(sql);
+    String sql = "SELECT email, password, requestNotif, joinedNotif FROM user WHERE id = ?;";
+
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
       prep.setInt(1, id);
 
       rs = prep.executeQuery();
@@ -938,7 +949,8 @@ public class SqliteDatabase {
           String date = rs.getString(4);
           List<Integer> reviews = findReviewsById(id);
 
-          Profile profile = new Profile(id, firstName, lastName, image, date, reviews);
+          Profile profile = new Profile(id, firstName, lastName, image, date,
+              reviews);
 
           double rating = findRatingByUserId(id);
 
@@ -999,9 +1011,9 @@ public class SqliteDatabase {
   public Event findEventById(int id) throws SQLException {
 
     ResultSet rs = null;
-    try {
-      String sql = "SELECT owner_id, state, name, description, image, member_capacity, cost, location, lat, lng FROM event WHERE id = ?;";
-      PreparedStatement prep = connection.prepareStatement(sql);
+    String sql = "SELECT owner_id, state, name, description, image, member_capacity, cost, location, lat, lng FROM event WHERE id = ?;";
+
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
       prep.setInt(1, id);
 
       rs = prep.executeQuery();
@@ -1033,9 +1045,9 @@ public class SqliteDatabase {
 
   public List<String> findTagsByEventId(int id) throws SQLException {
     ResultSet rs = null;
-    try {
-      String sql = "SELECT tag FROM event_tags WHERE event_id = ?;";
-      PreparedStatement prep = connection.prepareStatement(sql);
+    String sql = "SELECT tag FROM event_tags WHERE event_id = ?;";
+
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
       prep.setInt(1, id);
 
       List<String> toReturn = new ArrayList<>();
@@ -1096,9 +1108,9 @@ public class SqliteDatabase {
 
   public List<Event> findPendingEventsByUserId(int userId) throws SQLException {
     ResultSet rs = null;
-    try {
-      String sql = "SELECT event_id FROM user_request WHERE user_id = ? ORDER BY event_id DESC;";
-      PreparedStatement prep = connection.prepareStatement(sql);
+    String sql = "SELECT event_id FROM user_request WHERE user_id = ? ORDER BY event_id DESC;";
+
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
       prep.setInt(1, userId);
 
       List<Event> toReturn = new ArrayList<>();
@@ -1117,9 +1129,9 @@ public class SqliteDatabase {
   public List<Notification> findNotificationsById(int userId)
       throws SQLException {
     ResultSet rs = null;
-    try {
-      String sql = "SELECT id, notif_id, type FROM notification WHERE user_id = ? AND is_new = 1;";
-      PreparedStatement prep = connection.prepareStatement(sql);
+    String sql = "SELECT id, notif_id, type FROM notification WHERE user_id = ? AND is_new = 1;";
+
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
       prep.setInt(1, userId);
 
       List<Notification> toReturn = new ArrayList<>();
@@ -1141,20 +1153,21 @@ public class SqliteDatabase {
   }
 
   public void updateNotification(int userId, boolean isNew) throws SQLException {
-
     String sql = "UPDATE notification SET is_new = ? WHERE user_id = ?;";
-    PreparedStatement prep = connection.prepareStatement(sql);
-    prep.setBoolean(1, isNew);
-    prep.setInt(2, userId);
 
-    prep.executeUpdate();
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
+      prep.setBoolean(1, isNew);
+      prep.setInt(2, userId);
+
+      prep.executeUpdate();
+    }
   }
 
   public Message findMessageById(int notifId) throws SQLException {
     ResultSet rs = null;
-    try {
-      String sql = "SELECT event_id, user_id, message, time FROM message WHERE id = ?;";
-      PreparedStatement prep = connection.prepareStatement(sql);
+    String sql = "SELECT event_id, user_id, message, time FROM message WHERE id = ?;";
+
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
       prep.setInt(1, notifId);
 
       rs = prep.executeQuery();
@@ -1181,9 +1194,9 @@ public class SqliteDatabase {
 
   public EventRequest findEventRequestById(int notifId) throws SQLException {
     ResultSet rs = null;
-    try {
-      String sql = "SELECT event_id, user_id FROM user_request WHERE id = ?;";
-      PreparedStatement prep = connection.prepareStatement(sql);
+    String sql = "SELECT event_id, user_id FROM user_request WHERE id = ?;";
+
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
       prep.setInt(1, notifId);
 
       rs = prep.executeQuery();
@@ -1205,11 +1218,11 @@ public class SqliteDatabase {
 
   public Event findJoinedEventById(int notifId) throws SQLException {
     ResultSet rs = null;
-    try {
-      String sql = "SELECT event_id FROM user_event WHERE id = ?;";
-      PreparedStatement prep = connection.prepareStatement(sql);
-      prep.setInt(1, notifId);
+    String sql = "SELECT event_id FROM user_event WHERE id = ?;";
 
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
+
+      prep.setInt(1, notifId);
       rs = prep.executeQuery();
 
       if (rs.next()) {
@@ -1227,11 +1240,10 @@ public class SqliteDatabase {
 
   public List<Integer> findRequestsByEventId(int eventId) throws SQLException {
     ResultSet rs = null;
-    try {
-      String sql = "SELECT user_id FROM user_request WHERE event_id = ?;";
-      PreparedStatement prep = connection.prepareStatement(sql);
-      prep.setInt(1, eventId);
+    String sql = "SELECT user_id FROM user_request WHERE event_id = ?;";
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
 
+      prep.setInt(1, eventId);
       rs = prep.executeQuery();
       List<Integer> toReturn = new ArrayList<>();
 
@@ -1247,9 +1259,9 @@ public class SqliteDatabase {
 
   public int findOwnerIdByEventId(int eventId) throws SQLException {
     ResultSet rs = null;
-    try {
-      String sql = "SELECT owner_id FROM event WHERE id = ?;";
-      PreparedStatement prep = connection.prepareStatement(sql);
+    String sql = "SELECT owner_id FROM event WHERE id = ?;";
+
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
       prep.setInt(1, eventId);
 
       rs = prep.executeQuery();
@@ -1265,13 +1277,12 @@ public class SqliteDatabase {
 
   public boolean isInUserTable(String val) throws SQLException {
     ResultSet rs = null;
-    try {
-      String sql = "SELECT first_name FROM user WHERE email = ?;";
-      PreparedStatement prep = connection.prepareStatement(sql);
+    String sql = "SELECT first_name FROM user WHERE email = ?;";
+
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
       prep.setString(1, val);
 
       rs = prep.executeQuery();
-
       return rs.next();
 
     } finally {
@@ -1281,10 +1292,9 @@ public class SqliteDatabase {
 
   public EventState getEventStateById(int eventId) throws SQLException {
     ResultSet rs = null;
+    String sql = "SELECT state FROM event WHERE id = ?;";
 
-    try {
-      String sql = "SELECT state FROM event WHERE id = ?;";
-      PreparedStatement prep = connection.prepareStatement(sql);
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
       prep.setInt(1, eventId);
 
       rs = prep.executeQuery();
@@ -1299,7 +1309,8 @@ public class SqliteDatabase {
     return null;
   }
 
-  public void insertUserIntoLeftEvent(int event_id, int user_id, int owner_id) throws SQLException {
+  public void insertUserIntoLeftEvent(int event_id, int user_id, int owner_id)
+      throws SQLException {
     String sql = "INSERT INTO user_left_event (event_id, user_id, owner_id) VALUES (?, ?, ?)";
     try (PreparedStatement prep = connection.prepareStatement(sql)) {
       prep.setInt(1, event_id);
@@ -1313,10 +1324,9 @@ public class SqliteDatabase {
   public List<Integer> findAllUsersInEvent(int eventId) throws SQLException {
     ResultSet rs = null;
     List<Integer> users = new ArrayList<>();
+    String sql = "SELECT user_id FROM user_event WHERE event_id = ?;";
 
-    try {
-      String sql = "SELECT user_id FROM user_event WHERE event_id = ?;";
-      PreparedStatement prep = connection.prepareStatement(sql);
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
       prep.setInt(1, eventId);
 
       rs = prep.executeQuery();
@@ -1335,12 +1345,11 @@ public class SqliteDatabase {
   public List<Integer> findUsersLeftInEvent(int eventId) throws SQLException {
     ResultSet rs = null;
     List<Integer> users = new ArrayList<>();
+    String sql = "SELECT user_id FROM user_left_event WHERE event_id = ?;";
 
-    try {
-      String sql = "SELECT user_id FROM user_left_event WHERE event_id = ?;";
-      PreparedStatement prep = connection.prepareStatement(sql);
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
+
       prep.setInt(1, eventId);
-
       rs = prep.executeQuery();
 
       while (rs.next()) {
@@ -1354,13 +1363,13 @@ public class SqliteDatabase {
     }
   }
 
-  public List<PendingReview> findPendingReviewsByUserId(int userId) throws SQLException {
+  public List<PendingReview> findPendingReviewsByUserId(int userId)
+      throws SQLException {
     ResultSet rs = null;
     List<PendingReview> pendingReviews = new ArrayList<>();
+    String sql = "SELECT id, target_id, event_name FROM pending_review WHERE reviewer_id = ?;";
 
-    try {
-      String sql = "SELECT id, target_id, event_name FROM pending_review WHERE reviewer_id = ?;";
-      PreparedStatement prep = connection.prepareStatement(sql);
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
       prep.setInt(1, userId);
 
       rs = prep.executeQuery();
@@ -1371,7 +1380,8 @@ public class SqliteDatabase {
         String eventName = rs.getString(3);
         Profile target = findUserProfileById(targetId);
 
-        PendingReview pending = new PendingReview(id, userId, targetId, target.getName(), target.getImage(), eventName);
+        PendingReview pending = new PendingReview(id, userId, targetId,
+            target.getName(), target.getImage(), eventName);
         pendingReviews.add(pending);
       }
 
@@ -1379,6 +1389,29 @@ public class SqliteDatabase {
 
     } finally {
       closeResultSet(rs);
+    }
+  }
+
+  public int getNewPendingReviewsNum(int userId) throws SQLException {
+    int reviewCount = 0;
+    String sql = "SELECT id FROM pending_review WHERE reviewer_id = ? AND seen = 0;";
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
+      prep.setInt(1, userId);
+      try (ResultSet rs = prep.executeQuery()) {
+        while (rs.next()) {
+          reviewCount++;
+        }
+      }
+    }
+    return reviewCount;
+  }
+
+  public void setPendingReviewsSeen(int userId) throws SQLException {
+    String sql = "UPDATE pending_review SET seen = ? WHERE reviewer_id = ?;";
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
+      prep.setBoolean(1, true);
+      prep.setInt(2, userId);
+      prep.executeUpdate();
     }
   }
 

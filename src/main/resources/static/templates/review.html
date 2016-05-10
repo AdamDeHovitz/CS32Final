@@ -1,10 +1,23 @@
 <div class="card">
-  <div class="item item-divider">
-  <div class="star-ratings-sprite">
-  <span style="width:{{(review.rating / 5) * 100}}%" class="star-ratings-sprite-rating">
-  </span></div>
+
+
+  <div class="item item-divider">  
+  <span class="star-rating-disabled">
+		<input type="radio"  value="1" 
+		ng-checked="Math.floor(review.rating) == 1" ng-disabled="Math.floor(review.rating) != 1"><i></i>
+		<input type="radio" value="2"
+		ng-checked="Math.floor(review.rating) == 2" ng-disabled="Math.floor(review.rating) != 2"><i></i>
+  		<input type="radio"  value="3"
+  		ng-checked="Math.floor(review.rating) == 3" ng-disabled="Math.floor(review.rating) != 3"><i></i>
+  		<input type="radio"value="4"
+  		ng-checked="Math.floor(review.rating) == 4" ng-disabled="Math.floor(review.rating) != 4"><i></i>
+  		<input type="radio" value="5"
+  		ng-checked="Math.floor(review.rating) == 5" ng-disabled="Math.floor(review.rating) != 5"><i></i>
+	</span>	
   </div>
   <div class="item item-text-wrap">
-    {{review.text}}
+   <p ng-if="review.text && review.text.length > 0">{{review.text}}</p>
+   <p ng-if="!review.text || review.text.length < 1"><small>Reviewer did not leave a message</small></p>
+   
   </div>
 </div>

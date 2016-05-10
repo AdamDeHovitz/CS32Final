@@ -6,9 +6,10 @@ bulkAppControllers
 
 	        $scope.newMyEventsNum = 0;
 	        $scope.newJoinedEventsNum = 0;
+	        $scope.newReviewsNum = 0;
 	        $scope.creationData = {};
 	        $scope.forms = {};
-	        $scope.positiveIntRegex = "^[2-9][0-9]*$";
+	        $scope.positiveIntRegex = "^[1-9][0-9]*$";
 	        $scope.moneyRegex = "^\\$?[0-9][0-9\\,]*(\\.\\d{1,2})?$|^\\$?[\\.]([\\d][\\d]?)$";
 
 	        $scope.getEventInfo = function() {
@@ -20,6 +21,7 @@ bulkAppControllers
 			        $timeout(function() {
 				        $scope.newMyEventsNum = responseObject.myEventNotifNum;
 				        $scope.newJoinedEventsNum = responseObject.joinedEventNotifNum;
+				        $scope.newReviewsNum = responseObject.newReviewNum;
 			        }, 0);
 		        });
 	        };
@@ -39,6 +41,13 @@ bulkAppControllers
 
 	        $scope.goJoined = function() {
 		        $state.go('tab.joined-events');
+	        };
+	        
+	        $scope.goWriteReviews = function() {
+	        	$timeout(function() {
+	  	        $scope.newReviewsNum = 0;
+	        	}, 1000) 
+	        	$state.go('tab.write-reviews');
 	        };
 
 	        $scope.createEvent = function() {

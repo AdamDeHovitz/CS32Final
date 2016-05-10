@@ -1,6 +1,11 @@
 <ion-view view-title="Reviews">
   <ion-content class="padding">
   <div class="list">
+  <div class="card" ng-show="reviews.length < 1">
+  	<div class="item">
+  	<p>No reviews yet.</p>
+  	</div>
+  </div>
 	<div ng-repeat="review in reviews" ng-include="'templates/review.html'"></div>
 	</div>
   </ion-content>
