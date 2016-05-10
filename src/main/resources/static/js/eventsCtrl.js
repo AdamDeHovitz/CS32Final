@@ -9,7 +9,7 @@ bulkAppControllers
 	        $scope.newReviewsNum = 0;
 	        $scope.creationData = {};
 	        $scope.forms = {};
-	        $scope.positiveIntRegex = "^[2-9][0-9]*$";
+	        $scope.positiveIntRegex = "^[1-9][0-9]*$";
 	        $scope.moneyRegex = "^\\$?[0-9][0-9\\,]*(\\.\\d{1,2})?$|^\\$?[\\.]([\\d][\\d]?)$";
 
 	        $scope.getEventInfo = function() {
@@ -132,10 +132,7 @@ bulkAppControllers
 		        $scope.modal.show();
 	        };
 	        $scope.closeModal = function() {
-		        $scope.forms.eventCreate.$setPristine();
-		        $scope.forms.eventCreate.$setUntouched();
 		        $scope.modal.hide();
-		        $scope.creationData = {};
 	        };
 	        // Cleanup the modal when we're done with it!
 	        $scope.$on('$destroy', function() {

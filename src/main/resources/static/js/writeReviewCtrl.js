@@ -31,6 +31,13 @@ bulkAppControllers.controller("writeReviewCtrl",
 			function(responseJSON) {
 				
 			});
+		var newReviews = [];
+		for (var i = 0; i < $scope.reviews.length; i++) {
+			if ($scope.reviews[i].id != pendingId) {
+				newReviews.push($scope.reviews[i]);
+			}
+		}
+		$scope.reviews = newReviews;
 		console.log($scope.reviewCreate);
 		$scope.modal.hide();
 	}

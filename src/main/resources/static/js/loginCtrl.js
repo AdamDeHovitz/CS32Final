@@ -1,17 +1,19 @@
-
-bulkAppControllers.controller("loginCtrl", function($scope, $rootScope, $state, $ionicViewSwitcher, $ionicModal, $http, $ionicPopup, $interval,
-    $timeout, toaster) {
-
+bulkAppControllers.controller("loginCtrl", function($scope, $rootScope, $state,
+    $ionicViewSwitcher, $ionicModal, $http, $ionicPopup, $interval, $timeout,
+    toaster) {
 
 	$scope.loginData = {};
 	$scope.registerData = {};
 	$scope.forms = {};
 
-	//$scope.fd = = new FormData();
+	// $scope.fd = = new FormData();
 
 	$scope.$on('$ionicView.enter', function() {
 		$scope.forms.registerForm.$setPristine();
 		$scope.forms.registerForm.$setUntouched();
+		if ($rootScope.stopNotifications) {
+			$interval.cancel($rootScope.stopNotifications);
+		}
 	});
 
 	$ionicModal.fromTemplateUrl('register-modal.html', {
@@ -57,18 +59,20 @@ bulkAppControllers.controller("loginCtrl", function($scope, $rootScope, $state, 
 			var route = undefined;
 			var urlPrefix = "";
 			var hasNotif = false;
-			
-			if ($state.current.name.includes("tab.events") || $state.current.name == "tab.my-events"
-				|| $state.current.name == "tab.joined-events" || $state.current.name == "tab.pending-events") {
+
+			if ($state.current.name.includes("tab.events")
+			    || $state.current.name == "tab.my-events"
+			    || $state.current.name == "tab.joined-events"
+			    || $state.current.name == "tab.pending-events") {
 				urlPrefix = "tab.events-";
-			} else if ($state.current.name.includes("tab.account") || $state.current.name == "tab.settings"
-				|| $state.current.name == "tab.help") {
+			} else if ($state.current.name.includes("tab.account")
+			    || $state.current.name == "tab.settings"
+			    || $state.current.name == "tab.help") {
 				urlPrefix = "tab.account-";
 			} else {
 				urlPrefix = "tab.";
 			}
 			console.log($state.current);
-
 
 			if (responseObject.messages.length > 0 && responseObject.messages[0]) {
 				hasNotif = true;
@@ -76,7 +80,9 @@ bulkAppControllers.controller("loginCtrl", function($scope, $rootScope, $state, 
 				var title = "New Message in \"" + notif.eventName + "\"";
 				var body = notif.username + ": " + notif.content;
 				route = function() {
-					$state.go(urlPrefix + 'chat', { eventId : notif.eventId });
+					$state.go(urlPrefix + 'chat', {
+						eventId : notif.eventId
+					});
 				};
 			} else if (responseObject.requests.length > 0
 			    && responseObject.requests[0]) {
@@ -88,7 +94,9 @@ bulkAppControllers.controller("loginCtrl", function($scope, $rootScope, $state, 
 				body = requester + " has requested to join " + eventName;
 				title = "Request to Join";
 				route = function() {
-					$state.go(urlPrefix + 'event', { eventId : notif.id });
+					$state.go(urlPrefix + 'event', {
+						eventId : notif.id
+					});
 				};
 			} else if (responseObject.joinedEvents.length > 0
 			    && responseObject.joinedEvents[0]) {
@@ -97,7 +105,9 @@ bulkAppControllers.controller("loginCtrl", function($scope, $rootScope, $state, 
 				body = "You have been accepted to \"" + notif.name + "\"."
 				title = "Event Acceptance";
 				route = function() {
-					$state.go(urlPrefix + 'event', {eventId : notif.id});
+					$state.go(urlPrefix + 'event', {
+						eventId : notif.id
+					});
 				};
 
 			} else if (responseObject.eventState.length > 0
@@ -105,7 +115,9 @@ bulkAppControllers.controller("loginCtrl", function($scope, $rootScope, $state, 
 				hasNotif = true;
 				var notif = responseObject.eventState[0];
 				route = function() {
-					$state.go(urlPrefix + 'event', {eventId : notif.id});
+					$state.go(urlPrefix + 'event', {
+						eventId : notif.id
+					});
 				};
 				if (notif.state == "CLOSED") {
 					title = "Event Closed";
@@ -116,19 +128,25 @@ bulkAppControllers.controller("loginCtrl", function($scope, $rootScope, $state, 
 				}
 				// notification if ended?
 			}
-			
+
 			if (hasNotif) {
 				var f = function() {
 					console.log("notif routing");
 					toaster.clear();
 					route();
 				}
-				toaster.pop({type: 'note', title: title, body: body, 
-					timeout: 50000, clickHandler: f, showCloseButton: false});
+				toaster.pop({
+				  type : 'note',
+				  title : title,
+				  body : body,
+				  timeout : 50000,
+				  clickHandler : f,
+				  showCloseButton : false
+				});
 			}
-			
+
 		});
- };
+	};
 
 	$scope.doRegister = function() {
 		console.log('Doing register', $scope.registerData);
@@ -207,8 +225,9 @@ bulkAppControllers.controller("loginCtrl", function($scope, $rootScope, $state, 
 				$rootScope.stopNotifications = $interval(getNotifications, 5000);
 				$ionicViewSwitcher.nextDirection('forward');
 				$state.go("tab.feed");
-			};
-			
+			}
+			;
+
 			$timeout(function() {
 				$scope.loginData = {};
 				$scope.forms.loginForm.$setPristine();

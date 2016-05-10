@@ -16,6 +16,8 @@
 	</span>	
   </div>
   <div class="item item-text-wrap">
-    {{review.text}}
+   <p ng-if="review.text && review.text.length > 0">{{review.text}}</p>
+   <p ng-if="!review.text || review.text.length < 1"><small>Reviewer did not leave a message</small></p>
+   
   </div>
 </div>

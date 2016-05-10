@@ -46,6 +46,8 @@
 	 <script src="js/membersCtrl.js"></script>
 	 <script src="js/settingsCtrl.js"></script>
 	 <script src="js/writeReviewCtrl.js"></script>
+	 <script src="js/aboutCtrl.js"></script>
+	 
 	 
 	 
      <script src="js/main.js"></script>

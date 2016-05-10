@@ -80,13 +80,14 @@
 		<label class="item item-input"
 			ng-class="{'has-error': forms.eventCreate.members.$touched && forms.eventCreate.members.$invalid }">
     		<span class="input-label">Participant Number*</span>
-   			<input type="number" name="members" ng-model="creationData.members" ng-pattern="positiveIntRegex"
+   			<input type="number" name="members" ng-model="creationData.members" min="2" ng-pattern="positiveIntRegex"
 					onkeypress='return event.charCode >= 48 && event.charCode <= 57' required>
   	</label>
 		<div class="form-errors" 
   		ng-show="forms.eventCreate.members.$touched && forms.eventCreate.members.$invalid " 
   		ng-messages="forms.eventCreate.members.$error">
         <div class="form-error" ng-message="required">The number of participants is required.</div>
+				<div class="form-error" ng-message="min">Must be greater than one.</div>
 				<div class="form-error" ng-message="number">Must be a positive integer.</div>
 				<div class="form-error" ng-message="pattern">Must be a positive integer greater than one.</div>
     	</div>
