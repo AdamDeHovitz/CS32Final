@@ -2,13 +2,19 @@ bulkAppControllers.controller("membersCtrl",
 	function($scope, $rootScope, $http, $stateParams, $state, $timeout, $interval) {
 
 	var eventId = $stateParams.eventId;
-
+	$scope.Math = window.Math;
+	
 	var getMembers = function() {
-		$.post("/user-members", {"id": eventId}, function(responseJSON) {
+		$.post("/event-members", {"id": eventId}, function(responseJSON) {
 			responseObject = JSON.parse(responseJSON);
-			$scope.requests = responseObject.requests;
-        });
+			$scope.owner = responseObject.owner;
+			$scope.members = responseObject.users;
+			console.log(responseObject);
+    });
 	}
+	
+	$timeout(getMembers, 0);
+
 
 	//$timeout(getRequests, 0);
 	//$scope.gettingReqs = $interval(getRequests, 5000);

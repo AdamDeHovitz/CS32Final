@@ -318,6 +318,18 @@ public class SqliteDatabase {
     }
   }
 
+  public void removeStateNotif(int user_id, int event_id)
+      throws SQLException {
+    String sql = "DELETE FROM notification WHERE type == 'STATE' AND user_id == ? AND event_id == ?";
+
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
+      prep.setInt(1, user_id);
+      prep.setInt(2, event_id);
+
+      prep.executeUpdate();
+    }
+  }
+
   public void clearMessageNotifs(int eventId, int userId) throws SQLException {
     String sql = "DELETE FROM notification WHERE type == 'MESSAGE' AND user_id == ? and event_id == ?";
 
