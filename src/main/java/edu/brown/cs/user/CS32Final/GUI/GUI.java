@@ -981,10 +981,12 @@ public class GUI {
       int authorId = Integer.parseInt(qm.value("authorId"));
       int targetId = Integer.parseInt(qm.value("targetId"));
       int rating = Integer.parseInt(qm.value("rating"));
+      int pendingId = Integer.parseInt(qm.value("pendingId"));
       String text = qm.value("text");
 
       try {
         SqliteDatabase.getInstance().insertReview(authorId, text, rating, targetId);
+        SqliteDatabase.getInstance().removePendingReview(pendingId);
       } catch (Exception e) {
         e.printStackTrace();
       }

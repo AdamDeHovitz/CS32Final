@@ -477,6 +477,14 @@ public class SqliteDatabase {
     }
   }
 
+  public void removePendingReview(int reviewId) throws SQLException {
+    String sql = "DELETE FROM pending_review WHERE id = ?";
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
+      prep.setInt(1, reviewId);
+      prep.executeUpdate();
+    }
+  }
+
   public void removeRequest(int event_id, int user_id) throws SQLException {
     String sql = "DELETE FROM user_request WHERE event_id = ? AND user_id = ?";
     try (PreparedStatement prep = connection.prepareStatement(sql)) {

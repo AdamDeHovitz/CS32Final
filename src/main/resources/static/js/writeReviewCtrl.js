@@ -2,10 +2,11 @@ bulkAppControllers.controller("writeReviewCtrl",
 		function($scope, $rootScope, $http, $stateParams, $ionicModal, $state) {
 	
 	$scope.forms = {};
-	$scope.reviewCreate = {};
+	$scope.reviewCreate = {rating: 3};
 	
 	$.post("/pending-reviews", {id: $rootScope.account.id}, function(responseJSON) {
 		responseObject = JSON.parse(responseJSON);
+		console.log(responseObject);
 		$scope.reviews = responseObject.pendingReviews;
 	});
 	
@@ -24,8 +25,14 @@ bulkAppControllers.controller("writeReviewCtrl",
 		$state.go('tab.events-profile',{userId: id});
 	};
 	
-	$scope.createReview = function() {
-		console.log("creating: " + $scope.reviewCreate);
+	$scope.createReview = function(targetId, pendingId) {
+		$.post("/review", {authorId: $rootScope.account.id, targetId: targetId, 
+			text: $scope.reviewCreate.text, rating: $scope.reviewCreate.rating, pendingId: pendingId},
+			function(responseJSON) {
+				
+			});
+		console.log($scope.reviewCreate);
+		$scope.modal.hide();
 	}
 	
 	$ionicModal.fromTemplateUrl('new-review-modal.html', {
@@ -39,6 +46,7 @@ bulkAppControllers.controller("writeReviewCtrl",
   };
   $scope.closeModal = function() {
     $scope.modal.hide();
+    $scope.reviewCreate = {rating: 3};
   };
   // Cleanup the modal when we're done with it!
   $scope.$on('$destroy', function() {
