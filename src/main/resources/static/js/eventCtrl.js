@@ -146,6 +146,7 @@ bulkAppControllers.controller("eventCtrl", function($scope, $http, $rootScope,
 			$.post("/delete-event", {id: $scope.account.id, eventId: eventId}, function(responseJSON) {
 				responseObject = JSON.parse(responseJSON);
 				console.log(responseObject);
+				$state.go("tab.events");
 				// figure out where to route
 			});
 			/*
