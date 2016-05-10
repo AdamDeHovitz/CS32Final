@@ -10,7 +10,7 @@
   <div ng-repeat="request in requests" class="item item-thumbnail-left">
   		<img src="{{request.image}}" ng-click="goProfile(request.id);">
 		<b><h2 ng-click="goProfile(request.id);">{{request.firstName}} {{request.lastName}}</h2></b>
-		<p ng-if="request.rating == 0">No reviews yet.</p>
+	<p ng-if="request.rating == 0">No reviews yet.</p>
 	<div ng-if="request.rating != 0">
 	  <span class="star-rating-disabled" >
 		<input type="radio"  value="1" 

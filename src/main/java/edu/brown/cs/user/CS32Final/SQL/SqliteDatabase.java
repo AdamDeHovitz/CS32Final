@@ -23,6 +23,8 @@ import edu.brown.cs.user.CS32Final.Entities.Event.EventState;
 
 public class SqliteDatabase {
   private Connection connection;
+  private static final String CAPS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  private static final String LETTERS = "abcdefghijklmnopqrstuvwxyz";
 
   private SqliteDatabase(String db) {
     try {
@@ -80,12 +82,12 @@ public class SqliteDatabase {
         + "is_new BOOLEAN)";
 
     String userLeftEvent = "CREATE TABLE IF NOT EXISTS user_left_event("
-            + "id INTEGER PRIMARY KEY AUTOINCREMENT, event_id INTEGER, "
-            + "user_id INTEGER, owner_id INTEGER)";
+        + "id INTEGER PRIMARY KEY AUTOINCREMENT, event_id INTEGER, "
+        + "user_id INTEGER, owner_id INTEGER)";
 
     String pendingReview = "CREATE TABLE IF NOT EXISTS pending_review("
-            + "id INTEGER PRIMARY KEY AUTOINCREMENT, " + "reviewer_id INTEGER, "
-            + "target_id, event_name TEXT, seen BOOLEAN)";
+        + "id INTEGER PRIMARY KEY AUTOINCREMENT, " + "reviewer_id INTEGER, "
+        + "target_id, event_name TEXT, seen BOOLEAN)";
 
     Statement prep = connection.createStatement();
     prep.addBatch(user);
@@ -164,8 +166,8 @@ public class SqliteDatabase {
     }
   }
 
-  public void updateSettings(int id, String firstName, String lastName, String email)
-    throws SQLException {
+  public void updateSettings(int id, String firstName, String lastName,
+      String email) throws SQLException {
     String sql = "UPDATE user SET email = ?, first_name = ?, last_name = ? WHERE id = ?;";
     try (PreparedStatement prep = connection.prepareStatement(sql)) {
       prep.setString(1, email);
@@ -402,9 +404,26 @@ public class SqliteDatabase {
 
   public void removeNotificationsById(int userId) throws SQLException {
     String sql = "DELETE FROM notification WHERE user_id = ?";
-
     try (PreparedStatement prep = connection.prepareStatement(sql)) {
       prep.setInt(1, userId);
+      prep.executeUpdate();
+    }
+  }
+
+  public void removeNotifications(int eventId) throws SQLException {
+    String sql = "DELETE FROM notification WHERE event_id = ?";
+
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
+      prep.setInt(1, eventId);
+      prep.executeUpdate();
+    }
+  }
+
+  public void removeLeft(int eventId) throws SQLException {
+    String sql = "DELETE FROM user_left_event WHERE event_id = ?";
+
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
+      prep.setInt(1, eventId);
 
       prep.executeUpdate();
     }
@@ -425,6 +444,14 @@ public class SqliteDatabase {
     try (PreparedStatement prep = connection.prepareStatement(sql)) {
       prep.setString(1, state);
       prep.setInt(2, event_id);
+      prep.executeUpdate();
+    }
+  }
+
+  public void cancelRequests(int event_id) throws SQLException {
+    String sql = "DELETE FROM user_request WHERE event_id = ?;";
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
+      prep.setInt(1, event_id);
       prep.executeUpdate();
     }
   }
@@ -451,7 +478,6 @@ public class SqliteDatabase {
     }
   }
 
-
   public void requestUserIntoEvent(int event_id, int user_id, int owner_id)
       throws SQLException {
     String sql = "INSERT INTO user_request (event_id, user_id, owner_id) VALUES (?, ?, ?)";
@@ -465,7 +491,8 @@ public class SqliteDatabase {
 
   }
 
-  public void insertPendingReview(int reviewerId, int targetId, String eventName) throws SQLException {
+  public void insertPendingReview(int reviewerId, int targetId,
+      String eventName) throws SQLException {
     String sql = "INSERT INTO pending_review (reviewer_id, target_id, event_name, seen) VALUES (?, ?, ?, ?)";
     try (PreparedStatement prep = connection.prepareStatement(sql)) {
       prep.setInt(1, reviewerId);
@@ -756,8 +783,9 @@ public class SqliteDatabase {
           double nlat = rs.getDouble(10);
           double nlng = rs.getDouble(11);
           if (members.size() + 1 < member_capacity) {
-            toReturn.add(new Event(eventId, state, name, description, image, host,
-                    members, member_capacity, cost, location, tags, nlat, nlng));
+            toReturn.add(new Event(eventId, state, name, description, image,
+                host, members, member_capacity, cost, location, tags, nlat,
+                nlng));
           }
         }
       }
@@ -765,6 +793,111 @@ public class SqliteDatabase {
       closeResultSet(rs);
     }
     return toReturn;
+  }
+
+  /**
+   * Parses a String that represents a line and adds all words (lowercase).
+   * Words are all alphabetical characters seperated by anyamount of none
+   * alphabetical characters
+   *
+   * @param line
+   *          the String to be parsed
+   */
+  public static List<String> parseLine(String line) {
+    List<String> wordList = new ArrayList<>();
+    StringBuffer buf = new StringBuffer();
+    for (int i = 0; i < line.length(); i++) {
+      String letter = line.substring(i, i + 1);
+      if (LETTERS.contains(letter)) {
+        buf.append(letter);
+      } else if (CAPS.contains(letter)) {
+        buf.append(LETTERS.charAt(CAPS.indexOf(letter)));
+      } else if (buf.length() != 0) {
+        wordList.add(buf.toString());
+        buf.setLength(0);
+      }
+    }
+    if (buf.length() != 0) {
+      wordList.add(buf.toString());
+    }
+    return wordList;
+  }
+
+  public static boolean compare(List<String> a, List<String> b) {
+    double matches = 0;
+    for (String aword : a) {
+      boolean found = false;
+      for (int x = 0; !found && x < b.size(); x++) {
+        if (levDistance(aword, b.get(x)) < 2) {
+          matches++;
+          found = true;
+        }
+      }
+    }
+    return ((a.size() / matches) / a.size() > .5);
+  }
+
+  private static int minimum(int a, int b, int c) {
+    return Math.min(Math.min(a, b), c);
+  }
+
+  public static int levDistance(String a, String b) {
+    int[][] distance = new int[a.length() + 1][b.length() + 1];
+
+    for (int i = 0; i <= a.length(); i++)
+      distance[i][0] = i;
+    for (int j = 1; j <= b.length(); j++)
+      distance[0][j] = j;
+
+    for (int i = 1; i <= a.length(); i++)
+      for (int j = 1; j <= b.length(); j++)
+        distance[i][j] = minimum(distance[i - 1][j] + 1, distance[i][j - 1] + 1,
+            distance[i - 1][j - 1]
+                + ((a.charAt(i - 1) == b.charAt(j - 1)) ? 0 : 1));
+
+    return distance[a.length()][b.length()];
+  }
+
+  public List<Event> findEventsByKeys(String line) throws SQLException {
+    List<Event> toReturn = new ArrayList();
+    ResultSet rs = null;
+
+    try {
+      String sql = "SELECT id, owner_id, state, name, description, image,"
+          + " member_capacity, cost, location, lat, lng FROM event;";
+      PreparedStatement prep = connection.prepareStatement(sql);
+
+      rs = prep.executeQuery();
+
+      while (rs.next() && toReturn.size() < 10) {
+        String name = rs.getString(4);
+        if (compare(parseLine(line), parseLine(name))) {
+
+          Integer eventId = rs.getInt(1);
+          int owner_id = rs.getInt(2);
+          Account host = findUserAccountById(owner_id);
+          EventState state = EventState.valueOf(rs.getString(3));
+          String description = rs.getString(5);
+          String image = rs.getString(6);
+          int member_capacity = rs.getInt(7);
+          double cost = rs.getDouble(8);
+          String location = rs.getString(9);
+          List<String> tags = findTagsByEventId(eventId);
+          List<Integer> members = findUsersByEventId(eventId);
+          double nlat = rs.getDouble(10);
+          double nlng = rs.getDouble(11);
+          if (members.size() + 1 < member_capacity) {
+            toReturn.add(new Event(eventId, state, name, description, image,
+                host, members, member_capacity, cost, location, tags, nlat,
+                nlng));
+          }
+        }
+
+      }
+    } finally {
+      closeResultSet(rs);
+    }
+    return toReturn.subList(0, 10);
   }
 
   public Account findUserAccountById(int id) throws SQLException {
@@ -792,7 +925,7 @@ public class SqliteDatabase {
     return null;
   }
 
-  public Profile findUserProfileById(int id) {
+  public Profile findUserProfileById(int id) throws SQLException {
     String sql = "SELECT first_name, last_name, image, date FROM user WHERE id = ?;";
 
     try (PreparedStatement prep = connection.prepareStatement(sql)) {
@@ -807,13 +940,42 @@ public class SqliteDatabase {
           String date = rs.getString(4);
           List<Integer> reviews = findReviewsById(id);
 
-          return new Profile(id, firstName, lastName, image, date, reviews);
+          Profile profile = new Profile(id, firstName, lastName, image, date,
+              reviews);
+
+          double rating = findRatingByUserId(id);
+
+          profile.setRating(rating);
+
+          return profile;
         }
       }
-    } catch (SQLException e) {
-      return null;
     }
     return null;
+  }
+
+  public double findRatingByUserId(int userId) throws SQLException {
+    String sql = "SELECT rating FROM review WHERE target_id = ?;";
+
+    double totalRating = 0;
+    double totalNum = 0;
+
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
+      prep.setInt(1, userId);
+
+      try (ResultSet rs = prep.executeQuery()) {
+
+        while (rs.next()) {
+          totalRating += rs.getDouble(1);
+          totalNum++;
+        }
+
+        if (totalNum > 0) {
+          return totalRating / totalNum;
+        }
+      }
+    }
+    return -1;
   }
 
   public List<Integer> findReviewsById(int id) throws SQLException {
@@ -981,7 +1143,7 @@ public class SqliteDatabase {
     }
   }
 
-  public void updateNotification(int userId, boolean isNew) {
+  public void updateNotification(int userId, boolean isNew) throws SQLException {
     String sql = "UPDATE notification SET is_new = ? WHERE user_id = ?;";
 
     try (PreparedStatement prep = connection.prepareStatement(sql)) {
@@ -989,9 +1151,6 @@ public class SqliteDatabase {
       prep.setInt(2, userId);
 
       prep.executeUpdate();
-
-    } catch (SQLException e) {
-      e.printStackTrace();
     }
   }
 
@@ -1141,7 +1300,8 @@ public class SqliteDatabase {
     return null;
   }
 
-  public void insertUserIntoLeftEvent(int event_id, int user_id, int owner_id) throws SQLException {
+  public void insertUserIntoLeftEvent(int event_id, int user_id, int owner_id)
+      throws SQLException {
     String sql = "INSERT INTO user_left_event (event_id, user_id, owner_id) VALUES (?, ?, ?)";
     try (PreparedStatement prep = connection.prepareStatement(sql)) {
       prep.setInt(1, event_id);
@@ -1156,7 +1316,6 @@ public class SqliteDatabase {
     ResultSet rs = null;
     List<Integer> users = new ArrayList<>();
     String sql = "SELECT user_id FROM user_event WHERE event_id = ?;";
-
 
     try (PreparedStatement prep = connection.prepareStatement(sql)) {
       prep.setInt(1, eventId);
@@ -1195,7 +1354,8 @@ public class SqliteDatabase {
     }
   }
 
-  public List<PendingReview> findPendingReviewsByUserId(int userId) throws SQLException {
+  public List<PendingReview> findPendingReviewsByUserId(int userId)
+      throws SQLException {
     ResultSet rs = null;
     List<PendingReview> pendingReviews = new ArrayList<>();
     String sql = "SELECT id, target_id, event_name FROM pending_review WHERE reviewer_id = ?;";
@@ -1211,7 +1371,8 @@ public class SqliteDatabase {
         String eventName = rs.getString(3);
         Profile target = findUserProfileById(targetId);
 
-        PendingReview pending = new PendingReview(id, userId, targetId, target.getName(), target.getImage(), eventName);
+        PendingReview pending = new PendingReview(id, userId, targetId,
+            target.getName(), target.getImage(), eventName);
         pendingReviews.add(pending);
       }
 
@@ -1254,13 +1415,11 @@ public class SqliteDatabase {
     stat.executeUpdate("PRAGMA foreign_keys = ON; PRAGMA journal_mode=WAL;");
   }
 
-  private void closeResultSet(ResultSet rs) {
+  private void closeResultSet(ResultSet rs) throws SQLException {
     if (rs != null) {
-      try {
-        rs.close();
-      } catch (SQLException e) {
-        System.out.println("ERROR: can't close result set");
-      }
+
+      rs.close();
+
     }
   }
 }

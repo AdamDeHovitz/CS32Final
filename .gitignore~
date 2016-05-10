@@ -1,2 +1,4 @@
 .idea/
-.class
+*.class
+.mvn-classpath
+/target/

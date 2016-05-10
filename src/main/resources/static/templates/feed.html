@@ -1,6 +1,6 @@
 <ion-view view-title="{{curTitle}}" cache-view="false">
   <ion-content class="padding">
-  <ion-spinner class="loader-center" ng-if="loading && !curEvents">
+  <ion-spinner  ng-if="loading">
 	</ion-spinner>
   <div class="list">
 	<div ng-repeat="event in curEvents" ng-include="'templates/shortEvent.html'"></div>

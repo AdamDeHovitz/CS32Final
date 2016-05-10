@@ -157,6 +157,10 @@ bulkAppControllers.controller("eventCtrl", function($scope, $http, $rootScope,
 				responseObject = JSON.parse(responseJSON);
 				console.log(responseObject);
 				$state.go("tab.events");
+<<<<<<< HEAD
+=======
+				// figure out where to route
+>>>>>>> 06d4b5e3481aa242996f0bcd4a1e727d96198d13
 			});
 			/*
 			 * $.post("/event-remove", postParams, function(responseJSON) {

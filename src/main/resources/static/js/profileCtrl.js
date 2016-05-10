@@ -1,6 +1,7 @@
 bulkAppControllers.controller("profileCtrl", function($scope, $http, $stateParams, $state) {
 	var profileId = $stateParams.userId;
 	$scope.profileId = profileId;
+	$scope.Math = window.Math;
 
 	console.log($state.current.name);
 	if ($state.current.name == "tab.events-profile") {

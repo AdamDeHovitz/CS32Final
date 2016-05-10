@@ -39,6 +39,7 @@ bulkAppControllers
 				        console.log("retrieved location");
 				        console.log($rootScope.lat);
 				        console.log($rootScope.lng);
+				        $scope.loading = false;
 				        callback();
 			        };
 			        var geoError = function(error) {
@@ -51,6 +52,7 @@ bulkAppControllers
 				        // 3: timed out
 				        $rootScope.lat = null;
 				        $rootScope.lng = null;
+				        $scope.loading = false;
 				        callback();
 			        };
 
@@ -60,6 +62,7 @@ bulkAppControllers
 		        } else {
 			        console
 			            .log('Geolocation is not supported for this Browser/OS version yet.');
+			            $scope.loading = false;
 			        callback();
 		        }
 	        }
@@ -79,6 +82,9 @@ bulkAppControllers
                         			console.log(responseObject);
                         	})
                         }
+                if ($rootScope.lat != null) {
+                    getFeed();
+                }
                 getLoc(getFeed);
                 var rad = function(x) {
                     return x * Math.PI / 180;
