@@ -80,8 +80,10 @@
   ng-click="showConfirm('Confirm Close', 'Are you sure you want to close this event', confirmClose);">Close Requesting</button>
   <button class="button button-positive button-block" ng-show="isOwner && event.state == 'CLOSED'"
   ng-click="showConfirm('Confirm Close', 'Are you sure you want to start this event', confirmStart);">Start Event</button>
-  <button class="button button-positive button-block" ng-show="isOwner && event.state == 'STARTED'"
-  ng-click="showConfirm('Confirm Close', 'Are you sure this event is finished?', confirmRemove);">Mark as Complete</button>
+  <button class="button button-assertive button-block"  ng-show="isOwner && event.state != 'STARTED'"
+  ng-click="showConfirm('Confirm Close', 'Are you sure you want to delete this event?', confirmRemove);">Delete Event</button>
+    <button class="button button-assertive button-block"  ng-show="isOwner && event.state == 'STARTED'"
+            ng-click="showConfirm('Confirm Close', 'Are you sure this event is finished?', confirmRemove);">Close Event</button>
   <button class="button button-assertive button-block" ng-show="isMember && !isOwner" 
   ng-click="showConfirm('Confirm Leave', 'Are you sure you want to leave this event', confirmLeave);">Leave Event</button>
   

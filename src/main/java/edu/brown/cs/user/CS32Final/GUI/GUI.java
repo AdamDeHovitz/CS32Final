@@ -406,16 +406,26 @@ public class GUI {
       boolean hasError = false;
 
       Event event = null;
+      ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
 
       try {
         event = SqliteDatabase.getInstance().findEventById(id);
       } catch (Exception e) {
+        hasError = true;
+
         System.out.println("ERROR: SQL error");
         e.printStackTrace();
+        vars.put("hasError", hasError);
+        Map<String, Object> variables = vars.build();
+        return gson.toJson(variables);
       }
-
-      ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+      if (event == null) {
+        vars.put("hasError", hasError);
+        Map<String, Object> variables = vars.build();
+        return gson.toJson(variables);
+      }
       event.getEventData(vars);
+
 
       try {
         List<Integer> requests = SqliteDatabase.getInstance()
