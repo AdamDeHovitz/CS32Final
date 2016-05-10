@@ -1,12 +1,23 @@
 bulkAppControllers
     .controller(
         "feedCtrl",
-        function($scope, $rootScope, $http, $timeout) {
+        function($scope, $rootScope, $http, $timeout, $ionicPopup) {
 	        $scope.curTitle = "Feed";
 	        $scope.curUrl = "event";
 	        // $scope.curEvents = [];
 	        $scope.feedData = {};
+	        $scope.searchData = {};
 	        console.log("feed");
+
+            $scope.searchEnter = function() {
+                	            console.log($scope.searchData.search);
+                	            $.post("/event-search", {"search": $scope.searchData.search}, function(responseJSON) {
+                                 responseObject = JSON.parse(responseJSON);
+                                 $timeout(function() {$scope.curEvents = responseObject.events;}, 0);
+                                 console.log("searchData.search");
+                                 console.log(responseObject);
+                              })
+                }
 
 	        $scope.$on('$ionicView.enter', function() {
 		        // console.log('UserMessages ionicView.enter');
@@ -50,10 +61,18 @@ bulkAppControllers
 				        // 2: position unavailable (error response from location
 								// provider)
 				        // 3: timed out
-				        $rootScope.lat = null;
-				        $rootScope.lng = null;
+
 				        $scope.loading = false;
-				        callback();
+
+
+                    var alertPopup = $ionicPopup.alert({
+                      title : "Location Failed",
+                      template : "We were unable to determine your location. Please try again"
+                    });
+
+                    alertPopup.then(function(res) {
+                        getLoc(callback);
+                    });
 			        };
 
 			        navigator.geolocation.getCurrentPosition(geoSuccess, geoError,
