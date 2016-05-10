@@ -29,7 +29,14 @@ bulkAppControllers.controller("mapCtrl",
                   };
                   var geoError = function(error) {
                     console.log('Error occurred. Error code: ' + error.code);
-                    callback();
+                     var alertPopup = $ionicPopup.alert({
+                                          title : "Location Failed",
+                                          template : "We were unable to determine your location. Please try again"
+                                        });
+
+                                        alertPopup.then(function(res) {
+                                            getLoc(callback);
+                                        });
                   };
 
                   navigator.geolocation.getCurrentPosition(geoSuccess, geoError, geoOptions);

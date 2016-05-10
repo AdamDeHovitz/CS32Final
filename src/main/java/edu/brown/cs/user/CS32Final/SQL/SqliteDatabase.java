@@ -809,17 +809,26 @@ public class SqliteDatabase {
   }
 
   public static boolean compare(List<String> a, List<String> b) {
+    for(String aword: a) {
+      System.out.println(aword);
+    }
+    for (String bword: b) {
+      System.out.println(bword);
+    }
     double matches = 0;
     for (String aword: a) {
       boolean found = false;
       for (int x = 0; !found && x < b.size(); x++) {
-        if (levDistance(aword, b.get(x)) < 2) {
+        if (levDistance(aword, b.get(x)) < 1) {
           matches++;
           found = true;
         }
       }
     }
-    return ((a.size() / matches) / a.size() > .5);
+    System.out.println("size: " + a.size());
+    System.out.println("matches: " + matches);
+    System.out.println(a.size() / 2.0 <= matches);
+    return (a.size() / 2.0 <= matches);
   }
 
   private static int minimum(int a, int b, int c) {
@@ -886,7 +895,7 @@ public class SqliteDatabase {
     } finally {
       closeResultSet(rs);
     }
-    return toReturn.subList(0, 10);
+    return toReturn.subList(0, Math.min(10, toReturn.size()));
   }
 
   public Account findUserAccountById(int id) throws SQLException {

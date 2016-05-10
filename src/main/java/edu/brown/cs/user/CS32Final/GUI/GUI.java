@@ -491,9 +491,19 @@ public class GUI {
       QueryParamsMap qm = req.queryMap();
 
       int id = Integer.parseInt(qm.value("id"));
+      double lat;
+      double lng;
+      try {
+        lat = Double.parseDouble(qm.value("lat"));
+        lng = Double.parseDouble(qm.value("lng"));
+      } catch(NumberFormatException e) {
+        e.printStackTrace();
+        ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+        vars.put("hasError", true);
+        Map<String, Object> variables = vars.build();
+        return gson.toJson(variables);
 
-      double lat = Double.parseDouble(qm.value("lat"));
-      double lng = Double.parseDouble(qm.value("lng"));
+      }
       List<Event> events = null;
       try {
         List<Integer> handled = SqliteDatabase.getInstance()
@@ -521,8 +531,9 @@ public class GUI {
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
 
-      int id = Integer.parseInt(qm.value("id"));
+      //int id = Integer.parseInt(qm.value("id"));
       String line = qm.value("search");
+      System.out.println(line);
       List<Event> events = null;
       try {
         events = SqliteDatabase.getInstance().findEventsByKeys(line);

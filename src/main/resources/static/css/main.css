@@ -82,7 +82,7 @@ label.item.has-error {
 }
 
  .loader-center {
-	height: 100%;
+	/*height: 100%;*/
 	display: -webkit-box;
 	display: -moz-box;
 	display: -ms-flexbox;

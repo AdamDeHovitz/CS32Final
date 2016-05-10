@@ -2,6 +2,7 @@ bulkAppControllers.controller("pendingEventsCtrl", function($scope, $rootScope, 
 	$scope.curTitle = "Pending Events";
 	$scope.curUrl = "events-event";
 	$scope.curEvents = [];
+	$("#search").hide();
 
 	$.post("/event-pending", {id: $rootScope.account.id}, function(responseJSON) {
 			responseObject = JSON.parse(responseJSON);

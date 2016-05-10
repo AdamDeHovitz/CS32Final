@@ -2,6 +2,7 @@ bulkAppControllers.controller("joinedEventsCtrl", function($scope, $rootScope, $
 	$scope.curTitle = "Joined Events";
 	$scope.curUrl = "events-event";
 	$scope.curEvents = [];
+	$("#search").hide();
 
 	$.post("/event-joined", {id: $rootScope.account.id}, function(responseJSON) {
 			responseObject = JSON.parse(responseJSON);
