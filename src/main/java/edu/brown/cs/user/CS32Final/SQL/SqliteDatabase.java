@@ -1415,6 +1415,12 @@ public class SqliteDatabase {
     }
   }
 
+  public void runSql(String sql) throws SQLException {
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
+      prep.executeUpdate();
+    }
+  }
+
   private void makeConnection(String db)
       throws SQLException, ClassNotFoundException {
     Class.forName("org.sqlite.JDBC");
