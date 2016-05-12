@@ -118,6 +118,7 @@ public class GUI {
     Spark.post("/event-owner", new EventOwnerHandler());
     Spark.post("/event-joined", new EventJoinedHandler());
     Spark.post("/event-pending", new EventPendingHandler());
+    Spark.post("/event-members", new EventMembersHandler());
 
     // View users
     Spark.post("/user-requests", new UserRequestsHandler());
@@ -434,6 +435,9 @@ public class GUI {
         boolean newlyAccepted = SqliteDatabase.getInstance()
             .getNewlyAccepted(userId, event.getId());
 
+        SqliteDatabase.getInstance().removeStateNotif(userId,
+            event.getId());
+
         if (newlyAccepted) {
           SqliteDatabase.getInstance().removeNewlyAccepted(userId,
               event.getId());
@@ -616,6 +620,39 @@ public class GUI {
       }
       ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
       vars.put("events", events);
+
+      Map<String, Object> variables = vars.build();
+      return gson.toJson(variables);
+    }
+  }
+
+  private class EventMembersHandler implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+      int eventId = Integer.parseInt(qm.value("id"));
+
+      List<Profile> users = new ArrayList<>();
+      Profile owner = null;
+      boolean hasError = false;
+
+
+      try {
+        Event event = SqliteDatabase.getInstance().findEventById(eventId);
+        List<Integer> memberIds = event.getMembers();
+        owner = event.getHost().getProf();
+
+        for (int userId : memberIds) {
+          users.add(SqliteDatabase.getInstance().findUserProfileById(userId));
+        }
+      } catch (Exception e) {
+        hasError = true;
+      }
+
+      ImmutableMap.Builder<String, Object> vars = new ImmutableMap.Builder();
+      vars.put("owner", owner);
+      vars.put("users", users);
+      vars.put("hasError", hasError);
 
       Map<String, Object> variables = vars.build();
       return gson.toJson(variables);

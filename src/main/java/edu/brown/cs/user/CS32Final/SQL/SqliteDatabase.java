@@ -318,6 +318,18 @@ public class SqliteDatabase {
     }
   }
 
+  public void removeStateNotif(int user_id, int event_id)
+      throws SQLException {
+    String sql = "DELETE FROM notification WHERE type == 'STATE' AND user_id == ? AND event_id == ?";
+
+    try (PreparedStatement prep = connection.prepareStatement(sql)) {
+      prep.setInt(1, user_id);
+      prep.setInt(2, event_id);
+
+      prep.executeUpdate();
+    }
+  }
+
   public void clearMessageNotifs(int eventId, int userId) throws SQLException {
     String sql = "DELETE FROM notification WHERE type == 'MESSAGE' AND user_id == ? and event_id == ?";
 
@@ -748,12 +760,14 @@ public class SqliteDatabase {
       double lng) throws SQLException {
     List<Event> toReturn = new ArrayList();
     ResultSet rs = null;
+
     String sql = "SELECT id, owner_id, state, name, description, image,"
         + " member_capacity, cost, location, lat, lng FROM event "
         + "WHERE ABS(lat - ?) < 0.2 AND " + "ABS(lng - ?) < 0.2 ORDER BY"
         + "((? - lat) * (? - lat) + " + "(? - lng) * (? - lng) * ?);";
 
     double fudge = Math.pow(Math.cos(Math.toRadians(lat)), 2);
+
     try (PreparedStatement prep = connection.prepareStatement(sql)) {
 
       prep.setDouble(1, lat);
