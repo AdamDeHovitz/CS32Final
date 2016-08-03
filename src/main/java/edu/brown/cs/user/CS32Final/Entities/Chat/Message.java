@@ -30,4 +30,8 @@ public class Message {
     this.eventName = eventName;
     this.image = image;
   }
+
+  public String getContent() {
+    return content;
+  }
 }
