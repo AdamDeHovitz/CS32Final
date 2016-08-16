@@ -8,7 +8,8 @@ GoodSplit is a unique buying and selling application that allows users to buy in
 
 With a light and sleek design, GoodSplit will let you enjoy saving those grocery dollars.
 
-[Explore the app now!](www.bit.ly/GoodSplit)
+[Explore the app here now!](www.bit.ly/GoodSplit)
+
 Note: geolocation required. There will likely be no events near you given the limited user base, but you should make some.
 
 
